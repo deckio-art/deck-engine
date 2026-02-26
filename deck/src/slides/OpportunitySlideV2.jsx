@@ -136,12 +136,12 @@ function buildFromScenario(scenario) {
 }
 
 function buildInitial() {
-  return buildFromScenario(SCENARIOS[1])
+  return buildFromScenario(SCENARIOS[0])
 }
 
 export default function OpportunitySlideV2({ index = 4 }) {
   const [positions, setPositions] = useState(buildInitial)
-  const [activeScenario, setActiveScenario] = useState('seats')
+  const [activeScenario, setActiveScenario] = useState('base')
   const [yearly, setYearly] = useState(false)
   const [dragging, setDragging] = useState(null)
   const chartRef = useRef(null)
