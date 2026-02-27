@@ -7,6 +7,9 @@
 // ── Global discount (0 = no discount, 0.1 = 10% off, etc.) ──
 export const DISCOUNT = 0.00
 
+// ── ACD (Annual Commitment Discount) ──
+export const ACD_RATE = 0.25  // 25% discount when ACD is enabled
+
 // ── Pricing ──
 export const PRICE_BUSINESS   = 19   // $/dev/mo  — Copilot for Business
 export const PRICE_ENTERPRISE = 39   // $/dev/mo  — Copilot Enterprise
@@ -94,6 +97,49 @@ export const entUpgradeYr80  = (targetSeats * entPrice - targetSeats * bizPrice)
 
 // Revenue multiplier
 export const revenueMultiplier = yrStretch / yrBase
+
+// ── Recompute all scenarios for a given total discount ──
+export function computeScenarios(disc) {
+  const bp = PRICE_BUSINESS * (1 - disc)
+  const ep = PRICE_ENTERPRISE * (1 - disc)
+  const ts = targetSeats
+  const tc = totalGHCP
+
+  const _moBase         = tc * bp
+  const _moBase80       = ts * bp
+  const _moConservative = _moBase80 + ts * PRU_OVERAGE_BIZ_PCT * PRU_OVERAGE_BIZ_EXTRA * PRU_OVERAGE_RATE
+  const _moBestCase     = ts * ep
+  const _moStretch      = _moBestCase + ts * PRU_OVERAGE_ENT_PCT * PRU_OVERAGE_ENT_EXTRA * PRU_OVERAGE_RATE
+
+  const _moBaseCurrent     = tc * bp
+  const _moConservativeCur = tc * bp + tc * PRU_OVERAGE_BIZ_PCT * PRU_OVERAGE_BIZ_EXTRA * PRU_OVERAGE_RATE
+  const _moBestCaseCur     = tc * ep
+  const _moStretchCur      = _moBestCaseCur + tc * PRU_OVERAGE_ENT_PCT * PRU_OVERAGE_ENT_EXTRA * PRU_OVERAGE_RATE
+
+  const _yrBase         = _moBase * 12
+  const _yrBase80       = _moBase80 * 12
+  const _yrConservative = _moConservative * 12
+  const _yrBestCase     = _moBestCase * 12
+  const _yrStretch      = _moStretch * 12
+
+  const _pruOverageYr80  = ts * PRU_OVERAGE_BIZ_PCT * PRU_OVERAGE_BIZ_EXTRA * PRU_OVERAGE_RATE * 12
+  const _entUpgradeYr80  = (ts * ep - ts * bp) * 12
+
+  return {
+    moBaseCurrent: _moBaseCurrent, moBase80: _moBase80,
+    moConservativeCur: _moConservativeCur, moConservative: _moConservative,
+    moBestCaseCur: _moBestCaseCur, moBestCase: _moBestCase,
+    moStretchCur: _moStretchCur, moStretch: _moStretch,
+    yrBase: _yrBase, yrBase80: _yrBase80, yrConservative: _yrConservative,
+    yrBestCase: _yrBestCase, yrStretch: _yrStretch,
+    deltaConMo: _moConservative - _moBase80, deltaBestMo: _moBestCase - _moBase80,
+    deltaStrMo: _moStretch - _moBase80,
+    deltaConYr: _yrConservative - _yrBase80, deltaBestYr: _yrBestCase - _yrBase80,
+    deltaStrYr: _yrStretch - _yrBase80,
+    pruOverageYr80: _pruOverageYr80, entUpgradeYr80: _entUpgradeYr80,
+    revenueMultiplier: _yrStretch / _yrBase,
+  }
+}
 
 // ── Formatters ──
 export const fmtK   = (v) => '$' + (v / 1000).toFixed(1) + 'K'

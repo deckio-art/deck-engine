@@ -3,7 +3,7 @@ import Slide from '../components/Slide'
 import BottomBar from '../components/BottomBar'
 import styles from './OpportunitySlideV2.module.css'
 import {
-  customers, DISCOUNT,
+  customers, DISCOUNT, ACD_RATE,
   PRICE_BUSINESS, PRICE_ENTERPRISE,
   PRU_OVERAGE_RATE, PRU_BIZ, PRU_ENT,
   fmtM, fmtK, fmtPct,
@@ -29,7 +29,9 @@ const fmtSmart = v => Math.abs(v) >= 1e6 ? fmtM(v) : fmtK(v)
  *  Y = PRU usage per user/month           → overage → revenue
  *  Drag customers to explore $$$ impact.
  * ────────────────────────────────────────────────── */
-const d = (v) => v * (1 - DISCOUNT)
+
+// Discount helper: takes total discount rate
+const applyDiscount = (v, disc) => v * (1 - disc)
 
 // Axis bounds
 const PEN_MIN = 0.20, PEN_MAX = 0.95
@@ -38,7 +40,9 @@ const PEN_MID = 0.50, PRU_MID = PRU_ENT
 
 // Enterprise breakeven: where Business + overage = Enterprise flat price
 // $19 + (PRU-300)×$0.04 = $39  →  PRU = 300 + ($39-$19)/$0.04 = 800
-const PRU_BREAKEVEN = PRU_BIZ + (d(PRICE_ENTERPRISE) - d(PRICE_BUSINESS)) / PRU_OVERAGE_RATE
+function calcBreakeven(disc) {
+  return PRU_BIZ + (applyDiscount(PRICE_ENTERPRISE, disc) - applyDiscount(PRICE_BUSINESS, disc)) / PRU_OVERAGE_RATE
+}
 
 // Map value → chart %
 function valToX(pen) { return Math.max(1, Math.min(99, ((pen - PEN_MIN) / (PEN_MAX - PEN_MIN)) * 100)) }
@@ -48,12 +52,10 @@ function xToVal(pct) { return PEN_MIN + (pct / 100) * (PEN_MAX - PEN_MIN) }
 function yToVal(pct) { return PRU_MIN + ((100 - pct) / 100) * (PRU_MAX - PRU_MIN) }
 
 // Revenue calculator for a single customer given pen & pru
-// Business: $19/mo, 300 PRU included. Overage above 300 at $0.04/PRU.
-// Enterprise: $39/mo, 1000 PRU included. Upgrade when PRU >= 1000.
-function calcRevenue(c, pen, pru) {
+function calcRevenue(c, pen, pru, disc) {
   const seats = Math.round(c.ghe * pen)
-  const isEnt = pru >= PRU_ENT          // upgrade to Enterprise at 1000 PRU
-  const planPrice = isEnt ? d(PRICE_ENTERPRISE) : d(PRICE_BUSINESS)
+  const isEnt = pru >= PRU_ENT
+  const planPrice = isEnt ? applyDiscount(PRICE_ENTERPRISE, disc) : applyDiscount(PRICE_BUSINESS, disc)
   const allowance = isEnt ? PRU_ENT : PRU_BIZ
   const overagePru = Math.max(0, pru - allowance)
   const overagePerSeat = overagePru * PRU_OVERAGE_RATE
@@ -70,7 +72,7 @@ function calcRevenue(c, pen, pru) {
 }
 
 // initial current PRU usage per user/month (near zero — basic completions)
-const initPru = { ING: 80, ASML: 50, Philips: 60, Shell: 35, Ahold: 25, Rabobank: 45 }
+const initPru = { ING: 80, ASML: 50, Philips: 60, Shell: 35, Ahold: 25, 'ABN Amro': 40, Rabobank: 45 }
 
 // ── Scenario presets ──
 const SCENARIOS = [
@@ -144,9 +146,13 @@ export default function OpportunitySlideV2({ index = 4 }) {
   const [positions, setPositions] = useState(buildInitial)
   const [activeScenario, setActiveScenario] = useState('base')
   const [yearly, setYearly] = useState(false)
+  const [acdEnabled, setAcdEnabled] = useState(false)
   const [dragging, setDragging] = useState(null)
   const chartRef = useRef(null)
   const dragIdx = useRef(null)
+
+  const totalDiscount = DISCOUNT + (acdEnabled ? ACD_RATE : 0)
+  const PRU_BREAKEVEN = calcBreakeven(totalDiscount)
 
   const applyScenario = useCallback((s) => {
     setActiveScenario(s.id)
@@ -188,8 +194,8 @@ export default function OpportunitySlideV2({ index = 4 }) {
   const period = yearly ? 'annual' : 'monthly'
   const periodLabel = yearly ? '/yr' : '/mo'
   const computed = positions.map(c => {
-    const base = calcRevenue(c, c.ghcp / c.ghe, initPru[c.name] || 50)
-    const current = calcRevenue(c, c.pen, c.pru)
+    const base = calcRevenue(c, c.ghcp / c.ghe, initPru[c.name] || 50, totalDiscount)
+    const current = calcRevenue(c, c.pen, c.pru, totalDiscount)
     const delta = current[period] - base[period]
     return { ...c, base, current, delta }
   })
@@ -384,20 +390,34 @@ export default function OpportunitySlideV2({ index = 4 }) {
             <div className={styles.revHeader}>
               <div className={styles.revHeaderTop}>
                 <h3>Live Revenue</h3>
-                <button
-                  className={styles.periodToggle}
-                  onClick={(e) => { e.stopPropagation(); setYearly(v => !v) }}
-                  title={yearly ? 'Switch to monthly' : 'Switch to yearly'}
-                >
-                  <span className={!yearly ? styles.periodActive : ''}>Mo</span>
-                  <span className={yearly ? styles.periodActive : ''}>Yr</span>
-                </button>
+                <div className={styles.revToggles}>
+                  <button
+                    className={`${styles.acdToggle} ${acdEnabled ? styles.acdActive : ''}`}
+                    onClick={(e) => { e.stopPropagation(); setAcdEnabled(v => !v) }}
+                    title={acdEnabled ? 'Disable ACD (25% discount)' : 'Enable ACD (25% discount)'}
+                  >
+                    ACD {acdEnabled ? 'ON' : 'OFF'}
+                  </button>
+                  <button
+                    className={styles.periodToggle}
+                    onClick={(e) => { e.stopPropagation(); setYearly(v => !v) }}
+                    title={yearly ? 'Switch to monthly' : 'Switch to yearly'}
+                  >
+                    <span className={!yearly ? styles.periodActive : ''}>Mo</span>
+                    <span className={yearly ? styles.periodActive : ''}>Yr</span>
+                  </button>
+                </div>
               </div>
               <p className={styles.revSubtitle}>
                 {activeScenario
                   ? SCENARIOS.find(s => s.id === activeScenario)?.desc || 'Custom'
                   : 'Custom (dragged)'}
               </p>
+              {totalDiscount > 0 && (
+                <div className={styles.discountBadge}>
+                  {Math.round(totalDiscount * 100)}% discount applied{acdEnabled ? ' (incl. ACD)' : ''}
+                </div>
+              )}
             </div>
 
             <div className={styles.revList}>
@@ -425,7 +445,7 @@ export default function OpportunitySlideV2({ index = 4 }) {
                           </span>
                         )}
                         {c.current.plan === 'Business' && c.pru >= PRU_BREAKEVEN && (
-                          <span className={styles.revUpgradeHint}>↑ Enterprise saves ${((c.pru - PRU_BIZ) * PRU_OVERAGE_RATE - (d(PRICE_ENTERPRISE) - d(PRICE_BUSINESS))).toFixed(0)}/seat/mo</span>
+                          <span className={styles.revUpgradeHint}>↑ Enterprise saves ${((c.pru - PRU_BIZ) * PRU_OVERAGE_RATE - (applyDiscount(PRICE_ENTERPRISE, totalDiscount) - applyDiscount(PRICE_BUSINESS, totalDiscount))).toFixed(0)}/seat/mo</span>
                         )}
                       </div>
                       <div className={styles.revAmounts}>

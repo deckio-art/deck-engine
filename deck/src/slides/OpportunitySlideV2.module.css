@@ -569,6 +569,42 @@
   background: rgba(88, 166, 255, 0.15);
   color: var(--accent) !important;
 }
+
+/* ACD toggle */
+.revToggles {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.acdToggle {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.2px;
+  transition: all 0.2s ease;
+}
+.acdToggle.acdActive {
+  background: rgba(63, 185, 80, 0.15);
+  color: #3fb950;
+  border-color: rgba(63, 185, 80, 0.4);
+}
+.discountBadge {
+  font-size: 9px;
+  font-weight: 600;
+  color: #3fb950;
+  background: rgba(63, 185, 80, 0.1);
+  border-radius: 8px;
+  padding: 2px 8px;
+  margin-top: 3px;
+  display: inline-block;
+}
+
 .revSubtitle {
   font-size: 10px;
   color: var(--text-muted);

@@ -1,24 +1,17 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Slide from '../components/Slide'
 import BottomBar from '../components/BottomBar'
 import styles from './OpportunitySlide.module.css'
 import {
-  customers, DISCOUNT,
+  customers, DISCOUNT, ACD_RATE,
   PRICE_BUSINESS, PRICE_ENTERPRISE, PRU_OVERAGE_RATE,
   PRU_BIZ, PRU_ENT,
   PRU_OVERAGE_BIZ_PCT, PRU_OVERAGE_BIZ_EXTRA,
   PRU_OVERAGE_ENT_PCT, PRU_OVERAGE_ENT_EXTRA,
   TARGET_PENETRATION,
   totalGHCP, targetSeats,
-  moBaseCurrent, moBase80,
-  moConservativeCur, moConservative,
-  moBestCaseCur, moBestCase,
-  moStretchCur, moStretch,
-  yrBase, yrBase80, yrConservative, yrBestCase, yrStretch,
-  deltaConMo, deltaBestMo, deltaStrMo,
-  deltaConYr, deltaBestYr, deltaStrYr,
-  pruOverageYr80, entUpgradeYr80, revenueMultiplier,
   fmtK, fmtM, fmtPct, barPct, avgPen,
+  computeScenarios,
 } from '../data/opportunity'
 
 const tabs = [
@@ -34,6 +27,12 @@ const tgtPctLabel = Math.round(TARGET_PENETRATION * 100) + '%'
 
 export default function OpportunitySlide() {
   const [active, setActive] = useState('horizontal')
+  const [acdEnabled, setAcdEnabled] = useState(false)
+
+  const totalDiscount = DISCOUNT + (acdEnabled ? ACD_RATE : 0)
+  const s = useMemo(() => computeScenarios(totalDiscount), [totalDiscount])
+
+  const discountLabel = totalDiscount > 0 ? ` (${Math.round(totalDiscount * 100)}% discount applied${acdEnabled ? ' incl. ACD' : ''})` : ''
 
   return (
     <Slide index={3} className={styles.opportunity}>
@@ -43,7 +42,14 @@ export default function OpportunitySlide() {
         <div className={styles.header}>
           <h2>Pilot Opportunity <span className={styles.dim}>&mdash; {customers.length} Strategic Customers</span></h2>
           <div className={styles.tag}>Live Dashboard</div>
-          {DISCOUNT > 0 && <div className={styles.discountBadge}>{Math.round(DISCOUNT * 100)}% discount</div>}
+          <button
+            className={`${styles.acdToggle} ${acdEnabled ? styles.acdActive : ''}`}
+            onClick={(e) => { e.stopPropagation(); setAcdEnabled(v => !v) }}
+            title={acdEnabled ? 'Disable ACD (25% discount)' : 'Enable ACD (25% discount)'}
+          >
+            ACD {acdEnabled ? 'ON' : 'OFF'}
+          </button>
+          {totalDiscount > 0 && <div className={styles.discountBadge}>{Math.round(totalDiscount * 100)}% discount{acdEnabled ? ' (ACD)' : ''}</div>}
         </div>
 
         <div className={styles.tabs}>
@@ -132,8 +138,8 @@ export default function OpportunitySlide() {
                     <span className={styles.dot} style={{background: 'var(--accent)'}} />
                     Baseline — all Business
                   </td>
-                  <td>{fmtK(moBaseCurrent)} <span>/mo</span></td>
-                  <td>{fmtK(moBase80)} <span>/mo</span></td>
+                  <td>{fmtK(s.moBaseCurrent)} <span>/mo</span></td>
+                  <td>{fmtK(s.moBase80)} <span>/mo</span></td>
                   <td className={styles.muted}>—</td>
                 </tr>
                 <tr className={styles.rowCon}>
@@ -142,18 +148,18 @@ export default function OpportunitySlide() {
                     Conservative — Biz + PRU overage
                     <span className={styles.assumption}>{Math.round(PRU_OVERAGE_BIZ_PCT * 100)}% users avg {PRU_OVERAGE_BIZ_EXTRA} extra PRUs</span>
                   </td>
-                  <td>{fmtK(moConservativeCur)} <span>/mo</span></td>
-                  <td>{fmtK(moConservative)} <span>/mo</span></td>
-                  <td className={styles.up}>+{fmtK(deltaConMo)}/mo · <strong>+{fmtM(deltaConYr)}/yr</strong></td>
+                  <td>{fmtK(s.moConservativeCur)} <span>/mo</span></td>
+                  <td>{fmtK(s.moConservative)} <span>/mo</span></td>
+                  <td className={styles.up}>+{fmtK(s.deltaConMo)}/mo · <strong>+{fmtM(s.deltaConYr)}/yr</strong></td>
                 </tr>
                 <tr className={styles.rowBest}>
                   <td>
                     <span className={styles.dot} style={{background: 'var(--green)'}} />
                     Best case — all Enterprise
                   </td>
-                  <td>{fmtK(moBestCaseCur)} <span>/mo</span></td>
-                  <td>{fmtK(moBestCase)} <span>/mo</span></td>
-                  <td className={styles.up}>+{fmtK(deltaBestMo)}/mo · <strong>+{fmtM(deltaBestYr)}/yr</strong></td>
+                  <td>{fmtK(s.moBestCaseCur)} <span>/mo</span></td>
+                  <td>{fmtK(s.moBestCase)} <span>/mo</span></td>
+                  <td className={styles.up}>+{fmtK(s.deltaBestMo)}/mo · <strong>+{fmtM(s.deltaBestYr)}/yr</strong></td>
                 </tr>
                 <tr className={styles.rowStretch}>
                   <td>
@@ -161,9 +167,9 @@ export default function OpportunitySlide() {
                     Stretch — Enterprise + PRU overage
                     <span className={styles.assumption}>{Math.round(PRU_OVERAGE_ENT_PCT * 100)}% users avg {PRU_OVERAGE_ENT_EXTRA} extra PRUs</span>
                   </td>
-                  <td>{fmtK(moStretchCur)} <span>/mo</span></td>
-                  <td>{fmtK(moStretch)} <span>/mo</span></td>
-                  <td className={styles.up}>+{fmtK(deltaStrMo)}/mo · <strong>+{fmtM(deltaStrYr)}/yr</strong></td>
+                  <td>{fmtK(s.moStretchCur)} <span>/mo</span></td>
+                  <td>{fmtK(s.moStretch)} <span>/mo</span></td>
+                  <td className={styles.up}>+{fmtK(s.deltaStrMo)}/mo · <strong>+{fmtM(s.deltaStrYr)}/yr</strong></td>
                 </tr>
               </tbody>
             </table>
@@ -174,30 +180,30 @@ export default function OpportunitySlide() {
             <div className={styles.barRow}>
               <span className={styles.barLabel}>Baseline</span>
               <div className={styles.barTrack}>
-                <div className={styles.barFill} style={{width: barPct(yrBase80, yrStretch), background: 'var(--accent)'}} />
+                <div className={styles.barFill} style={{width: barPct(s.yrBase80, s.yrStretch), background: 'var(--accent)'}} />
               </div>
-              <span className={styles.barVal}>{fmtM(yrBase80)}/yr</span>
+              <span className={styles.barVal}>{fmtM(s.yrBase80)}/yr</span>
             </div>
             <div className={styles.barRow}>
               <span className={styles.barLabel}>Conservative</span>
               <div className={styles.barTrack}>
-                <div className={styles.barFill} style={{width: barPct(yrConservative, yrStretch), background: 'var(--orange)'}} />
+                <div className={styles.barFill} style={{width: barPct(s.yrConservative, s.yrStretch), background: 'var(--orange)'}} />
               </div>
-              <span className={styles.barVal}>{fmtM(yrConservative)}/yr</span>
+              <span className={styles.barVal}>{fmtM(s.yrConservative)}/yr</span>
             </div>
             <div className={styles.barRow}>
               <span className={styles.barLabel}>Best case</span>
               <div className={styles.barTrack}>
-                <div className={styles.barFill} style={{width: barPct(yrBestCase, yrStretch), background: 'var(--green)'}} />
+                <div className={styles.barFill} style={{width: barPct(s.yrBestCase, s.yrStretch), background: 'var(--green)'}} />
               </div>
-              <span className={styles.barVal}>{fmtM(yrBestCase)}/yr</span>
+              <span className={styles.barVal}>{fmtM(s.yrBestCase)}/yr</span>
             </div>
             <div className={styles.barRow}>
               <span className={styles.barLabel}>Stretch</span>
               <div className={styles.barTrack}>
                 <div className={styles.barFill} style={{width: '100%', background: 'linear-gradient(90deg, var(--purple), var(--pink))'}} />
               </div>
-              <span className={styles.barVal}>{fmtM(yrStretch)}/yr</span>
+              <span className={styles.barVal}>{fmtM(s.yrStretch)}/yr</span>
             </div>
           </div>
         </div>
@@ -214,22 +220,22 @@ export default function OpportunitySlide() {
           <div className={styles.totalKpis}>
             <div className={styles.totalKpi}>
               <div className={styles.totalKpiLabel}>Current State</div>
-              <div className={styles.totalKpiVal}>{fmtM(yrBase)}<span>/yr</span></div>
+              <div className={styles.totalKpiVal}>{fmtM(s.yrBase)}<span>/yr</span></div>
               <div className={styles.totalKpiSub}>{seatsK(totalGHCP)} seats × ${PRICE_BUSINESS} (Business)</div>
             </div>
             <div className={`${styles.totalKpi} ${styles.totalKpiWarn}`}>
               <div className={styles.totalKpiLabel}>Conservative</div>
-              <div className={styles.totalKpiVal}>{fmtM(yrConservative)}<span>/yr</span></div>
+              <div className={styles.totalKpiVal}>{fmtM(s.yrConservative)}<span>/yr</span></div>
               <div className={styles.totalKpiSub}>{seatsK(targetSeats)} seats × ${PRICE_BUSINESS} + PRU overage</div>
             </div>
             <div className={`${styles.totalKpi} ${styles.totalKpiBest}`}>
               <div className={styles.totalKpiLabel}>Best Case</div>
-              <div className={styles.totalKpiVal}>{fmtM(yrBestCase)}<span>/yr</span></div>
+              <div className={styles.totalKpiVal}>{fmtM(s.yrBestCase)}<span>/yr</span></div>
               <div className={styles.totalKpiSub}>{seatsK(targetSeats)} seats × ${PRICE_ENTERPRISE} (Enterprise)</div>
             </div>
             <div className={`${styles.totalKpi} ${styles.totalKpiStretch}`}>
               <div className={styles.totalKpiLabel}>Stretch</div>
-              <div className={styles.totalKpiVal}>{fmtM(yrStretch)}<span>/yr</span></div>
+              <div className={styles.totalKpiVal}>{fmtM(s.yrStretch)}<span>/yr</span></div>
               <div className={styles.totalKpiSub}>{seatsK(targetSeats)} seats × ${PRICE_ENTERPRISE} + PRU overage</div>
             </div>
           </div>
@@ -255,10 +261,10 @@ export default function OpportunitySlide() {
                     ↔ Horizontal — Seat Adoption
                     <span className={styles.assumption}>{seatsK(totalGHCP)} → {seatsK(targetSeats)} seats ({fmtPct(avgPen)} → {tgtPctLabel})</span>
                   </td>
-                  <td>{fmtM(yrBase)}</td>
-                  <td>{fmtM(yrBase80)}</td>
-                  <td>{fmtM(yrBase80)}</td>
-                  <td>{fmtM(yrBase80)}</td>
+                  <td>{fmtM(s.yrBase)}</td>
+                  <td>{fmtM(s.yrBase80)}</td>
+                  <td>{fmtM(s.yrBase80)}</td>
+                  <td>{fmtM(s.yrBase80)}</td>
                 </tr>
                 <tr>
                   <td>
@@ -268,8 +274,8 @@ export default function OpportunitySlide() {
                   </td>
                   <td className={styles.muted}>—</td>
                   <td className={styles.muted}>—</td>
-                  <td className={styles.up}>+{fmtM(entUpgradeYr80)}</td>
-                  <td className={styles.up}>+{fmtM(entUpgradeYr80)}</td>
+                  <td className={styles.up}>+{fmtM(s.entUpgradeYr80)}</td>
+                  <td className={styles.up}>+{fmtM(s.entUpgradeYr80)}</td>
                 </tr>
                 <tr>
                   <td>
@@ -278,16 +284,16 @@ export default function OpportunitySlide() {
                     <span className={styles.assumption}>${PRU_OVERAGE_RATE}/PRU beyond allowance</span>
                   </td>
                   <td className={styles.muted}>—</td>
-                  <td className={styles.up}>+{fmtM(pruOverageYr80)}</td>
+                  <td className={styles.up}>+{fmtM(s.pruOverageYr80)}</td>
                   <td className={styles.muted}>—</td>
-                  <td className={styles.up}>+{fmtM(pruOverageYr80)}</td>
+                  <td className={styles.up}>+{fmtM(s.pruOverageYr80)}</td>
                 </tr>
                 <tr className={styles.rowStretch} style={{fontWeight: 700}}>
                   <td><strong>Total Annualized Revenue</strong></td>
-                  <td>{fmtM(yrBase)}</td>
-                  <td style={{color: 'var(--orange)'}}>{fmtM(yrConservative)}</td>
-                  <td style={{color: 'var(--green)'}}>{fmtM(yrBestCase)}</td>
-                  <td style={{color: 'var(--purple)'}}>{fmtM(yrStretch)}</td>
+                  <td>{fmtM(s.yrBase)}</td>
+                  <td style={{color: 'var(--orange)'}}>{fmtM(s.yrConservative)}</td>
+                  <td style={{color: 'var(--green)'}}>{fmtM(s.yrBestCase)}</td>
+                  <td style={{color: 'var(--purple)'}}>{fmtM(s.yrStretch)}</td>
                 </tr>
               </tbody>
             </table>
@@ -298,34 +304,34 @@ export default function OpportunitySlide() {
             <div className={styles.totalBarRow}>
               <span className={styles.barLabel}>Current</span>
               <div className={styles.barTrack}>
-                <div className={styles.barSegment} style={{width: barPct(yrBase, yrStretch), background: 'var(--accent)'}} title={`Horizontal: ${fmtM(yrBase)}`} />
+                <div className={styles.barSegment} style={{width: barPct(s.yrBase, s.yrStretch), background: 'var(--accent)'}} title={`Horizontal: ${fmtM(s.yrBase)}`} />
               </div>
-              <span className={styles.barVal}>{fmtM(yrBase)}</span>
+              <span className={styles.barVal}>{fmtM(s.yrBase)}</span>
             </div>
             <div className={styles.totalBarRow}>
               <span className={styles.barLabel}>Conservative</span>
               <div className={styles.barTrack}>
-                <div className={styles.barSegment} style={{width: barPct(yrBase80, yrStretch), background: 'var(--accent)'}} title={`Horizontal: ${fmtM(yrBase80)}`} />
-                <div className={styles.barSegment} style={{width: barPct(pruOverageYr80, yrStretch), background: 'var(--orange)'}} title={`PRU overage: ${fmtM(pruOverageYr80)}`} />
+                <div className={styles.barSegment} style={{width: barPct(s.yrBase80, s.yrStretch), background: 'var(--accent)'}} title={`Horizontal: ${fmtM(s.yrBase80)}`} />
+                <div className={styles.barSegment} style={{width: barPct(s.pruOverageYr80, s.yrStretch), background: 'var(--orange)'}} title={`PRU overage: ${fmtM(s.pruOverageYr80)}`} />
               </div>
-              <span className={styles.barVal}>{fmtM(yrConservative)}</span>
+              <span className={styles.barVal}>{fmtM(s.yrConservative)}</span>
             </div>
             <div className={styles.totalBarRow}>
               <span className={styles.barLabel}>Best Case</span>
               <div className={styles.barTrack}>
-                <div className={styles.barSegment} style={{width: barPct(yrBase80, yrStretch), background: 'var(--accent)'}} title={`Horizontal: ${fmtM(yrBase80)}`} />
-                <div className={styles.barSegment} style={{width: barPct(entUpgradeYr80, yrStretch), background: 'var(--green)'}} title={`Enterprise upgrade: ${fmtM(entUpgradeYr80)}`} />
+                <div className={styles.barSegment} style={{width: barPct(s.yrBase80, s.yrStretch), background: 'var(--accent)'}} title={`Horizontal: ${fmtM(s.yrBase80)}`} />
+                <div className={styles.barSegment} style={{width: barPct(s.entUpgradeYr80, s.yrStretch), background: 'var(--green)'}} title={`Enterprise upgrade: ${fmtM(s.entUpgradeYr80)}`} />
               </div>
-              <span className={styles.barVal}>{fmtM(yrBestCase)}</span>
+              <span className={styles.barVal}>{fmtM(s.yrBestCase)}</span>
             </div>
             <div className={styles.totalBarRow}>
               <span className={styles.barLabel}>Stretch</span>
               <div className={styles.barTrack}>
-                <div className={styles.barSegment} style={{width: barPct(yrBase80, yrStretch), background: 'var(--accent)'}} title={`Horizontal: ${fmtM(yrBase80)}`} />
-                <div className={styles.barSegment} style={{width: barPct(entUpgradeYr80, yrStretch), background: 'var(--green)'}} title={`Enterprise upgrade: ${fmtM(entUpgradeYr80)}`} />
-                <div className={styles.barSegment} style={{width: barPct(pruOverageYr80, yrStretch), background: 'linear-gradient(90deg, var(--orange), var(--pink))'}} title={`PRU overage: ${fmtM(pruOverageYr80)}`} />
+                <div className={styles.barSegment} style={{width: barPct(s.yrBase80, s.yrStretch), background: 'var(--accent)'}} title={`Horizontal: ${fmtM(s.yrBase80)}`} />
+                <div className={styles.barSegment} style={{width: barPct(s.entUpgradeYr80, s.yrStretch), background: 'var(--green)'}} title={`Enterprise upgrade: ${fmtM(s.entUpgradeYr80)}`} />
+                <div className={styles.barSegment} style={{width: barPct(s.pruOverageYr80, s.yrStretch), background: 'linear-gradient(90deg, var(--orange), var(--pink))'}} title={`PRU overage: ${fmtM(s.pruOverageYr80)}`} />
               </div>
-              <span className={styles.barVal}>{fmtM(yrStretch)}</span>
+              <span className={styles.barVal}>{fmtM(s.yrStretch)}</span>
             </div>
             <div className={styles.totalLegend}>
               <span><span className={styles.legendDot} style={{background: 'var(--accent)'}} /> Seat Adoption</span>
@@ -335,7 +341,7 @@ export default function OpportunitySlide() {
           </div>
 
           <p className={styles.totalFootnote}>
-            From <strong>{fmtM(yrBase)}</strong> today to up to <strong>{fmtM(yrStretch)}</strong> — a <strong>{revenueMultiplier.toFixed(1)}×</strong> revenue multiplier across {customers.length} accounts.
+            From <strong>{fmtM(s.yrBase)}</strong> today to up to <strong>{fmtM(s.yrStretch)}</strong> — a <strong>{s.revenueMultiplier.toFixed(1)}×</strong> revenue multiplier across {customers.length} accounts.
           </p>
         </div>
       )}

@@ -43,6 +43,35 @@
   border: 1px solid rgba(63,185,80,0.25);
 }
 
+/* ACD toggle */
+.acdToggle {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+}
+.acdToggle.acdActive {
+  background: rgba(63, 185, 80, 0.15);
+  color: #3fb950;
+  border-color: rgba(63, 185, 80, 0.4);
+}
+.discountBadge {
+  font-size: 10px;
+  font-weight: 600;
+  color: #3fb950;
+  background: rgba(63, 185, 80, 0.1);
+  border-radius: 20px;
+  padding: 4px 12px;
+  border: 1px solid rgba(63, 185, 80, 0.25);
+}
+
 /* ── Tabs ── */
 .tabs {
   display: flex;
