@@ -1,51 +1,38 @@
-import { SlideProvider } from './context/SlideContext'
-import Navigation from './components/Navigation'
-import CoverSlide from './slides/CoverSlide'
-import AgendaSlide from './slides/AgendaSlide'
-import OpportunitySlide from './slides/OpportunitySlide'
-import OpportunitySlideV2 from './slides/OpportunitySlideV2'
-import IntentSlide from './slides/IntentSlide'
-import ApproachSlide from './slides/ApproachSlide'
-import PresentersSlide from './slides/PresentersSlide'
-import GovernanceSlide from './slides/GovernanceSlide'
-import ThankYouSlide from './slides/ThankYouSlide'
-import CustomerCoverSlide from './slides/CustomerCoverSlide'
-import CustomerIntroSlide from './slides/CustomerIntroSlide'
-import CustomerGoalsSlide from './slides/CustomerGoalsSlide'
-import CustomerCommitmentSlide from './slides/CustomerCommitmentSlide'
-import CustomerNextStepsSlide from './slides/CustomerNextStepsSlide'
-import SelectorSlide from './slides/SelectorSlide'
-import AppendixEmailSlide from './slides/AppendixEmailSlide'
-import SpeakerInviteSlide from './slides/SpeakerInviteSlide'
+import { useState, useEffect } from 'react'
+import ProjectPicker from './ProjectPicker'
+import GhcpApp from './GhcpApp'
+import DevPlanApp from './projects/dev-plan/DevPlanApp'
 
-const TOTAL = 20
+function getRoute() {
+  const hash = window.location.hash.replace('#/', '')
+  if (hash === 'ghcp') return 'ghcp'
+  if (hash === 'dev-plan') return 'dev-plan'
+  return null
+}
 
 export default function App() {
-  return (
-    <SlideProvider totalSlides={TOTAL}>
-      <Navigation />
-      <div className="deck">
-        <SelectorSlide />
-        <CoverSlide />
-        <AgendaSlide />
-        <OpportunitySlide />
-        <OpportunitySlideV2 />
-        <IntentSlide />
-        <ApproachSlide />
-        <PresentersSlide />
-        <GovernanceSlide />
-        <ThankYouSlide />
-        <SpeakerInviteSlide />
-        <CustomerCoverSlide />
-        <CustomerIntroSlide />
-        <CustomerGoalsSlide />
-        <ApproachSlide index={14} />
-        <PresentersSlide index={15} />
-        <CustomerCommitmentSlide />
-        <CustomerNextStepsSlide />
-        <ThankYouSlide index={18} />
-        <AppendixEmailSlide />
-      </div>
-    </SlideProvider>
-  )
+  const [route, setRoute] = useState(getRoute)
+
+  useEffect(() => {
+    const onHash = () => setRoute(getRoute())
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+
+  // Allow Escape to return to picker from any project
+  useEffect(() => {
+    if (!route) return
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        window.location.hash = ''
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [route])
+
+  if (route === 'ghcp') return <GhcpApp />
+  if (route === 'dev-plan') return <DevPlanApp />
+  return <ProjectPicker />
 }
