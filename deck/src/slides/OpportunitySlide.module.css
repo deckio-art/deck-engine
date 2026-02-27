@@ -308,6 +308,53 @@
 .impactTable tbody tr:last-child td { border-bottom: none; }
 .impactTable tbody tr:hover { background: rgba(88,166,255,0.03); }
 
+/* ── Customer breakdown table ── */
+.customerTable th,
+.customerTable td {
+  padding: 8px 10px;
+  font-size: 11px;
+}
+.custName {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.custLogo {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  object-fit: contain;
+  background: #fff;
+  padding: 1px;
+  flex-shrink: 0;
+}
+.custSub {
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: 10px;
+}
+.penBadge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.penGood {
+  background: rgba(63, 185, 80, 0.15);
+  color: var(--green);
+}
+.penWarn {
+  background: rgba(210, 153, 34, 0.15);
+  color: var(--orange);
+}
+.totalRow td {
+  border-top: 2px solid var(--border);
+  font-weight: 700;
+}
+
 .dot {
   display: inline-block;
   width: 8px; height: 8px;

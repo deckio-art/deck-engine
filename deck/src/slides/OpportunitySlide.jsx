@@ -14,6 +14,17 @@ import {
   computeScenarios,
 } from '../data/opportunity'
 
+// Local logos for reliability
+import logoING from '../data/logos/ing.png'
+import logoASML from '../data/logos/asml.png'
+import logoPhilips from '../data/logos/philips.png'
+import logoShell from '../data/logos/shell.png'
+import logoAhold from '../data/logos/ahold.png'
+import logoABNAmro from '../data/logos/abnamro.png'
+import logoRabobank from '../data/logos/rabobank.svg'
+
+const localLogos = { ING: logoING, ASML: logoASML, Philips: logoPhilips, Shell: logoShell, Ahold: logoAhold, 'ABN Amro': logoABNAmro, Rabobank: logoRabobank }
+
 const tabs = [
   { id: 'horizontal', label: 'Horizontal Expansion', icon: '↔' },
   { id: 'vertical',   label: 'Vertical Expansion',   icon: '↕' },
@@ -240,6 +251,65 @@ export default function OpportunitySlide() {
               <div className={styles.totalKpiVal}>{fmtM(s.yrStretch)}<span>/yr</span></div>
               <div className={styles.totalKpiSub}>{seatsK(targetSeats)} seats × ${fmtPrice(entPrice)} + PRU overage</div>
             </div>
+          </div>
+
+          {/* ── Customer Breakdown ── */}
+          <div className={styles.impactSection}>
+            <h4 className={styles.impactTitle}>Customer Expansion Summary</h4>
+            <p className={styles.impactDesc}>Per-account view — current state and expansion potential at {tgtPctLabel} penetration target</p>
+            <table className={`${styles.impactTable} ${styles.customerTable}`}>
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Seats</th>
+                  <th>Pen.</th>
+                  <th>Current</th>
+                  <th>Baseline</th>
+                  <th>Conservative</th>
+                  <th>Best Case</th>
+                  <th>Stretch</th>
+                </tr>
+              </thead>
+              <tbody>
+                {customers.map(c => {
+                  const pen = c.ghcp / c.ghe
+                  const tgt = Math.round(c.ghe * TARGET_PENETRATION)
+                  const curYr = c.ghcp * bizPrice * 12
+                  const baseYr = tgt * bizPrice * 12
+                  const conYr = baseYr + tgt * PRU_OVERAGE_BIZ_PCT * PRU_OVERAGE_BIZ_EXTRA * pruRate * 12
+                  const bestYr = tgt * entPrice * 12
+                  const strYr = bestYr + tgt * PRU_OVERAGE_ENT_PCT * PRU_OVERAGE_ENT_EXTRA * pruRate * 12
+                  return (
+                    <tr key={c.name}>
+                      <td>
+                        <div className={styles.custName}>
+                          <img src={localLogos[c.name] || c.logo} alt={c.name} className={styles.custLogo}
+                            onError={e => { e.target.style.display = 'none' }} />
+                          {c.name}
+                        </div>
+                      </td>
+                      <td>{c.ghcp.toLocaleString()}<span className={styles.custSub}>/{c.ghe.toLocaleString()}</span></td>
+                      <td><span className={`${styles.penBadge} ${pen >= 0.55 ? styles.penGood : styles.penWarn}`}>{fmtPct(pen)}</span></td>
+                      <td>{fmtK(curYr)}</td>
+                      <td>{fmtK(baseYr)}</td>
+                      <td className={styles.up}>{fmtK(conYr)}</td>
+                      <td style={{color: 'var(--green)', fontWeight: 600}}>{fmtK(bestYr)}</td>
+                      <td style={{color: 'var(--purple)', fontWeight: 600}}>{fmtK(strYr)}</td>
+                    </tr>
+                  )
+                })}
+                <tr className={styles.totalRow}>
+                  <td><strong>TOTAL</strong></td>
+                  <td><strong>{totalGHCP.toLocaleString()}</strong><span className={styles.custSub}>/{customers.reduce((a,c) => a + c.ghe, 0).toLocaleString()}</span></td>
+                  <td><span className={`${styles.penBadge} ${styles.penWarn}`}>{fmtPct(avgPen)}</span></td>
+                  <td><strong>{fmtM(s.yrBase)}</strong></td>
+                  <td><strong>{fmtM(s.yrBase80)}</strong></td>
+                  <td className={styles.up}><strong>{fmtM(s.yrConservative)}</strong></td>
+                  <td style={{color: 'var(--green)', fontWeight: 700}}><strong>{fmtM(s.yrBestCase)}</strong></td>
+                  <td style={{color: 'var(--purple)', fontWeight: 700}}><strong>{fmtM(s.yrStretch)}</strong></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
           {/* ── Waterfall breakdown ── */}
