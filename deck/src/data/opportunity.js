@@ -25,12 +25,13 @@ export const TARGET_PENETRATION = 0.80 // 80%
 
 // ── Customer data ──
 export const customers = [
-  { name: 'ING',     ghe: 15000, ghcp: 6000,  color: '#58a6ff', logo: 'https://logo.clearbit.com/ing.com' },
-  { name: 'ASML',    ghe: 8201,  ghcp: 4532,  color: '#3fb950', logo: 'https://logo.clearbit.com/asml.com' },
-  { name: 'Philips', ghe: 8056,  ghcp: 4350,  color: '#d29922', logo: 'https://logo.clearbit.com/philips.com' },
-  { name: 'Shell',   ghe: 6500,  ghcp: 3120,  color: '#bc8cff', logo: 'https://logo.clearbit.com/shell.com' },
-  { name: 'Ahold',   ghe: 4200,  ghcp: 1890,  color: '#f778ba', logo: 'https://logo.clearbit.com/aholddelhaize.com' },
-  { name: 'Rabobank',ghe: 9500,  ghcp: 4750,  color: '#f97316', logo: 'https://logo.clearbit.com/rabobank.com' },
+  { name: 'ING',      ghe: 15000, ghcp: 6000,  color: '#58a6ff', logo: 'https://logo.clearbit.com/ing.com' },
+  { name: 'ASML',     ghe: 8201,  ghcp: 4532,  color: '#3fb950', logo: 'https://logo.clearbit.com/asml.com' },
+  { name: 'Philips',  ghe: 8056,  ghcp: 4350,  color: '#d29922', logo: 'https://logo.clearbit.com/philips.com' },
+  { name: 'Shell',    ghe: 4500,  ghcp: 2952,  color: '#bc8cff', logo: 'https://logo.clearbit.com/shell.com' },
+  { name: 'Ahold',    ghe: 4122,  ghcp: 1750,  color: '#f778ba', logo: 'https://logo.clearbit.com/aholddelhaize.com' },
+  { name: 'ABN Amro', ghe: 5148,  ghcp: 2905,  color: '#00a651', logo: 'https://logo.clearbit.com/abnamro.com' },
+  { name: 'Rabobank', ghe: 7469,  ghcp: 2799,  color: '#f97316', logo: 'https://logo.clearbit.com/rabobank.com' },
 ]
 
 // ── Helper: apply discount ──

@@ -12,7 +12,7 @@ function getEmailHtml() {
 <ul>
 <li>🎤 <b>One 30–40 minute live demo</b> on [Topic] — no slides, just you and your IDE</li>
 <li>📅 <b>Bi-weekly cadence</b>, 1-hour sessions — you'd present once (or more if you want to come back)</li>
-<li>👥 <b>Audience:</b> 200+ engineers from companies like ING, ASML, Shell, Philips, Rabobank</li>
+<li>👥 <b>Audience:</b> 200+ engineers from companies like ING, ASML, Shell, Philips, ABN Amro, Rabobank</li>
 <li>🌟 <b>Recognition:</b> Featured speaker profile, cross-published content, and direct visibility with enterprise engineering leaders</li>
 </ul>
 <p>This isn't a generic ask. The lineup is intentionally small and curated — every speaker is someone who's <b>ahead of the curve</b>. Being part of this series is a chance to shape how the next generation of enterprise engineers works with AI.</p>
@@ -34,7 +34,7 @@ What we're asking:
 
 🎤 One 30–40 minute live demo on [Topic] — no slides, just you and your IDE
 📅 Bi-weekly cadence, 1-hour sessions — you'd present once (or more if you want to come back)
-👥 Audience: 200+ engineers from companies like ING, ASML, Shell, Philips, Rabobank
+👥 Audience: 200+ engineers from companies like ING, ASML, Shell, Philips, ABN Amro, Rabobank
 🌟 Recognition: Featured speaker profile, cross-published content, and direct visibility with enterprise engineering leaders
 
 This isn't a generic ask. The lineup is intentionally small and curated — every speaker is someone who's ahead of the curve. Being part of this series is a chance to shape how the next generation of enterprise engineers works with AI.

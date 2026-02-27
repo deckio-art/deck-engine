@@ -38,47 +38,58 @@ window.DASHBOARD_DATA = [
   },
   {
     "name": "Shell",
-    "ghe": 6500,
-    "ghcp": 3120,
-    "acr": 59280,
-    "pen": 48,
-    "at75": 92625,
-    "at90": 111150,
+    "ghe": 4500,
+    "ghcp": 2952,
+    "acr": 56088,
+    "pen": 66,
+    "at75": 64125,
+    "at90": 76950,
     "color": "#bc8cff",
     "logo": "https://logo.clearbit.com/shell.com"
   },
   {
     "name": "Ahold",
-    "ghe": 4200,
-    "ghcp": 1890,
-    "acr": 35910,
-    "pen": 45,
-    "at75": 59850,
-    "at90": 71820,
+    "ghe": 4122,
+    "ghcp": 1750,
+    "acr": 33250,
+    "pen": 42,
+    "at75": 58748,
+    "at90": 70490,
     "color": "#f778ba",
     "logo": "https://logo.clearbit.com/aholddelhaize.com"
   },
   {
+    "name": "ABN Amro",
+    "ghe": 5148,
+    "ghcp": 2905,
+    "acr": 55195,
+    "pen": 56,
+    "at75": 73359,
+    "at90": 88027,
+    "color": "#00a651",
+    "logo": "https://logo.clearbit.com/abnamro.com"
+  },
+  {
     "name": "Rabobank",
-    "ghe": 9500,
-    "ghcp": 4750,
-    "acr": 90250,
-    "pen": 50,
-    "at75": 135375,
-    "at90": 162450,
+    "ghe": 7469,
+    "ghcp": 2799,
+    "acr": 53181,
+    "pen": 37,
+    "at75": 106438,
+    "at90": 127718,
     "color": "#f97316",
     "logo": "https://logo.clearbit.com/rabobank.com"
   }
 ];
 window.DASHBOARD_KPIS = {
-  "totalGHE": 51457,
-  "totalGHCP": 24642,
+  "totalGHE": 52496,
+  "totalGHCP": 25288,
   "avgPen": 48,
-  "totalACR": 468198,
-  "total75": 733267,
-  "total90": 879909,
-  "gapTo75": 265069,
-  "expansionPct": 88
+  "totalACR": 480472,
+  "total75": 748087,
+  "total90": 897674,
+  "gapTo75": 267615,
+  "expansionPct": 87
 };
 window.PRICE_BUSINESS = 19;
 window.DISCOUNT = 0;
