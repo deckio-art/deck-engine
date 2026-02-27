@@ -46,7 +46,7 @@ export default function GovernanceSlide() {
 
       <div className="content-frame content-gutter">
         <div className={styles.header}>
-          <h2>Core Team</h2>
+          <h2>Governance</h2>
         </div>
         <p className={styles.subtitle}>
           A focused leadership team with clear accountability drives smooth, scalable program execution.
