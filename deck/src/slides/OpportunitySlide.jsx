@@ -258,7 +258,7 @@ export default function OpportunitySlide() {
           <div className={styles.impactSection}>
             <div className={styles.custHeader}>
               <div>
-                <h4 className={styles.impactTitle}>Customer Expansion Summary</h4>
+                <h4 className={styles.impactTitle}>Customer Expansion Summary <span className={styles.dim}>— ACR {perYear ? '/yr' : '/mo'}</span></h4>
                 <p className={styles.impactDesc}>Per-account view — current state and expansion potential at {tgtPctLabel} penetration target</p>
               </div>
               <button
