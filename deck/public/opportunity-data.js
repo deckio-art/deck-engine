@@ -67,7 +67,7 @@ window.DASHBOARD_DATA = [
     "at75": 73359,
     "at90": 88027,
     "color": "#00a651",
-    "logo": "https://logo.clearbit.com/abnamro.com"
+    "logo": "https://logo.clearbit.com/abnamro.nl"
   },
   {
     "name": "Rabobank",

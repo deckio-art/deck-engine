@@ -30,7 +30,7 @@ export const customers = [
   { name: 'Philips',  ghe: 8056,  ghcp: 4350,  color: '#d29922', logo: 'https://logo.clearbit.com/philips.com' },
   { name: 'Shell',    ghe: 4500,  ghcp: 2952,  color: '#bc8cff', logo: 'https://logo.clearbit.com/shell.com' },
   { name: 'Ahold',    ghe: 4122,  ghcp: 1750,  color: '#f778ba', logo: 'https://logo.clearbit.com/aholddelhaize.com' },
-  { name: 'ABN Amro', ghe: 5148,  ghcp: 2905,  color: '#00a651', logo: 'https://logo.clearbit.com/abnamro.com' },
+  { name: 'ABN Amro', ghe: 5148,  ghcp: 2905,  color: '#00a651', logo: 'https://logo.clearbit.com/abnamro.nl' },
   { name: 'Rabobank', ghe: 7469,  ghcp: 2799,  color: '#f97316', logo: 'https://logo.clearbit.com/rabobank.com' },
 ]
 
