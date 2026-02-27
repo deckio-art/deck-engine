@@ -2,21 +2,39 @@ import Slide from '../components/Slide'
 import BottomBar from '../components/BottomBar'
 import styles from './GovernanceSlide.module.css'
 
-const roles = [
-  { role: 'Program Owner', assignee: 'Leandro Lopez', badge: 'Leandro Lopez', badgeClass: 'owner' },
-  { role: 'GitHub Program Sponsor', assignee: 'TBD', badge: 'TBD', badgeClass: 'tbd' },
-  { role: 'CSU Program Sponsor', assignee: 'TBD', badge: 'TBD', badgeClass: 'tbd' },
-  { role: 'GitHub Speaker Pool Lead', assignee: 'TBD', badge: 'TBD', badgeClass: 'tbd' },
-  { role: 'Microsoft Speaker Pool Lead', assignee: 'TBD', badge: 'TBD', badgeClass: 'tbd' },
+import leandroImg from '../data/governance/leandro.png'
+import marcelImg from '../data/governance/marcel.png'
+import stefanieImg from '../data/governance/stefanie.png'
+import ericImg from '../data/governance/eric.png'
+
+const team = [
   {
-    role: 'Industry Pool Lead',
-    assignee: 'tags',
-    tags: [
-      { label: 'FSI', cls: 'fsi' },
-      { label: 'Retail', cls: 'retail' },
-      { label: 'Manufacturing', cls: 'mfg' },
-      { label: 'Public', cls: 'public' },
-    ],
+    name: 'Leandro Lopez',
+    title: 'Microsoft Solution Engineering Manager',
+    programRole: 'Program Owner',
+    img: leandroImg,
+    accent: 'blue',
+  },
+  {
+    name: 'Marcel Van Ingen',
+    title: 'Microsoft Customer Success Unit Manager',
+    programRole: 'Execution',
+    img: marcelImg,
+    accent: 'green',
+  },
+  {
+    name: 'Stefanie Stavri',
+    title: 'GitHub Regional Sales Director',
+    programRole: 'Speaker Curation',
+    img: stefanieImg,
+    accent: 'purple',
+  },
+  {
+    name: 'Eric Laan',
+    title: 'Microsoft ING CAIP Lead',
+    programRole: 'Customer-Zero & Program Co-Owner',
+    img: ericImg,
+    accent: 'orange',
   },
 ]
 
@@ -28,37 +46,27 @@ export default function GovernanceSlide() {
 
       <div className="content-frame content-gutter">
         <div className={styles.header}>
-          <h2>Governance</h2>
+          <h2>Core Team</h2>
         </div>
-        <p className={styles.subtitle}>A lightweight governance with clear owners ensures a smooth and scalable program execution.</p>
+        <p className={styles.subtitle}>
+          A focused leadership team with clear accountability drives smooth, scalable program execution.
+        </p>
 
-        <div className={styles.tableWrap}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Role</th>
-                <th>Assignee</th>
-              </tr>
-            </thead>
-            <tbody>
-              {roles.map((r, i) => (
-                <tr key={i}>
-                  <td>{r.role}</td>
-                  <td>
-                    {r.tags ? (
-                      <div className={styles.tagRow}>
-                        {r.tags.map((t) => (
-                          <span key={t.cls} className={`${styles.tag} ${styles[`tag${t.cls}`]}`}>{t.label}</span>
-                        ))}
-                      </div>
-                    ) : (
-                      <span className={`${styles.badge} ${styles[r.badgeClass]}`}>{r.badge}</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className={styles.cardGrid}>
+          {team.map((m) => (
+            <div key={m.name} className={`${styles.card} ${styles[m.accent]}`}>
+              <div className={styles.avatarWrap}>
+                <img src={m.img} alt={m.name} className={styles.avatar} />
+              </div>
+              <div className={styles.cardBody}>
+                <h3 className={styles.name}>{m.name}</h3>
+                <p className={styles.title}>{m.title}</p>
+                <span className={`${styles.roleBadge} ${styles[`badge${m.accent}`]}`}>
+                  {m.programRole}
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
