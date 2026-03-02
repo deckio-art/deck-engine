@@ -9,9 +9,10 @@ import logoASML from '../data/logos/asml.png'
 import logoPhilips from '../data/logos/philips.png'
 import logoShell from '../data/logos/shell.png'
 import logoAhold from '../data/logos/ahold.png'
+import logoABNAmro from '../data/logos/abnamro.png'
 import logoRabobank from '../data/logos/rabobank.svg'
 
-const localLogos = { ING: logoING, ASML: logoASML, Philips: logoPhilips, Shell: logoShell, Ahold: logoAhold, Rabobank: logoRabobank }
+const localLogos = { ING: logoING, ASML: logoASML, Philips: logoPhilips, Shell: logoShell, Ahold: logoAhold, 'ABN Amro': logoABNAmro, Rabobank: logoRabobank }
 
 export default function SelectorSlide() {
   const { goTo, setSelectedCustomer } = useSlides()

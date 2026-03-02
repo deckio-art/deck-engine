@@ -1,0 +1,336 @@
+.slide {
+  background: #0d1117;
+  color: #e6edf3;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 44px 56px 36px;
+  box-sizing: border-box;
+}
+
+/* ── Header ── */
+.header {
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+.header h2 {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: #e6edf3;
+}
+
+.header p {
+  font-size: 15px;
+  color: #8b949e;
+  margin: 0;
+}
+
+/* ── Diagram container ── */
+.diagram {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-height: 0;
+}
+
+/* ── Grid layout for diagram ── */
+.grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 100px 1fr 240px;
+  grid-template-rows: 1fr 36px 1fr 36px 1fr;
+  align-items: center;
+  gap: 0;
+}
+
+/* ── Labels column ── */
+.label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 16px;
+}
+
+.labelText {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #8b949e;
+  text-align: right;
+  line-height: 1.3;
+}
+
+/* ── Customer cards ── */
+.stakeholderData {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stakeholderApps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cardBlue {
+  background: rgba(56, 139, 253, 0.06);
+  border: 1.5px solid rgba(56, 139, 253, 0.18);
+  color: #79c0ff;
+}
+
+.cardPurple {
+  background: rgba(110, 64, 201, 0.06);
+  border: 1.5px solid rgba(110, 64, 201, 0.18);
+  color: #c9a0ff;
+}
+
+.cardIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardIconBlue { background: rgba(56, 139, 253, 0.12); }
+.cardIconPurple { background: rgba(110, 64, 201, 0.12); }
+
+/* ── SE cards (larger) ── */
+.seData {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.seApps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.seCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 28px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.seCardBlue {
+  background: rgba(56, 139, 253, 0.08);
+  border: 1.5px solid rgba(56, 139, 253, 0.25);
+  color: #58a6ff;
+}
+
+.seCardPurple {
+  background: rgba(110, 64, 201, 0.08);
+  border: 1.5px solid rgba(110, 64, 201, 0.25);
+  color: #a371f7;
+}
+
+.seIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.seIconBlue { background: rgba(56, 139, 253, 0.15); }
+.seIconPurple { background: rgba(110, 64, 201, 0.15); }
+
+.noIncentive {
+  font-size: 10px;
+  font-weight: 700;
+  color: #f85149;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ── Connector rows ── */
+.connectorCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.arrowStem {
+  width: 2px;
+  height: 22px;
+}
+
+.arrowStemBlue { background: rgba(56, 139, 253, 0.3); }
+.arrowStemPurple { background: rgba(110, 64, 201, 0.3); }
+
+.arrowTip {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+}
+
+.arrowTipBlue { border-top: 6px solid rgba(56, 139, 253, 0.4); }
+.arrowTipPurple { border-top: 6px solid rgba(110, 64, 201, 0.4); }
+
+/* ── Products row ── */
+.productsArea {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+.productsRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.chipAnalytics {
+  background: rgba(56, 139, 253, 0.10);
+  color: #58a6ff;
+  border: 1px solid rgba(56, 139, 253, 0.15);
+}
+
+.chipTransactional {
+  background: rgba(63, 185, 80, 0.08);
+  color: #3fb950;
+  border: 1px solid rgba(63, 185, 80, 0.15);
+}
+
+.chipOss {
+  background: rgba(210, 153, 34, 0.08);
+  color: #d29922;
+  border: 1px solid rgba(210, 153, 34, 0.15);
+}
+
+.emptyProducts {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyText {
+  font-size: 11px;
+  color: #484f58;
+  font-style: italic;
+}
+
+/* ── SVG overlay for the cross-link ── */
+.svgOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ── Broken link callout ── */
+.callout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 14px 20px;
+  background: rgba(248, 81, 73, 0.04);
+  border: 1px solid rgba(248, 81, 73, 0.15);
+  border-radius: 10px;
+  margin-left: 100px;
+  flex-shrink: 0;
+}
+
+.calloutIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(248, 81, 73, 0.10);
+  border: 1.5px solid rgba(248, 81, 73, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f85149;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.calloutText {
+  font-size: 14px;
+  color: #f85149;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.calloutText strong {
+  font-weight: 700;
+}
+
+/* ── Legend ── */
+.legend {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  padding: 10px 0 0;
+  margin-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #8b949e;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.legendBlue { background: #58a6ff; }
+.legendGreen { background: #3fb950; }
+.legendYellow { background: #d29922; }
+.legendRed { background: #f85149; }

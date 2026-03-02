@@ -3,9 +3,10 @@ import Navigation from '../../components/Navigation'
 import CoverSlide from './CoverSlide'
 import ButterflyArtSlide from './ButterflyArtSlide'
 import HourglassSlide from './HourglassSlide'
+import AlignmentGapSlide from './AlignmentGapSlide'
 import ThankYouSlide from '../../slides/GenericThankYouSlide'
 
-const TOTAL = 4
+const TOTAL = 5
 
 export default function DevExKeynoteApp() {
   return (
@@ -15,7 +16,8 @@ export default function DevExKeynoteApp() {
         <CoverSlide />
         <ButterflyArtSlide index={1} />
         <HourglassSlide index={2} />
-        <ThankYouSlide index={3} tagline="DevEx Keynote · 2026" footerText="DevEx Keynote" />
+        <AlignmentGapSlide index={3} />
+        <ThankYouSlide index={4} tagline="DevEx Keynote · 2026" footerText="DevEx Keynote" />
       </div>
     </SlideProvider>
   )
