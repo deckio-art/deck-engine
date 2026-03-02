@@ -21,13 +21,13 @@ export default function Navigation() {
   let pdfLabel = 'Deck PDF'
 
   if (project === 'ghcp') {
-    const isInternal = current >= 1 && current <= 9
-    const isCustomerSlide = current >= 11 && current <= 18
+    const isInternal = current >= 1 && current <= 11
+    const isCustomerSlide = current >= 12 && current <= 20
     showPdfLink = isInternal || isCustomerSlide
     pdfUrl = isInternal
       ? INTERNAL_PDF_URL
       : selectedCustomer
-        ? `/exports/${selectedCustomer.name.toLowerCase()}-slides.pdf`
+        ? `/exports/${selectedCustomer.name.toLowerCase().replace(/\s+/g, '-')}-slides.pdf`
         : null
     pdfLabel = isInternal
       ? 'Internal deck PDF'
