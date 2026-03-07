@@ -1,9 +1,10 @@
 {
-  "name": "@lopezleandro03/deck-engine",
-  "version": "1.7.4",
+  "name": "@deckio/deck-engine",
+  "version": "1.7.5",
   "type": "module",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
   },
   "repository": {
     "type": "git",

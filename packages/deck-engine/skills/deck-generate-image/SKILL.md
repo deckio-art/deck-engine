@@ -46,8 +46,8 @@ Write a detailed prompt including:
 Run from the project root:
 
 ```bash
-node node_modules/@lopezleandro03/deck-engine/scripts/generate-image.mjs --prompt "your prompt" --name my-icon
-node node_modules/@lopezleandro03/deck-engine/scripts/generate-image.mjs --prompt "..." --name hero --size 1536x1024
+node node_modules/@deckio/deck-engine/scripts/generate-image.mjs --prompt "your prompt" --name my-icon
+node node_modules/@deckio/deck-engine/scripts/generate-image.mjs --prompt "..." --name hero --size 1536x1024
 ```
 
 | Flag | Description | Default |

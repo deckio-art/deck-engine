@@ -1,6 +1,6 @@
 # Deck Project
 
-This is a presentation deck built with `@lopezleandro03/deck-engine`.
+This is a presentation deck built with `@deckio/deck-engine`.
 
 ## Purpose
 
@@ -21,6 +21,6 @@ Create and maintain slide-based presentations. Each project is a self-contained 
 ## Stack
 
 - React 19, Vite, CSS Modules
-- `@lopezleandro03/deck-engine` provides: `Slide`, `BottomBar`, `Navigation`, `SlideProvider`, `useSlides`, `GenericThankYouSlide`
+- `@deckio/deck-engine` provides: `Slide`, `BottomBar`, `Navigation`, `SlideProvider`, `useSlides`, `GenericThankYouSlide`
 - See `.github/instructions/` for detailed conventions on slide JSX, CSS modules, and deck.config.js
 - See `.github/skills/` for step-by-step workflows (e.g., adding a slide)

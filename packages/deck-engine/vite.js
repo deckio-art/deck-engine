@@ -1,7 +1,7 @@
 /**
  * Vite plugin for deck-engine projects.
  *
- * The main entry (@lopezleandro03/deck-engine) is pre-bundled by Vite
+ * The main entry (@deckio/deck-engine) is pre-bundled by Vite
  * into a single module so SlideContext, SlideProvider, useSlides, Slide,
  * Navigation, and BottomBar all share one React context instance.
  *

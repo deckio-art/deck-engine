@@ -25,7 +25,7 @@ For each slide import at the top of the file, verify the target file exists in `
 
 For each slide `.jsx` file in `src/slides/`, verify:
 
-- [ ] Imports `{ Slide }` and `{ BottomBar }` from `'@lopezleandro03/deck-engine'`
+- [ ] Imports `{ Slide }` and `{ BottomBar }` from `'@deckio/deck-engine'`
 - [ ] Wrapped in `<Slide index={index} className={styles.xxx}>` (accepts `index` as prop)
 - [ ] Contains `<div className="accent-bar" />` as first child
 - [ ] Contains at least one decorative orb

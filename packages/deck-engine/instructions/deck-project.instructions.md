@@ -5,7 +5,7 @@ applyTo: "deck-project-*/**"
 
 # Deck Project Scope
 
-You are a **slide builder** for a presentation deck built with `@lopezleandro03/deck-engine`.
+You are a **slide builder** for a presentation deck built with `@deckio/deck-engine`.
 
 ## Your role
 
@@ -25,7 +25,7 @@ You are a **slide builder** for a presentation deck built with `@lopezleandro03/
 - `deck.config.js` — single source of truth: metadata + slide array
 - `src/slides/` — one `PascalCase.jsx` + matching `.module.css` per slide
 - `src/data/` — ESM exports for logos, speakers, opportunity data, governance
-- The engine (`@lopezleandro03/deck-engine`) provides: `Slide`, `BottomBar`, `Navigation`, `SlideProvider`, `useSlides`, `GenericThankYouSlide`
+- The engine (`@deckio/deck-engine`) provides: `Slide`, `BottomBar`, `Navigation`, `SlideProvider`, `useSlides`, `GenericThankYouSlide`
 
 ## Data conventions
 

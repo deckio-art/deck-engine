@@ -10,7 +10,7 @@ description: Guide for adding a new slide to a deck project. Use this when asked
 Every slide **must** follow this structure:
 
 ```jsx
-import { BottomBar, Slide } from '@lopezleandro03/deck-engine'
+import { BottomBar, Slide } from '@deckio/deck-engine'
 import styles from './MyNewSlide.module.css'
 
 export default function MyNewSlide({ index, project }) {
@@ -44,8 +44,8 @@ export default function MyNewSlide({ index, project }) {
 
 | Resource | Import Path |
 |---|---|
-| `Slide`, `BottomBar`, `Navigation`, `SlideProvider`, `useSlides` | `'@lopezleandro03/deck-engine'` |
-| `GenericThankYouSlide` | `'@lopezleandro03/deck-engine'` |
+| `Slide`, `BottomBar`, `Navigation`, `SlideProvider`, `useSlides` | `'@deckio/deck-engine'` |
+| `GenericThankYouSlide` | `'@deckio/deck-engine'` |
 | Data / logos | `'../data/<file>'` |
 
 ---

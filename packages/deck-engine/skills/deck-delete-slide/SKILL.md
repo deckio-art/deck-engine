@@ -23,7 +23,7 @@ Delete from `src/slides/`:
 - `<SlideName>Slide.jsx`
 - `<SlideName>Slide.module.css`
 
-**Do not delete** shared slides from `@lopezleandro03/deck-engine` (like `GenericThankYouSlide`) — only remove the import.
+**Do not delete** shared slides from `@deckio/deck-engine` (like `GenericThankYouSlide`) — only remove the import.
 
 ## Step 4: Check for references
 

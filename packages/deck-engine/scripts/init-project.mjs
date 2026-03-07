@@ -6,7 +6,7 @@
  * .github/memory/state.md with project metadata from deck.config.js.
  *
  * Usage:
- *   node node_modules/@lopezleandro03/deck-engine/scripts/init-project.mjs
+ *   node node_modules/@deckio/deck-engine/scripts/init-project.mjs
  *   npx deck-init   (if bin is configured)
  *
  * Idempotent — safe to re-run. Updates skills, preserves state.

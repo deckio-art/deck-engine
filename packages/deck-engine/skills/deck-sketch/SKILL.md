@@ -75,7 +75,7 @@ Use the **deck-add-slide** skill to build the slide, guided by the sketch:
 1. Map sketch regions to CSS Grid or Flexbox layout.
 2. Translate hand-drawn text into real content with proper typography.
 3. Replace rough shapes with styled `<div>` containers using CSS Modules.
-4. Follow all deck-add-slide conventions (accent-bar, content-frame, BottomBar, imports from `@lopezleandro03/deck-engine`).
+4. Follow all deck-add-slide conventions (accent-bar, content-frame, BottomBar, imports from `@deckio/deck-engine`).
 5. Register the slide in `deck.config.js`.
 
 ### Step 5 — Visual verification

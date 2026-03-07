@@ -8,7 +8,7 @@ applyTo: "**/slides/**/*.jsx"
 ## Imports
 
 ```jsx
-import { BottomBar, Slide } from '@lopezleandro03/deck-engine'
+import { BottomBar, Slide } from '@deckio/deck-engine'
 import styles from './MySlide.module.css'
 ```
 
