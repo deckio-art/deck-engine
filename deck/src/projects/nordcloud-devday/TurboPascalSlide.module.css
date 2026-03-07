@@ -1,0 +1,63 @@
+.slide {
+  background: var(--bg-deep);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.orb1 {
+  width: 600px; height: 600px;
+  top: -180px; right: -100px;
+  background: radial-gradient(circle at 40% 40%, rgba(110,64,201,0.18), rgba(31,111,235,0.06) 55%, transparent 70%);
+}
+
+.orb2 {
+  width: 400px; height: 400px;
+  bottom: -100px; left: -80px;
+  background: radial-gradient(circle at 50% 50%, rgba(31,111,235,0.12), transparent 70%);
+}
+
+.body {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 300px;
+  gap: 0;
+}
+
+.statement {
+  font-size: 72px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--text);
+  letter-spacing: -1.5px;
+  margin: 0;
+}
+
+.highlight {
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.divider {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--purple), var(--accent));
+  border-radius: 2px;
+  margin: 40px auto;
+}
+
+.sub {
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: -0.2px;
+  margin: 0;
+}

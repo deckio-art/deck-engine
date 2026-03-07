@@ -2,7 +2,7 @@
 
 ## Active Project
 
-project: ghcp
+project: nordcloud-devday
 
 ## Dev Server
 

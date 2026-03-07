@@ -6,14 +6,14 @@ on:
   workflow_dispatch:
     inputs:
       project:
-        description: 'Project to deploy (ghcp, dev-plan, devex-keynote)'
+        description: 'Project to deploy (ghcp, dev-plan, dev-random)'
         required: false
         default: 'ghcp'
         type: choice
         options:
           - ghcp
           - dev-plan
-          - devex-keynote
+          - dev-random
 
 permissions:
   id-token: write

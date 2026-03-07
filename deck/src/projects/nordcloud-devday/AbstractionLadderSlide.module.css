@@ -1,0 +1,56 @@
+.slide {
+  background: var(--bg-deep);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.orb1 {
+  width: 600px; height: 600px;
+  top: -200px; right: -120px;
+  background: radial-gradient(circle at 40% 40%, rgba(110,64,201,0.22), rgba(31,111,235,0.08) 55%, transparent 70%);
+}
+
+.orb2 {
+  width: 420px; height: 420px;
+  bottom: -100px; left: -80px;
+  background: radial-gradient(circle at 50% 50%, rgba(31,111,235,0.14), transparent 70%);
+}
+
+.body {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+  width: min(100%, var(--content-max-width));
+  padding-left: var(--content-gutter);
+  padding-right: var(--content-gutter);
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(52px, 6.5vw, 88px);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -2px;
+  color: var(--text);
+}
+
+.highlight {
+  background: linear-gradient(135deg, var(--purple), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

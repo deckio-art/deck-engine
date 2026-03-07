@@ -1,0 +1,106 @@
+.cover {
+  background:
+    radial-gradient(circle at top right, rgba(31, 111, 235, 0.22), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(86, 212, 221, 0.18), transparent 28%),
+    var(--bg-deep);
+  align-items: center;
+  padding: 0 0 44px;
+}
+
+.orbPrimary {
+  width: 420px;
+  height: 420px;
+  top: -96px;
+  right: -64px;
+  background: radial-gradient(circle at 35% 35%, var(--accent), rgba(31, 111, 235, 0.45) 48%, transparent 72%);
+}
+
+.orbSecondary {
+  width: 280px;
+  height: 280px;
+  right: 180px;
+  bottom: 72px;
+  background: radial-gradient(circle at 40% 40%, var(--cyan), rgba(86, 212, 221, 0.16) 52%, transparent 76%);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+}
+
+.kicker {
+  display: inline-flex;
+  margin-bottom: 20px;
+  padding: 8px 14px;
+  border: 1px solid rgba(88, 166, 255, 0.28);
+  border-radius: 999px;
+  color: var(--blue-bright);
+  background: rgba(13, 17, 23, 0.72);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.content h1 {
+  font-size: clamp(46px, 5vw, 74px);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  margin-bottom: 18px;
+}
+
+.subtitle {
+  max-width: 640px;
+  font-size: clamp(18px, 2vw, 24px);
+  line-height: 1.45;
+  color: var(--text-muted);
+  margin-bottom: 40px;
+}
+
+.card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: end;
+  max-width: 720px;
+  padding: 24px 28px;
+  border: 1px solid rgba(48, 54, 61, 0.9);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(22, 27, 34, 0.92), rgba(8, 11, 16, 0.96));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+}
+
+.label {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.card p {
+  color: var(--text);
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.metric {
+  display: grid;
+  gap: 6px;
+  justify-items: end;
+  text-align: right;
+}
+
+.metric strong {
+  font-size: 52px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.metric span {
+  color: var(--text-muted);
+  font-size: 14px;
+}

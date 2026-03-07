@@ -1,0 +1,137 @@
+.cover {
+  background: var(--bg-deep);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.orb1 {
+  width: 600px; height: 600px;
+  top: -180px; right: -120px;
+  background: radial-gradient(circle at 40% 40%, rgba(31,111,235,0.22), rgba(86,212,221,0.08) 50%, transparent 70%);
+}
+
+.orb2 {
+  width: 420px; height: 420px;
+  bottom: -100px; left: -80px;
+  background: radial-gradient(circle at 50% 50%, rgba(110,64,201,0.18), transparent 70%);
+}
+
+.orb3 {
+  width: 280px; height: 280px;
+  top: 40%; left: 38%;
+  background: radial-gradient(circle at 50% 50%, rgba(63,185,80,0.07), transparent 70%);
+}
+
+.content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Partner row */
+.partnerRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hostedBy {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+.partnerChip {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 3px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: rgba(139,148,158,0.08);
+  color: var(--text-muted);
+}
+
+/* Headline */
+.headline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.eyebrow {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+}
+
+.title {
+  font-size: clamp(42px, 6vw, 72px);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -2px;
+  color: var(--text);
+  margin: 0;
+}
+
+.highlight {
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  font-size: clamp(14px, 1.4vw, 17px);
+  color: var(--text-muted);
+  line-height: 1.65;
+  max-width: 680px;
+  margin: 0;
+}
+
+/* Tags */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  background: rgba(31,111,235,0.1);
+  border: 1px solid rgba(31,111,235,0.2);
+  color: var(--accent);
+}
+
+/* Presenter */
+.presenter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.presenterName {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+
+.presenterRole {
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--text-muted);
+}

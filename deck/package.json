@@ -11,7 +11,7 @@
     "build": "vite build",
     "build:ghcp": "cross-env VITE_PROJECT=ghcp vite build",
     "build:dev-plan": "cross-env VITE_PROJECT=dev-plan vite build",
-    "build:devex-keynote": "cross-env VITE_PROJECT=devex-keynote vite build",
+    "build:dev-random": "cross-env VITE_PROJECT=dev-random vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "export:pdf": "node scripts/export-pdf.mjs",
@@ -20,6 +20,7 @@
     "export:dev-plan": "node scripts/export-pdf.mjs --project dev-plan"
   },
   "dependencies": {
+    "@lopezleandro03/canvas-engine": "file:../packages/canvas-engine",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
@@ -28,11 +29,12 @@
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",
+    "cross-env": "^10.1.0",
     "eslint": "^9.25.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
-    "puppeteer": "^24.37.5",
+    "puppeteer": "^24.38.0",
     "vite": "^6.3.5"
   }
 }

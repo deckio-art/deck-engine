@@ -1,33 +1,9 @@
 import styles from './ProjectPicker.module.css'
-
-const projects = [
-  {
-    id: 'ghcp',
-    title: 'GitHub Copilot Adoption',
-    subtitle: 'Netherlands Strategic Customers',
-    description: 'Opportunity model, customer scenarios, and expansion playbook for 7 strategic accounts.',
-    icon: '🚀',
-    accent: 'var(--accent)',
-  },
-  {
-    id: 'dev-plan',
-    title: 'Development Plan',
-    subtitle: 'Dilruba Turan — Aspire',
-    description: 'Career growth plan, skills development, milestones, and coaching framework.',
-    icon: '🌱',
-    accent: 'var(--green)',
-  },
-  {
-    id: 'devex-keynote',
-    title: 'DevEx Keynote',
-    subtitle: 'Developer Experience',
-    description: 'Keynote presentation on developer experience strategy, tooling & culture.',
-    icon: '🎤',
-    accent: 'var(--green)',
-  },
-]
+import { getProjects } from './utils/projectRegistry'
 
 export default function ProjectPicker() {
+  const projects = getProjects()
+
   const navigate = (id) => {
     window.location.hash = `#/${id}`
   }

@@ -1,0 +1,188 @@
+.slide {
+  background: var(--bg-deep);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.orb1 {
+  width: 500px; height: 500px;
+  top: -160px; right: -80px;
+  background: radial-gradient(circle at 40% 40%, rgba(110,64,201,0.18), rgba(31,111,235,0.06) 55%, transparent 70%);
+}
+
+.orb2 {
+  width: 380px; height: 380px;
+  bottom: -80px; left: -60px;
+  background: radial-gradient(circle at 50% 50%, rgba(31,111,235,0.12), transparent 70%);
+}
+
+.body {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+  width: min(100%, var(--content-max-width));
+  padding-left: var(--content-gutter);
+  padding-right: var(--content-gutter);
+}
+
+/* Header */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.title {
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--text);
+  margin: 0;
+}
+
+.highlight {
+  background: linear-gradient(135deg, var(--purple), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Timeline */
+.timeline {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+/* Connecting line segments — explicit element, appears with its bubble */
+.lineSegment {
+  position: absolute;
+  top: 26px;
+  right: 50%;
+  width: 100%;
+  height: 2px;
+  z-index: -1;
+}
+
+.lineSegment[data-seg='1'] {
+  background: linear-gradient(90deg, rgba(110,64,201,0.4), rgba(110,64,201,0.7));
+}
+
+.lineSegment[data-seg='2'] {
+  background: linear-gradient(90deg, rgba(110,64,201,0.7), var(--accent));
+}
+
+/* Each stop */
+.stop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+
+/* Reveal animation */
+.hidden {
+  opacity: 0;
+  transform: translateY(18px);
+  pointer-events: none;
+}
+
+.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+/* Pill */
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 28px;
+  border-radius: 100px;
+  border: 2px solid rgba(110,64,201,0.5);
+  background: var(--bg-deep);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.now .pill {
+  border-color: var(--accent);
+  color: var(--text);
+  background: #0a1423; /* opaque equivalent of rgba(31,111,235,0.08) on #080b10 */
+  box-shadow: 0 0 28px rgba(31,111,235,0.25), 0 0 0 1px rgba(31,111,235,0.15);
+}
+
+.genLabel {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.nowBadge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Vertical connector */
+.connector {
+  width: 2px;
+  height: 48px;
+  background: linear-gradient(to bottom, rgba(110,64,201,0.4), rgba(110,64,201,0.1));
+}
+
+.now .connector {
+  background: linear-gradient(to bottom, rgba(31,111,235,0.6), rgba(31,111,235,0.1));
+}
+
+/* Label */
+.label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+  padding: 0 16px;
+}
+
+.taglineLine {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-muted);
+  line-height: 1.2;
+}
+
+.now .taglineLine {
+  color: var(--text);
+}
+
+.detail {
+  font-size: 12px;
+  color: rgba(139,148,158,0.6);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.now .detail {
+  color: var(--text-muted);
+}

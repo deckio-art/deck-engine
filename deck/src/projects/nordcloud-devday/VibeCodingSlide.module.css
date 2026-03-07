@@ -1,0 +1,118 @@
+.slide {
+  background: var(--bg-deep);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.orb1 {
+  width: 500px; height: 500px;
+  top: -160px; left: -100px;
+  background: radial-gradient(circle at 40% 40%, rgba(110,64,201,0.15), rgba(31,111,235,0.05) 55%, transparent 70%);
+}
+
+.orb2 {
+  width: 420px; height: 420px;
+  bottom: -80px; right: -60px;
+  background: radial-gradient(circle at 50% 50%, rgba(31,111,235,0.1), transparent 70%);
+}
+
+.body {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 72px;
+  align-items: center;
+  width: min(100%, var(--content-max-width));
+  padding-left: var(--content-gutter);
+  padding-right: var(--content-gutter);
+}
+
+/* Left */
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.title {
+  font-size: clamp(48px, 6vw, 80px);
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1;
+  color: var(--text);
+  margin: 0;
+  background: linear-gradient(135deg, var(--text) 40%, rgba(139,148,158,0.6));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.description {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 420px;
+}
+
+.stats {
+  display: flex;
+  gap: 32px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.statValue {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+
+.statLabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.tagline {
+  font-size: 13px;
+  font-style: italic;
+  color: rgba(139,148,158,0.55);
+  line-height: 1.5;
+  padding-top: 4px;
+  border-top: 1px solid rgba(139,148,158,0.12);
+}
+
+/* Right */
+.right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tweet {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 16px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 24px 64px rgba(0,0,0,0.5),
+    0 4px 16px rgba(0,0,0,0.3);
+}

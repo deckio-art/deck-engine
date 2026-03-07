@@ -231,7 +231,7 @@ async function exportDevServerPDF() {
   const page = await browser.newPage()
   await page.setViewport({ width: 1920, height: 1080, deviceScaleFactor: 2 })
 
-  await page.goto(BASE, { waitUntil: 'networkidle0', timeout: 30000 })
+  await page.goto(`${BASE}/#/ghcp`, { waitUntil: 'networkidle0', timeout: 30000 })
   await page.waitForSelector('.slide.active', { timeout: 10000 })
 
   // Customer selection

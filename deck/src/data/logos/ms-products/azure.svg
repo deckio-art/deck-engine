@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+  <defs>
+    <linearGradient id="az" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#0078D4"/>
+      <stop offset="100%" stop-color="#005BA1"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#az)" d="M26.7 80h44.8L48.3 16H31.2L8.5 71.5l18.2 8.5zM53.7 26l18.8 44.5L53.7 80h33.8L66 26H53.7z"/>
+</svg>

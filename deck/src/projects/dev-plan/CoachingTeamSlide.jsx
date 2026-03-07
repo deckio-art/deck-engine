@@ -1,5 +1,4 @@
-import Slide from '../../components/Slide'
-import BottomBar from '../../components/BottomBar'
+import { BottomBar, Slide } from '@lopezleandro03/canvas-engine'
 import styles from './CoachingTeamSlide.module.css'
 
 import paulImg from '../../data/coaches/Paul.png'

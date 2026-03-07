@@ -1,4 +1,8 @@
 publish-profile.xml
+node_modules/
+dist/
+nul
+tmpclaude-*
 
 # Temporary screenshot captures for visual inspection
 .github/eyes/

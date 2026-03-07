@@ -1,0 +1,225 @@
+.slide {
+  background: var(--bg-deep);
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Full-height wrapper */
+.container {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  bottom: 56px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  padding: 44px 0 0;
+}
+
+/* Orbs — richer, more visible */
+.orb1 {
+  width: 600px; height: 600px;
+  top: -180px; right: -100px;
+  background: radial-gradient(circle at 35% 35%, rgba(110,64,201,0.22), rgba(31,111,235,0.06) 55%, transparent 70%);
+}
+
+.orb2 {
+  width: 420px; height: 420px;
+  bottom: -100px; left: -80px;
+  background: radial-gradient(circle at 50% 50%, rgba(31,111,235,0.14), transparent 70%);
+}
+
+.orb3 {
+  width: 320px; height: 320px;
+  top: 40%; right: 5%;
+  background: radial-gradient(circle at 50% 50%, rgba(184,127,255,0.08), transparent 70%);
+}
+
+/* ── Header ─────────────────────────── */
+.header {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 0 160px 12px;
+}
+
+.title {
+  font-size: 44px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -1px;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.accent {
+  background: linear-gradient(135deg, var(--accent), #b87fff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.titleBar {
+  width: 80px;
+  height: 3px;
+  margin: 14px auto 12px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--purple));
+}
+
+.subtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: 0.1px;
+}
+
+/* ── Body ───────────────────────────── */
+.body {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 160px 16px;
+  min-height: 0;
+}
+
+/* Column headers */
+.colHeaders {
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr;
+  padding: 0 0 2px;
+}
+
+.colLabel {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 0 20px;
+}
+
+.colLabel[data-side='from'] {
+  color: rgba(139,148,158,0.5);
+}
+
+.colLabel[data-side='to'] {
+  color: #b87fff;
+}
+
+/* ── Rows ───────────────────────────── */
+.row {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr;
+  align-items: stretch;
+  min-height: 0;
+}
+
+/* Reveal */
+.hidden {
+  opacity: 0;
+  transform: translateY(14px) scale(0.98);
+  pointer-events: none;
+}
+
+.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Cards ──────────────────────────── */
+.card {
+  position: relative;
+  border-radius: 14px;
+  padding: 16px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.fromCard {
+  background: rgba(139,148,158,0.04);
+  border: 1px solid rgba(139,148,158,0.12);
+}
+
+.toCard {
+  background: rgba(110,64,201,0.06);
+  border: 1px solid rgba(184,127,255,0.25);
+  box-shadow: 0 0 32px rgba(110,64,201,0.1), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+/* Row number badge */
+.num {
+  flex-shrink: 0;
+  width: 36px; height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(31,111,235,0.12);
+  border: 1px solid rgba(31,111,235,0.3);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.fromLabel {
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(230,237,243,0.7);
+  letter-spacing: -0.2px;
+}
+
+.toLabel {
+  font-size: 16px;
+  font-weight: 700;
+  color: #c4a8ff;
+  letter-spacing: -0.2px;
+}
+
+.itemText {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+/* Subtle inner glow on To cards */
+.glow {
+  position: absolute;
+  top: -30%; right: -20%;
+  width: 60%; height: 80%;
+  background: radial-gradient(circle, rgba(184,127,255,0.08), transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Connector ──────────────────────── */
+.connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.connectorArrow {
+  font-size: 36px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), #b87fff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 10px rgba(184,127,255,0.5)) drop-shadow(0 0 20px rgba(31,111,235,0.3));
+}

@@ -1,0 +1,42 @@
+{
+  "name": "@lopezleandro03/canvas-engine",
+  "version": "1.0.0",
+  "type": "module",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lopezleandro03/github-ai-adoption-program.git",
+    "directory": "packages/canvas-engine"
+  },
+  "main": "./index.js",
+  "module": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./slides/*": "./slides/*.jsx",
+    "./components/*": "./components/*.jsx",
+    "./styles/*": "./styles/*",
+    "./vite": "./vite.js"
+  },
+  "files": [
+    "index.js",
+    "vite.js",
+    "components",
+    "context",
+    "slides",
+    "styles",
+    "scripts"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "peerDependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "optionalDependencies": {
+    "puppeteer": "^24.38.0",
+    "puppeteer-core": "^24.38.0"
+  }
+}

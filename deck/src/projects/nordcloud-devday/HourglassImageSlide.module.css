@@ -1,0 +1,107 @@
+.slide {
+  background: var(--bg-deep);
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.orb1 {
+  width: 500px; height: 500px;
+  top: -160px; right: -80px;
+  background: radial-gradient(circle at 40% 40%, rgba(110,64,201,0.15), rgba(31,111,235,0.05) 55%, transparent 70%);
+}
+
+.orb2 {
+  width: 380px; height: 380px;
+  bottom: -80px; left: -60px;
+  background: radial-gradient(circle at 50% 50%, rgba(31,111,235,0.1), transparent 70%);
+}
+
+.body {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  bottom: 56px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 60px;
+  padding: 40px 160px;
+}
+
+/* Left — text content */
+.left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.title {
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -1px;
+  margin: 0;
+  line-height: 1.15;
+}
+
+.highlight {
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Zone cards */
+.zones {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.zone {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(139,148,158,0.1);
+}
+
+.zoneLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.zoneLabel[data-color='cyan']  { color: var(--cyan); }
+.zoneLabel[data-color='gold']  { color: #d29922; }
+.zoneLabel[data-color='green'] { color: var(--green); }
+
+.zoneTitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+
+.zoneDesc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+/* Right — image */
+.right {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.img {
+  max-height: 520px;
+  width: auto;
+  filter: drop-shadow(0 0 40px rgba(31,111,235,0.15));
+}

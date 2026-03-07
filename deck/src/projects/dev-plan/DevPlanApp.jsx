@@ -1,5 +1,4 @@
-import { SlideProvider } from '../../context/SlideContext'
-import Navigation from '../../components/Navigation'
+import { Navigation, SlideProvider } from '@lopezleandro03/canvas-engine'
 import CoverSlide from './CoverSlide'
 import ObjectiveSlide from './ObjectiveSlide'
 import TimelineSlide from './TimelineSlide'
@@ -8,14 +7,14 @@ import CoachingTeamSlide from './CoachingTeamSlide'
 import TestFlightTeamSlide from './TestFlightTeamSlide'
 import CertificationsSlide from './CertificationsSlide'
 import AppendixSlide from './AppendixSlide'
-import ThankYouSlide from '../../slides/GenericThankYouSlide'
+import ThankYouSlide from '@lopezleandro03/canvas-engine/slides/GenericThankYouSlide'
 
 const TOTAL = 9
 
 export default function DevPlanApp() {
   return (
     <SlideProvider totalSlides={TOTAL} project="dev-plan">
-      <Navigation />
+      <Navigation pdfPath="/exports/dev-plan-slides.pdf" pdfLabel="dev-plan deck PDF" />
       <div className="deck">
         <CoverSlide />
         <ObjectiveSlide />
