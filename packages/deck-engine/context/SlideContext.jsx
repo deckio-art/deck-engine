@@ -41,7 +41,7 @@ function getStoredSlide(project, totalSlides) {
  *  │  ◈  P R O V I D E R                                         │
  *  ╰──────────────────────────────────────────────────────────────╯  */
 
-export function SlideProvider({ children, totalSlides, project }) {
+export function SlideProvider({ children, totalSlides, project, slides }) {
   const [current, setCurrent] = useState(() =>
     getStoredSlide(project, totalSlides),
   )
@@ -57,7 +57,19 @@ export function SlideProvider({ children, totalSlides, project }) {
     } catch {
       /* storage full / unavailable – ignore */
     }
-  }, [current, project])
+
+    // Notify parent frame (e.g. deck-launcher) of the current slide
+    if (window.parent !== window) {
+      const component = slides?.[current]
+      window.parent.postMessage({
+        type: 'deck:slide',
+        project,
+        slideIndex: current,
+        slideName: component?.displayName || component?.name || null,
+        totalSlides,
+      }, '*')
+    }
+  }, [current, project, totalSlides, slides])
 
   /*  ▸ ▸ ▸  Navigation helpers  ◂ ◂ ◂  */
 
