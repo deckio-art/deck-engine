@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * create-deck-project — scaffold a new presentation project.
+ * @deckio/create-deck-project — scaffold a new presentation project.
  *
  * Usage:
- *   npm create deckio my-talk
- *   npx create-deckio my-talk
+ *   npm create @deckio/deck-project my-talk
+ *   npx @deckio/create-deck-project my-talk
  */
 import { mkdirSync, writeFileSync } from 'fs'
 import { join, resolve } from 'path'
@@ -113,7 +113,7 @@ export default function App() {
       <Navigation />
       <div className="deck" data-project-id={id}>
         {slides.map((SlideComponent, index) => (
-          <SlideComponent key={`${id}-slide-${index}`} index={index} project={project} />
+          <SlideComponent key={\`\${id}-slide-\${index}\`} index={index} project={project} />
         ))}
       </div>
     </SlideProvider>
@@ -394,12 +394,12 @@ async function main() {
 
   if (!arg || arg === '--help' || arg === '-h') {
     console.log(`
-  Usage: npm create deckio <project-name>
+  Usage: npm create @deckio/deck-project <project-name>
 
   Examples:
-    npm create deckio my-talk
-    npm create deckio quarterly-review
-    npx create-deckio cool-deck
+    npm create @deckio/deck-project my-talk
+    npm create @deckio/deck-project quarterly-review
+    npx @deckio/create-deck-project cool-deck
 `)
     process.exit(0)
   }

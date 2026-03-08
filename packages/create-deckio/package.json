@@ -1,9 +1,11 @@
 {
-  "name": "create-deckio",
-  "version": "1.0.2",
+  "name": "@deckio/create-deck-project",
+  "version": "1.0.3",
   "description": "Scaffold a new deck presentation project powered by @deckio/deck-engine",
   "type": "module",
-  "bin": "index.mjs",
+  "bin": {
+    "create-deck-project": "index.mjs"
+  },
   "files": [
     "index.mjs"
   ],
