@@ -60,7 +60,7 @@ jobs:
         if: steps.check.outputs.exists == 'false'
         working-directory: ${{ matrix.package.path }}
         run: |
-          npm config delete //registry.npmjs.org/:_authToken
+          sed -i '/_authToken/d' "$NPM_CONFIG_USERCONFIG"
           npm publish --access public --provenance
         env:
           PUPPETEER_SKIP_DOWNLOAD: 'true'
