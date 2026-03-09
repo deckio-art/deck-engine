@@ -74,3 +74,19 @@ Do you prefer TUIs? This works with GitHub Copilot CLI too.
 ```bash
 gh copilot --yolo
 ```
+
+## Contributing
+
+Contributions are welcome.
+
+If you find a bug, have a feature request, or see something unclear in the docs, open an issue. Please include enough detail to reproduce the problem, explain the expected behavior, and share relevant screenshots or examples when useful.
+
+If you want to contribute code, submit a pull request. Small, focused PRs are easier to review and merge. For larger changes, open an issue first so the approach can be discussed before implementation.
+
+Before opening a PR:
+
+- make sure the change is scoped and well explained
+- update docs when behavior or developer workflow changes
+- include tests or validation steps when they are relevant
+
+Whether you are reporting issues, improving docs, or sending code, thank you for helping make Deckio better.
