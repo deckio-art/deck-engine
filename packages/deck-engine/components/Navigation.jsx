@@ -1,6 +1,7 @@
 import { useSlides } from '../context/SlideContext'
 import styles from './Navigation.module.css'
 import { useState, useEffect, useRef } from 'react'
+import { exportDeckPdf } from './exportDeckPdf.js'
 
 function resolveProp(value, context) {
   return typeof value === 'function' ? value(context) : value
@@ -10,6 +11,8 @@ export default function Navigation({ pdfPath = null, pdfLabel = 'Deck PDF' }) {
   const { current, totalSlides, go, goTo, selectedCustomer, project } = useSlides()
   const [hintVisible, setHintVisible] = useState(true)
   const [idle, setIdle] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
+  const [exportStatus, setExportStatus] = useState('PDF')
   const timerRef = useRef(null)
 
   useEffect(() => {
@@ -38,6 +41,35 @@ export default function Navigation({ pdfPath = null, pdfLabel = 'Deck PDF' }) {
   const resolvedPdfPath = resolveProp(pdfPath, navigationState)
   const resolvedPdfLabel = resolveProp(pdfLabel, navigationState) || 'Deck PDF'
 
+  async function handleExportClick() {
+    if (resolvedPdfPath || isExporting) return
+
+    setIsExporting(true)
+    setExportStatus('Preparing')
+
+    try {
+      await exportDeckPdf({
+        current,
+        goTo,
+        project,
+        selectedCustomer,
+        totalSlides,
+        onProgress: ({ current: slideNumber, total }) => {
+          setExportStatus(`${slideNumber}/${total}`)
+        },
+      })
+      setExportStatus('Done')
+    } catch (error) {
+      console.error('PDF export failed', error)
+      setExportStatus('Error')
+    } finally {
+      window.setTimeout(() => {
+        setIsExporting(false)
+        setExportStatus('PDF')
+      }, 1200)
+    }
+  }
+
   return (
     <div className={`${styles.navWrapper} ${idle ? styles.navHidden : ''}`}>
       <div className={styles.progressTrack}>
@@ -57,7 +89,7 @@ export default function Navigation({ pdfPath = null, pdfLabel = 'Deck PDF' }) {
         </button>
       )}
 
-      {resolvedPdfPath && (
+      {resolvedPdfPath ? (
         <a
           className={styles.exportBtn}
           href={resolvedPdfPath}
@@ -74,6 +106,23 @@ export default function Navigation({ pdfPath = null, pdfLabel = 'Deck PDF' }) {
           </svg>
           <span className={styles.exportLabel}>PDF</span>
         </a>
+      ) : (
+        <button
+          className={`${styles.exportBtn} ${isExporting ? styles.exportBtnBusy : ''}`}
+          type="button"
+          onClick={handleExportClick}
+          disabled={isExporting}
+          title={isExporting ? 'Preparing deck PDF' : resolvedPdfLabel}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <path d="M12 12v6" />
+            <path d="M9 15l3 3 3-3" />
+            <path d="M8 10h8" />
+          </svg>
+          <span className={styles.exportLabel}>{exportStatus}</span>
+        </button>
       )}
 
       <button

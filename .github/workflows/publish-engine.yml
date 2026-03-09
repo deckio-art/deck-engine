@@ -1,47 +1,64 @@
-name: Publish Deck Engine
+name: Publish NPM Packages
 
 on:
   push:
     branches: [main]
     paths:
+      - '.github/workflows/publish-engine.yml'
       - 'packages/deck-engine/**'
+      - 'packages/create-deckio/**'
+      - 'package-lock.json'
   workflow_dispatch:
 
 permissions:
   contents: read
-  packages: write
+  id-token: write
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: packages/deck-engine
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - name: '@deckio/deck-engine'
+            path: 'packages/deck-engine'
+          - name: '@deckio/create-deck-project'
+            path: 'packages/create-deckio'
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://npm.pkg.github.com
+          registry-url: https://registry.npmjs.org
+          cache: npm
 
-      - name: Check if version already published
+      - name: Install workspace dependencies
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
+
+      - name: Check if version already exists on npm
         id: check
+        working-directory: ${{ matrix.package.path }}
         run: |
           PACKAGE_NAME=$(node -p "require('./package.json').name")
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
-          if npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version 2>/dev/null; then
+          echo "package_name=${PACKAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "package_version=${PACKAGE_VERSION}" >> $GITHUB_OUTPUT
+
+          if npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version --registry https://registry.npmjs.org >/dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
-            echo "Version ${PACKAGE_VERSION} already published — skipping"
+            echo "${PACKAGE_NAME}@${PACKAGE_VERSION} already published - skipping"
           else
             echo "exists=false" >> $GITHUB_OUTPUT
-            echo "Version ${PACKAGE_VERSION} not found — will publish"
+            echo "${PACKAGE_NAME}@${PACKAGE_VERSION} not found - will publish"
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish to GitHub Packages
+      - name: Publish package to npm
         if: steps.check.outputs.exists == 'false'
-        run: npm publish
+        working-directory: ${{ matrix.package.path }}
+        run: npm publish --access public --provenance
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUPPETEER_SKIP_DOWNLOAD: 'true'

@@ -74,10 +74,19 @@
   text-decoration: none;
   font-family: inherit;
 }
+.exportBtn:disabled {
+  cursor: wait;
+}
 .exportBtn:hover {
   opacity: 1;
   border-color: var(--accent);
   background: rgba(31,111,235,0.2);
+}
+.exportBtnBusy {
+  opacity: 1;
+  border-color: var(--accent);
+  background: rgba(31,111,235,0.22);
+  box-shadow: 0 0 0 1px rgba(121, 192, 255, 0.18), 0 0 24px rgba(31, 111, 235, 0.18);
 }
 .exportBtn svg {
   width: 16px; height: 16px;

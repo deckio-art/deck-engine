@@ -90,3 +90,26 @@ Before opening a PR:
 - include tests or validation steps when they are relevant
 
 Whether you are reporting issues, improving docs, or sending code, thank you for helping make Deckio better.
+
+## Release automation
+
+This repo publishes both public packages automatically from GitHub Actions when changes land on `main`:
+
+- `@deckio/deck-engine`
+- `@deckio/create-deck-project`
+
+Publishing is version-based. The workflow checks npm first and only publishes a package if the version in that package's `package.json` is not already present on npm.
+
+GitHub repository secrets required:
+
+- None
+
+This workflow is set up for npm trusted publishing via GitHub Actions OIDC instead of an `NPM_TOKEN`.
+
+One-time npm setup required outside GitHub:
+
+- Configure npm trusted publishing for `@deckio/deck-engine`
+- Configure npm trusted publishing for `@deckio/create-deck-project`
+- Point both packages at this repository and the `.github/workflows/publish-engine.yml` workflow on the `main` branch
+
+Once trusted publishing is configured in npm, merges to `main` can publish new package versions without storing npm credentials in GitHub.
