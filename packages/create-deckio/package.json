@@ -1,6 +1,6 @@
 {
   "name": "@deckio/create-deck-project",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Scaffold a new deck presentation project powered by @deckio/deck-engine",
   "type": "module",
   "bin": {
