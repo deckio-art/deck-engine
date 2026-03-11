@@ -79,6 +79,14 @@ export async function exportDeckPdf({
 
   if (document.fonts?.ready) await document.fonts.ready
 
+  // Force deck to canonical PDF dimensions so slides render at exactly
+  // PAGE_W × PAGE_H regardless of the current viewport size.
+  const origDeckCss = deck.style.cssText
+  deck.style.width = `${PAGE_W}px`
+  deck.style.height = `${PAGE_H}px`
+  await waitForPaint()
+  await wait(SETTLE_MS)
+
   try {
     for (let i = 0; i < totalSlides; i++) {
       onProgress?.({ current: i + 1, total: totalSlides })
@@ -95,8 +103,8 @@ export async function exportDeckPdf({
       let dataUrl
       try {
         dataUrl = await domToPng(active, {
-          width: active.clientWidth || PAGE_W,
-          height: active.clientHeight || PAGE_H,
+          width: PAGE_W,
+          height: PAGE_H,
           backgroundColor: bg,
           scale,
           style: {
@@ -114,6 +122,7 @@ export async function exportDeckPdf({
       pdf.addImage(dataUrl, 'PNG', 0, 0, PAGE_W, PAGE_H, undefined, 'FAST')
     }
   } finally {
+    deck.style.cssText = origDeckCss
     goTo(current)
     await waitForPaint()
   }
