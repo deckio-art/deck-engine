@@ -1,6 +1,6 @@
 {
   "name": "@deckio/create-deck-project",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Scaffold a new deck presentation project powered by @deckio/deck-engine",
   "type": "module",
   "bin": {
@@ -9,7 +9,8 @@
   "files": [
     "index.mjs",
     "utils.mjs",
-    "deckio.png"
+    "deckio.png",
+    "templates"
   ],
   "keywords": [
     "deck",
