@@ -233,6 +233,21 @@ export const AURORA_PALETTES = [
   { value: 'minimal', label: 'Minimal', hint: 'neutral zinc',           colors: ['#71717a', '#a1a1aa', '#d4d4d8'] },
 ]
 
+/** Derive accent color from aurora palette — first color of the palette */
+export const AURORA_ACCENT_MAP = {
+  ocean:   '#0ea5e9',
+  sunset:  '#f97316',
+  forest:  '#10b981',
+  nebula:  '#8b5cf6',
+  arctic:  '#06b6d4',
+  minimal: '#71717a',
+}
+
+/** Get the accent color for a given aurora palette name */
+export function auroraAccent(paletteName) {
+  return AURORA_ACCENT_MAP[paletteName] || AURORA_ACCENT_MAP.ocean
+}
+
 export function jsConfig() {
   return JSON.stringify({
     compilerOptions: {
@@ -254,21 +269,13 @@ export function jsConfig() {
 export function coverSlideJsxShadcn(title, subtitle, slug) {
   return `\
 import { BottomBar, Slide } from '@deckio/deck-engine'
-import Aurora from '@/components/ui/aurora'
 import BlurText from '@/components/ui/blur-text'
 import ShinyText from '@/components/ui/shiny-text'
-import project from '../../deck.config.js'
 import styles from './CoverSlide.module.css'
 
 export default function CoverSlide() {
-  const auroraColors = project.aurora?.colors ?? ['#0ea5e9', '#6366f1', '#8b5cf6']
-
   return (
     <Slide index={0} className={styles.cover}>
-      <div className={styles.auroraWrapper}>
-        <Aurora colorStops={auroraColors} amplitude={1.0} blend={0.5} speed={0.6} />
-      </div>
-
       <div className="content-frame content-gutter">
         <div className={styles.layout}>
           <div className={styles.main}>
@@ -332,16 +339,9 @@ export default function CoverSlide() {
 
 export const COVER_SLIDE_CSS_SHADCN = `\
 .cover {
-  background: var(--background);
+  background: color-mix(in oklch, var(--background) 85%, transparent);
   padding: 0 0 44px 0;
   overflow: hidden;
-  position: relative;
-}
-
-.auroraWrapper {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
 }
 
 /* Two-column asymmetric layout */
@@ -548,7 +548,7 @@ export default function FeaturesSlide() {
 
 export const FEATURES_SLIDE_CSS_SHADCN = `\
 .slide {
-  background: var(--background);
+  background: color-mix(in oklch, var(--background) 85%, transparent);
   padding: 0 0 44px 0;
   overflow: hidden;
 }
@@ -747,7 +747,7 @@ export default function GettingStartedSlide() {
 
 export const GETTING_STARTED_SLIDE_CSS_SHADCN = `\
 .slide {
-  background: var(--background);
+  background: color-mix(in oklch, var(--background) 85%, transparent);
   padding: 0 0 44px 0;
   overflow: hidden;
 }
@@ -1086,10 +1086,12 @@ import { useEffect } from 'react'
 import { Navigation, SlideProvider } from '@deckio/deck-engine'
 import { ThemeProvider } from './components/theme-provider'
 import { ModeToggle } from './components/mode-toggle'
+import Aurora from '@/components/ui/aurora'
 import project from '../deck.config.js'
 
 export default function App() {
   const { accent, id, slides, theme, title } = project
+  const auroraColors = project.aurora?.colors ?? ['#0ea5e9', '#6366f1', '#8b5cf6']
 
   useEffect(() => {
     document.documentElement.style.setProperty('--accent', accent)
@@ -1098,15 +1100,22 @@ export default function App() {
 
   return (
     <ThemeProvider defaultTheme="${defaultTheme}">
-      <SlideProvider totalSlides={slides.length} project={id} slides={slides} theme={theme}>
-        <Navigation />
-        <div className="deck" data-project-id={id}>
-          {slides.map((SlideComponent, index) => (
-            <SlideComponent key={\`\${id}-slide-\${index}\`} index={index} project={project} />
-          ))}
+      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+          <Aurora colorStops={auroraColors} amplitude={1.0} blend={0.5} speed={0.6} />
         </div>
-        <ModeToggle />
-      </SlideProvider>
+        <div style={{ position: 'relative', zIndex: 1, height: '100%' }}>
+          <SlideProvider totalSlides={slides.length} project={id} slides={slides} theme={theme}>
+            <Navigation />
+            <div className="deck" data-project-id={id}>
+              {slides.map((SlideComponent, index) => (
+                <SlideComponent key={\`\${id}-slide-\${index}\`} index={index} project={project} />
+              ))}
+            </div>
+          </SlideProvider>
+        </div>
+      </div>
+      <ModeToggle />
     </ThemeProvider>
   )
 }
@@ -1142,7 +1151,7 @@ export default function App() {
 
 export const THANK_YOU_SLIDE_CSS_SHADCN = `\
 .slide {
-  background: var(--background);
+  background: color-mix(in oklch, var(--background) 85%, transparent);
   padding: 0 0 44px 0;
   overflow: hidden;
 }

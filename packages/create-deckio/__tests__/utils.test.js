@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { slugify, packageJson, deckConfig, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS, AURORA_PALETTES, themeProviderJsx, modeToggleJsx, appJsx, coverSlideJsxShadcn, COVER_SLIDE_CSS_SHADCN, featuresSlideJsxShadcn, FEATURES_SLIDE_CSS_SHADCN, gettingStartedSlideJsxShadcn, GETTING_STARTED_SLIDE_CSS_SHADCN, thankYouSlideJsxShadcn, THANK_YOU_SLIDE_CSS_SHADCN, vscodeMcpConfig } from '../utils.mjs'
+import { slugify, packageJson, deckConfig, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS, AURORA_PALETTES, AURORA_ACCENT_MAP, auroraAccent, themeProviderJsx, modeToggleJsx, appJsx, coverSlideJsxShadcn, COVER_SLIDE_CSS_SHADCN, featuresSlideJsxShadcn, FEATURES_SLIDE_CSS_SHADCN, gettingStartedSlideJsxShadcn, GETTING_STARTED_SLIDE_CSS_SHADCN, thankYouSlideJsxShadcn, THANK_YOU_SLIDE_CSS_SHADCN, vscodeMcpConfig } from '../utils.mjs'
 
 describe('slugify', () => {
   it('lowercases and hyphenates spaces', () => {
@@ -592,6 +592,27 @@ describe('appJsx', () => {
     expect(dark).toBe(light)
     expect(dark).not.toContain('ThemeProvider')
   })
+
+  it('renders Aurora as global background when designSystem is shadcn', () => {
+    const code = appJsx({ designSystem: 'shadcn' })
+    expect(code).toContain("import Aurora from '@/components/ui/aurora'")
+    expect(code).toContain('<Aurora')
+    expect(code).toContain('colorStops={auroraColors}')
+    expect(code).toContain("project.aurora?.colors")
+  })
+
+  it('renders Aurora in a fixed-position wrapper for persistence across slides', () => {
+    const code = appJsx({ designSystem: 'shadcn' })
+    expect(code).toContain("position: 'fixed'")
+    expect(code).toContain("pointerEvents: 'none'")
+    expect(code).toContain("zIndex: 0")
+  })
+
+  it('does not render Aurora when designSystem is none', () => {
+    const code = appJsx({ designSystem: 'none' })
+    expect(code).not.toContain('Aurora')
+    expect(code).not.toContain('aurora')
+  })
 })
 
 describe('deckConfig shadcn slides', () => {
@@ -620,26 +641,15 @@ describe('deckConfig shadcn slides', () => {
 })
 
 describe('coverSlideJsxShadcn', () => {
-  it('imports Aurora component', () => {
+  it('does not import Aurora (moved to App.jsx)', () => {
     const jsx = coverSlideJsxShadcn('Title', 'Sub', 'slug')
-    expect(jsx).toContain("import Aurora from '@/components/ui/aurora'")
+    expect(jsx).not.toContain("import Aurora")
+    expect(jsx).not.toContain('<Aurora')
   })
 
-  it('renders Aurora with colorStops from project config', () => {
+  it('does not import deck.config.js (aurora config now in App)', () => {
     const jsx = coverSlideJsxShadcn('Title', 'Sub', 'slug')
-    expect(jsx).toContain('<Aurora')
-    expect(jsx).toContain('colorStops={auroraColors}')
-  })
-
-  it('reads aurora colors from project config with fallback', () => {
-    const jsx = coverSlideJsxShadcn('Title', 'Sub', 'slug')
-    expect(jsx).toContain("project.aurora?.colors")
-  })
-
-  it('imports deck.config.js for aurora config', () => {
-    const jsx = coverSlideJsxShadcn('Title', 'Sub', 'slug')
-    expect(jsx).toContain("import project from")
-    expect(jsx).toContain("deck.config.js")
+    expect(jsx).not.toContain("import project from")
   })
 
   it('has asymmetric two-column layout', () => {
@@ -655,12 +665,6 @@ describe('coverSlideJsxShadcn', () => {
     expect(jsx).toContain('overline')
   })
 
-  it('wraps Aurora in a positioned wrapper div', () => {
-    const jsx = coverSlideJsxShadcn('Title', 'Sub', 'slug')
-    expect(jsx).toContain('auroraWrapper')
-    expect(jsx).toContain('<Aurora')
-  })
-
   it('imports ReactBits components', () => {
     const jsx = coverSlideJsxShadcn('Title', 'Sub', 'slug')
     expect(jsx).toContain("import BlurText from '@/components/ui/blur-text'")
@@ -669,14 +673,19 @@ describe('coverSlideJsxShadcn', () => {
 })
 
 describe('COVER_SLIDE_CSS_SHADCN', () => {
-  it('sets position relative on cover for Aurora absolute positioning', () => {
-    expect(COVER_SLIDE_CSS_SHADCN).toContain('position: relative')
+  it('does not set position relative on cover (no per-slide Aurora)', () => {
+    // position: relative was removed to avoid cascade bug (see history)
+    const coverBlock = COVER_SLIDE_CSS_SHADCN.split('.layout')[0]
+    expect(coverBlock).not.toContain('position: relative')
   })
 
-  it('has auroraWrapper with absolute positioning', () => {
-    expect(COVER_SLIDE_CSS_SHADCN).toContain('.auroraWrapper')
-    expect(COVER_SLIDE_CSS_SHADCN).toContain('position: absolute')
-    expect(COVER_SLIDE_CSS_SHADCN).toContain('pointer-events: none')
+  it('does not have auroraWrapper (Aurora moved to App)', () => {
+    expect(COVER_SLIDE_CSS_SHADCN).not.toContain('.auroraWrapper')
+  })
+
+  it('uses semi-transparent background for Aurora bleed-through', () => {
+    expect(COVER_SLIDE_CSS_SHADCN).toContain('color-mix')
+    expect(COVER_SLIDE_CSS_SHADCN).toContain('transparent')
   })
 
   it('uses accent color for overline and highlight', () => {
@@ -849,6 +858,66 @@ describe('AURORA_PALETTES', () => {
     expect(values).toContain('nebula')
     expect(values).toContain('arctic')
     expect(values).toContain('minimal')
+  })
+})
+
+describe('AURORA_ACCENT_MAP', () => {
+  it('has an entry for every aurora palette', () => {
+    for (const p of AURORA_PALETTES) {
+      expect(AURORA_ACCENT_MAP).toHaveProperty(p.value)
+    }
+  })
+
+  it('each accent is a valid hex color', () => {
+    for (const hex of Object.values(AURORA_ACCENT_MAP)) {
+      expect(hex).toMatch(/^#[0-9a-fA-F]{6}$/)
+    }
+  })
+
+  it('maps ocean to sky blue (#0ea5e9)', () => {
+    expect(AURORA_ACCENT_MAP.ocean).toBe('#0ea5e9')
+  })
+
+  it('maps sunset to orange (#f97316)', () => {
+    expect(AURORA_ACCENT_MAP.sunset).toBe('#f97316')
+  })
+
+  it('maps forest to emerald (#10b981)', () => {
+    expect(AURORA_ACCENT_MAP.forest).toBe('#10b981')
+  })
+
+  it('maps nebula to violet (#8b5cf6)', () => {
+    expect(AURORA_ACCENT_MAP.nebula).toBe('#8b5cf6')
+  })
+
+  it('maps arctic to cyan (#06b6d4)', () => {
+    expect(AURORA_ACCENT_MAP.arctic).toBe('#06b6d4')
+  })
+
+  it('maps minimal to zinc (#71717a)', () => {
+    expect(AURORA_ACCENT_MAP.minimal).toBe('#71717a')
+  })
+
+  it('each accent matches the first color of its palette', () => {
+    for (const p of AURORA_PALETTES) {
+      expect(AURORA_ACCENT_MAP[p.value]).toBe(p.colors[0])
+    }
+  })
+})
+
+describe('auroraAccent', () => {
+  it('returns the correct accent for known palettes', () => {
+    expect(auroraAccent('ocean')).toBe('#0ea5e9')
+    expect(auroraAccent('sunset')).toBe('#f97316')
+    expect(auroraAccent('forest')).toBe('#10b981')
+  })
+
+  it('falls back to ocean accent for unknown palette', () => {
+    expect(auroraAccent('nonexistent')).toBe('#0ea5e9')
+  })
+
+  it('falls back to ocean accent for undefined', () => {
+    expect(auroraAccent(undefined)).toBe('#0ea5e9')
   })
 })
 

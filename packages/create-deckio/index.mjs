@@ -11,7 +11,7 @@ import { join, resolve, dirname } from 'path'
 import { execSync } from 'child_process'
 import { fileURLToPath } from 'url'
 import * as clack from '@clack/prompts'
-import { slugify, packageJson, deckConfig, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS, AURORA_PALETTES, coverSlideJsxShadcn, COVER_SLIDE_CSS_SHADCN, featuresSlideJsxShadcn, FEATURES_SLIDE_CSS_SHADCN, gettingStartedSlideJsxShadcn, GETTING_STARTED_SLIDE_CSS_SHADCN, thankYouSlideJsxShadcn, THANK_YOU_SLIDE_CSS_SHADCN, themeProviderJsx, modeToggleJsx, appJsx, vscodeMcpConfig } from './utils.mjs'
+import { slugify, packageJson, deckConfig, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS, AURORA_PALETTES, auroraAccent, coverSlideJsxShadcn, COVER_SLIDE_CSS_SHADCN, featuresSlideJsxShadcn, FEATURES_SLIDE_CSS_SHADCN, gettingStartedSlideJsxShadcn, GETTING_STARTED_SLIDE_CSS_SHADCN, thankYouSlideJsxShadcn, THANK_YOU_SLIDE_CSS_SHADCN, themeProviderJsx, modeToggleJsx, appJsx, vscodeMcpConfig } from './utils.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -363,34 +363,14 @@ async function main() {
     })
     if (clack.isCancel(subtitle)) { clack.cancel('Cancelled.'); process.exit(0) }
 
-    // Color preset picker with true-color swatches
-    const colorOptions = [
-      ...COLOR_PRESETS.map((c) => ({
-        value: c.value,
-        label: `${swatch(c.value)} ${c.label}`,
-        hint: c.value,
-      })),
-      { value: '__custom', label: '✎ Custom hex', hint: 'enter your own' },
-    ]
-
-    accent = await clack.select({
-      message: 'Choose an accent color',
-      options: colorOptions,
-      initialValue: '#6366f1',
+    icon = await clack.text({
+      message: 'Icon emoji',
+      placeholder: '🎴',
+      defaultValue: '🎴',
     })
-    if (clack.isCancel(accent)) { clack.cancel('Cancelled.'); process.exit(0) }
+    if (clack.isCancel(icon)) { clack.cancel('Cancelled.'); process.exit(0) }
 
-    if (accent === '__custom') {
-      accent = await clack.text({
-        message: 'Enter a hex color',
-        placeholder: '#6366f1',
-        defaultValue: '#6366f1',
-        validate: (v) => /^#[0-9a-fA-F]{6}$/.test(v) ? undefined : 'Must be a valid hex color (e.g. #6366f1)',
-      })
-      if (clack.isCancel(accent)) { clack.cancel('Cancelled.'); process.exit(0) }
-    }
-
-    // Step 1: Choose design system
+    // Choose design system
     const chosenDesignSystem = await clack.select({
       message: 'Choose a design system',
       options: [
@@ -401,7 +381,7 @@ async function main() {
     })
     if (clack.isCancel(chosenDesignSystem)) { clack.cancel('Cancelled.'); process.exit(0) }
 
-    // Step 2: Choose appearance (dark/light)
+    // Choose appearance (dark/light)
     appearance = await clack.select({
       message: 'Choose appearance',
       options: [
@@ -421,8 +401,9 @@ async function main() {
       designSystem = 'none'
     }
 
-    // Aurora palette picker (shadcn only)
+    // Color selection depends on design system
     if (designSystem === 'shadcn') {
+      // Aurora palette picker — the palette IS the color identity for shadcn
       const paletteOptions = AURORA_PALETTES.map((p) => ({
         value: p.value,
         label: `${swatch(p.colors[0])}${swatch(p.colors[1])}${swatch(p.colors[2])} ${p.label}`,
@@ -438,18 +419,39 @@ async function main() {
 
       const palette = AURORA_PALETTES.find((p) => p.value === chosenPalette)
       aurora = { palette: palette.value, colors: palette.colors }
-    }
+      // Derive accent from palette — no separate accent prompt
+      accent = auroraAccent(palette.value)
+    } else {
+      // Default design system — accent color preset picker
+      const colorOptions = [
+        ...COLOR_PRESETS.map((c) => ({
+          value: c.value,
+          label: `${swatch(c.value)} ${c.label}`,
+          hint: c.value,
+        })),
+        { value: '__custom', label: '✎ Custom hex', hint: 'enter your own' },
+      ]
 
-    icon = await clack.text({
-      message: 'Icon emoji',
-      placeholder: '🎴',
-      defaultValue: '🎴',
-    })
-    if (clack.isCancel(icon)) { clack.cancel('Cancelled.'); process.exit(0) }
+      accent = await clack.select({
+        message: 'Choose an accent color',
+        options: colorOptions,
+        initialValue: '#6366f1',
+      })
+      if (clack.isCancel(accent)) { clack.cancel('Cancelled.'); process.exit(0) }
+
+      if (accent === '__custom') {
+        accent = await clack.text({
+          message: 'Enter a hex color',
+          placeholder: '#6366f1',
+          defaultValue: '#6366f1',
+          validate: (v) => /^#[0-9a-fA-F]{6}$/.test(v) ? undefined : 'Must be a valid hex color (e.g. #6366f1)',
+        })
+        if (clack.isCancel(accent)) { clack.cancel('Cancelled.'); process.exit(0) }
+      }
+    }
   } else {
     title = process.env.DECK_TITLE || defaultTitle
     subtitle = process.env.DECK_SUBTITLE || 'A presentation built with deck-engine'
-    accent = process.env.DECK_ACCENT || '#6366f1'
     icon = process.env.DECK_ICON || '🎴'
 
     // New env vars: DECK_DESIGN_SYSTEM + DECK_APPEARANCE
@@ -474,11 +476,15 @@ async function main() {
       designSystem = theme === 'shadcn' ? 'shadcn' : 'none'
     }
 
-    // Aurora palette from env (shadcn only, defaults to 'ocean')
     if (designSystem === 'shadcn') {
+      // Aurora palette from env — derive accent from it
       const envPalette = process.env.DECK_AURORA_PALETTE || 'ocean'
       const palette = AURORA_PALETTES.find((p) => p.value === envPalette) || AURORA_PALETTES[0]
       aurora = { palette: palette.value, colors: palette.colors }
+      accent = auroraAccent(palette.value)
+    } else {
+      // Default design system — accent from env
+      accent = process.env.DECK_ACCENT || '#6366f1'
     }
 
     clack.log.info('Using defaults (non-interactive mode)')
