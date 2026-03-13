@@ -40,6 +40,14 @@
       "created_at": "2026-03-13T00:00:00Z",
       "legacy_named": false,
       "status": "active"
+    },
+    {
+      "persistent_name": "Virgil",
+      "role": "QA / Visual Reviewer",
+      "universe": "Ocean's Eleven",
+      "created_at": "2026-07-14T00:00:00Z",
+      "legacy_named": false,
+      "status": "active"
     }
   ]
 }

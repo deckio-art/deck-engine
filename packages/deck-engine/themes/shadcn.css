@@ -138,6 +138,55 @@
   --chart-5:              oklch(0.769 0.188 70.08);
 }
 
+.dark {
+  color-scheme: dark;
+
+  /* ── 1. Core Semantic Colors (shadcn/ui dark — oklch) ────────────────── */
+  --background:              oklch(0.145 0 0);
+  --foreground:              oklch(0.985 0 0);
+  --card:                    oklch(0.145 0 0);
+  --card-foreground:         oklch(0.985 0 0);
+  --primary:                 oklch(0.985 0 0);
+  --primary-foreground:      oklch(0.205 0 0);
+  --secondary:               oklch(0.269 0 0);
+  --secondary-foreground:    oklch(0.985 0 0);
+  --muted:                   oklch(0.269 0 0);
+  --muted-foreground:        oklch(0.708 0 0);
+  --accent:                  oklch(0.269 0 0);
+  --accent-foreground:       oklch(0.985 0 0);
+  --destructive:             oklch(0.396 0.141 25.723);
+  --destructive-foreground:  oklch(0.985 0 0);
+  --border:                  oklch(0.269 0 0);
+  --input:                   oklch(0.269 0 0);
+  --ring:                    oklch(0.439 0 0);
+  --radius:                  0.625rem;
+
+  /* ── 3. Derived Overlays & Glows (dark) ─────────────────────────────── */
+  --surface-overlay:         oklch(0.145 0 0 / 90%);
+  --surface-overlay-heavy:   oklch(0.145 0 0 / 97%);
+  --background-overlay:      oklch(0.18 0 0 / 90%);
+  --border-subtle:           oklch(0.269 0 0 / 60%);
+  --glow-primary:            oklch(0.985 0 0 / 5%);
+  --glow-primary-strong:     oklch(0.985 0 0 / 8%);
+  --glow-primary-shadow:     oklch(0.985 0 0 / 6%);
+  --glow-ring:               oklch(0.439 0 0 / 15%);
+  --glow-accent:             oklch(0.708 0 0 / 5%);
+  --glow-purple:             oklch(0.627 0.265 303.9 / 5%);
+  --glow-cyan:               oklch(0.715 0.143 215.221 / 5%);
+  --dot-color:               oklch(0.708 0 0 / 15%);
+  --destructive-subtle:      oklch(0.396 0.141 25.723 / 4%);
+  --shadow-elevated:         0 8px 24px oklch(0 0 0 / 30%);
+
+  /* ── shadcn-specific tokens (dark) ──────────────────────────────────── */
+  --popover:              oklch(0.145 0 0);
+  --popover-foreground:   oklch(0.985 0 0);
+  --chart-1:              oklch(0.488 0.243 264.376);
+  --chart-2:              oklch(0.696 0.17 162.48);
+  --chart-3:              oklch(0.769 0.188 70.08);
+  --chart-4:              oklch(0.627 0.265 303.9);
+  --chart-5:              oklch(0.645 0.246 16.439);
+}
+
 /* ── Tailwind ↔ CSS variable bridge ── */
 @theme inline {
   --color-background: var(--background);

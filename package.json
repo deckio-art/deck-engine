@@ -7,7 +7,10 @@
   "scripts": {
     "dev": "npm run dev -w @deckio/deck-engine",
     "build": "npm run build -w @deckio/deck-engine --if-present",
-    "test": "npm test --workspaces --if-present",
+    "test": "npx vitest run",
     "lint": "npm run lint --workspaces --if-present"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.0"
   }
 }

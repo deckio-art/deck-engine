@@ -59,7 +59,7 @@ export async function exportDeckPptx({
   const Pptx = PptxGenJS.default || PptxGenJS
 
   const bg = getComputedStyle(document.documentElement)
-    .getPropertyValue('--bg-deep').trim() || '#080b10'
+    .getPropertyValue('--background').trim() || '#080b10'
   const scale = Math.min(window.devicePixelRatio || 1, 2)
 
   const pptx = new Pptx()

@@ -11,7 +11,8 @@
         { "name": "Basher", "role": "Backend Dev" },
         { "name": "Livingston", "role": "Frontend Dev" },
         { "name": "Linus", "role": "Tester" },
-        { "name": "Saul", "role": "UI/UX & Theme Coherence" }
+        { "name": "Saul", "role": "UI/UX & Theme Coherence" },
+        { "name": "Virgil", "role": "QA / Visual Reviewer" }
       ]
     }
   ]

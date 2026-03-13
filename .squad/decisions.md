@@ -229,6 +229,40 @@ ReactBits (reactbits.dev) should be included as a complementary animation and co
 
 ---
 
+### SLIDES-001: shadcn-Specific Starter Slide Templates
+**Author:** Saul + Livingston | **Date:** 2026-03-15 | **Status:** Implemented
+
+1. **`designSystem` drives template selection** — when `designSystem: "shadcn"`, the scaffolder emits distinct CoverSlide and ThankYouSlide templates. Dark/light themes use the original orb/glow aesthetic unchanged.
+2. **shadcn CoverSlide removes orbs entirely** — no gradient orbs, no accent-bar. Replaced with a pill badge (pulsing dot + project slug), shimmer accent line, gradient-shift title, and clean card-style meta bar. All CSS uses semantic tokens (`--background`, `--foreground`, `--card`, `--border`, `--radius`, `--muted-foreground`, `--secondary`).
+3. **shadcn ThankYouSlide is a local file** — dark/light themes reuse the engine's `GenericThankYouSlide` (with glows/streaks). shadcn generates a local `ThankYouSlide.jsx` + `.module.css` with animated gradient text, clean divider, no orbs/streaks. `deckConfig()` imports accordingly.
+4. **ReactBits as inspiration, not dependency** — animations (gradient-shift, shimmer, pulse) are pure CSS, inspired by ReactBits' style. Each generated file includes a comment teaching users how to install ReactBits components (`// 💡 Add animated components: npx shadcn add @react-bits/animated-content`). Starter slides work without any ReactBits installation.
+5. **New exports from `utils.mjs`** — `coverSlideJsxShadcn()`, `COVER_SLIDE_CSS_SHADCN`, `thankYouSlideJsxShadcn()`, `THANK_YOU_SLIDE_CSS_SHADCN`. All testable as pure functions.
+
+**Key files:**
+- `packages/create-deckio/utils.mjs` — shadcn template functions + CSS constants
+- `packages/create-deckio/index.mjs` — conditional template selection
+
+---
+
+### DARK-001: Dark/Light Mode for shadcn Design System
+**Author:** Basher | **Date:** 2026-03-15 | **Status:** Implemented
+
+1. **Only for `designSystem: "shadcn"`** — dark/light single-mode themes don't get ThemeProvider or ModeToggle. They're already committed to one visual mode.
+2. **Uses shadcn's official Vite pattern** — `.dark` class on `<html>` element toggles CSS variable overrides. No runtime CSS file switching needed.
+3. **Two-layer architecture** — `data-theme="shadcn"` (from SlideProvider) is the theme identity; `.dark` class is the mode within that theme. They're orthogonal and don't conflict.
+4. **ThemeProvider and ModeToggle are scaffolded files, not engine exports** — they live in the generated project at `src/components/`. This keeps the engine lean and avoids a browser/Node boundary issue with localStorage.
+5. **Default mode is light** — `<ThemeProvider defaultTheme="light">`. Users can toggle to dark or system mode via the ModeToggle button.
+6. **ModeToggle is unobtrusive** — fixed-position bottom-right, low opacity, inline SVG icons. No external icon library dependency.
+7. **localStorage persistence** — mode survives page reloads via `deckio-ui-theme` key. System mode tracks `prefers-color-scheme`.
+8. **`APP_JSX` constant replaced with `appJsx()` function** — now conditional on `designSystem`. Non-shadcn projects get the same output as before (no ThemeProvider/ModeToggle).
+
+**Key files:**
+- `packages/deck-engine/themes/shadcn.css` — `:root` (light) + `.dark` (dark) token blocks
+- `packages/create-deckio/utils.mjs` — `themeProviderJsx()`, `modeToggleJsx()`, `appJsx()`
+- `packages/create-deckio/index.mjs` — writes theme-provider.jsx, mode-toggle.jsx, conditional App.jsx
+
+---
+
 ## Governance
 
 - All meaningful changes require team consensus

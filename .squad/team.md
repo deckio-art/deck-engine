@@ -17,6 +17,7 @@
 | Livingston | Frontend Dev | `.squad/agents/livingston/charter.md` | ⚛️ Active | claude-opus-4.6-1m |
 | Linus | Tester | `.squad/agents/linus/charter.md` | 🧪 Active | claude-opus-4.6-1m |
 | Saul | UI/UX & Theme Coherence | `.squad/agents/saul/charter.md` | 🎨 Active | claude-opus-4.6-1m |
+| Virgil | QA / Visual Reviewer | `.squad/agents/virgil/charter.md` | 🔒 Active | claude-opus-4.6-1m |
 | Scribe | Session Logger | `.squad/agents/scribe/charter.md` | 📋 Active | claude-sonnet-4.6 |
 | Ralph | Work Monitor | — | 🔄 Monitor | — |
 

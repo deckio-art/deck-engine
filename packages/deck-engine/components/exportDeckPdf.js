@@ -66,7 +66,7 @@ export async function exportDeckPdf({
   ])
 
   const bg = getComputedStyle(document.documentElement)
-    .getPropertyValue('--bg-deep').trim() || '#080b10'
+    .getPropertyValue('--background').trim() || '#080b10'
   const scale = Math.min(window.devicePixelRatio || 1, 2)
 
   const pdf = new jsPDF({

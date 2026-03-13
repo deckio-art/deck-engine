@@ -1,5 +1,5 @@
 .navWrapper {
-  transition: opacity 0.4s ease;
+  transition: opacity var(--transition-slow);
   opacity: 1;
 }
 
@@ -12,40 +12,40 @@
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 3px;
-  background: rgba(48,54,61,0.6);
-  z-index: 300;
+  background: var(--border-subtle);
+  z-index: var(--z-progress);
 }
 
 .progressFill {
   height: 100%;
   background: linear-gradient(90deg, var(--purple), var(--accent), var(--cyan));
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width var(--duration-progress) var(--ease-slide);
   border-radius: 0 2px 2px 0;
   box-shadow: 0 0 12px var(--accent);
 }
 
 .homeBtn {
   position: fixed;
-  top: 16px;
-  left: 20px;
-  z-index: 200;
+  top: var(--space-4);
+  left: var(--space-5);
+  z-index: var(--z-nav);
   width: 36px; height: 36px;
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border);
-  background: rgba(22,27,34,0.8);
+  background: var(--surface-overlay);
   backdrop-filter: blur(8px);
-  color: var(--text);
+  color: var(--foreground);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.25s ease;
+  transition: all var(--transition-base);
   opacity: 0.45;
 }
 .homeBtn:hover {
   opacity: 1;
   border-color: var(--accent);
-  background: rgba(31,111,235,0.2);
+  background: var(--glow-primary);
 }
 .homeBtn svg {
   width: 16px; height: 16px;
@@ -53,23 +53,23 @@
 
 .exportBtn {
   position: fixed;
-  top: 16px;
-  right: 20px;
-  z-index: 200;
+  top: var(--space-4);
+  right: var(--space-5);
+  z-index: var(--z-nav);
   height: 36px;
   min-width: 36px;
-  padding: 0 12px;
-  border-radius: 10px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border);
-  background: rgba(22,27,34,0.8);
+  background: var(--surface-overlay);
   backdrop-filter: blur(8px);
-  color: var(--text);
+  color: var(--foreground);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  transition: all 0.25s ease;
+  gap: var(--space-1-5);
+  transition: all var(--transition-base);
   opacity: 0.45;
   text-decoration: none;
   font-family: inherit;
@@ -80,29 +80,29 @@
 .exportBtn:hover {
   opacity: 1;
   border-color: var(--accent);
-  background: rgba(31,111,235,0.2);
+  background: var(--glow-primary);
 }
 .exportBtnBusy {
   opacity: 1;
   border-color: var(--accent);
-  background: rgba(31,111,235,0.22);
-  box-shadow: 0 0 0 1px rgba(121, 192, 255, 0.18), 0 0 24px rgba(31, 111, 235, 0.18);
+  background: var(--glow-primary-strong);
+  box-shadow: 0 0 0 1px var(--glow-ring), 0 0 24px var(--glow-primary-shadow);
 }
 .exportBtn svg {
   width: 16px; height: 16px;
 }
 .exportLabel {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .exportGroup {
   position: fixed;
-  top: 16px;
-  right: 20px;
-  z-index: 200;
+  top: var(--space-4);
+  right: var(--space-5);
+  z-index: var(--z-nav);
 }
 .exportGroup .exportBtn {
   position: static;
@@ -110,19 +110,19 @@
 
 .exportMenu {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + var(--space-1-5));
   right: 0;
   min-width: 140px;
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border);
-  background: rgba(22,27,34,0.95);
+  background: var(--surface-overlay-heavy);
   backdrop-filter: blur(12px);
-  padding: 4px;
+  padding: var(--space-1);
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  animation: menuFadeIn 0.15s ease;
+  gap: var(--space-0-5);
+  box-shadow: var(--shadow-elevated);
+  animation: menuFadeIn var(--transition-fast);
 }
 
 @keyframes menuFadeIn {
@@ -133,21 +133,21 @@
 .exportMenuItem {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   background: transparent;
-  color: var(--text);
-  font-size: 12px;
-  font-weight: 500;
+  color: var(--foreground);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background var(--transition-fast);
   white-space: nowrap;
 }
 .exportMenuItem:hover {
-  background: rgba(31,111,235,0.2);
+  background: var(--glow-primary);
 }
 .exportMenuItem svg {
   width: 14px; height: 14px;
@@ -158,35 +158,35 @@
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 200;
-  width: 48px; height: 48px;
-  border-radius: 50%;
+  z-index: var(--z-nav);
+  width: var(--space-12); height: var(--space-12);
+  border-radius: var(--radius-full);
   border: 1px solid var(--border);
-  background: rgba(22,27,34,0.8);
+  background: var(--surface-overlay);
   backdrop-filter: blur(8px);
-  color: var(--text);
+  color: var(--foreground);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.25s ease;
+  transition: all var(--transition-base);
   opacity: 0.5;
 }
-.navBtn:hover { opacity: 1; border-color: var(--accent); background: rgba(31,111,235,0.2); }
-.prev { left: 20px; }
-.next { right: 20px; }
-.navBtn svg { width: 20px; height: 20px; }
+.navBtn:hover { opacity: 1; border-color: var(--accent); background: var(--glow-primary); }
+.prev { left: var(--space-5); }
+.next { right: var(--space-5); }
+.navBtn svg { width: var(--space-5); height: var(--space-5); }
 .navBtn:disabled { opacity: 0.15; cursor: default; pointer-events: none; }
 
 .keyHint {
   position: fixed;
-  bottom: 56px; right: 40px;
-  z-index: 200;
+  bottom: var(--space-14); right: var(--space-10);
+  z-index: var(--z-nav);
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  color: var(--text-muted);
+  gap: var(--space-1-5);
+  font-size: var(--font-size-xs);
+  color: var(--muted-foreground);
   opacity: 0.5;
   animation: fadeOut 3s 5s forwards;
 }
@@ -202,9 +202,9 @@
   min-width: 22px; height: 22px;
   padding: 0 5px;
   border: 1px solid var(--border);
-  border-radius: 4px;
-  background: var(--surface);
-  font-size: 10px;
-  font-weight: 600;
+  border-radius: var(--radius-sm);
+  background: var(--secondary);
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-semibold);
   font-family: inherit;
 }

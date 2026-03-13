@@ -1,17 +1,17 @@
 .bar {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  height: 44px;
-  background: rgba(13,17,23,0.85);
+  height: var(--space-11);
+  background: var(--background-overlay);
   backdrop-filter: blur(12px);
   border-top: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
-  font-size: 11px;
-  letter-spacing: 2.5px;
+  padding: 0 var(--space-10);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-wider);
   text-transform: uppercase;
-  color: var(--text-muted);
-  z-index: 100;
+  color: var(--muted-foreground);
+  z-index: var(--z-bar);
 }

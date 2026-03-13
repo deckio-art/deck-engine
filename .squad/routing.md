@@ -10,6 +10,7 @@ How to decide who handles what.
 | Slide rendering, components, client JS | Livingston ⚛️ | HTML structure, navigation, presenter mode, keyboard shortcuts |
 | Design system, themes, visual consistency | Saul 🎨 | CSS tokens, color palette, typography, spacing, visual audits |
 | Tests, validation, edge cases | Linus 🧪 | Unit tests, integration tests, deck validation, regression locks |
+| Visual audits, screenshot verification, CSS inspection | Virgil 🔒 | Playwright screenshots, visual regression, design token compliance, release gating |
 | Code review, architecture, scope | Rusty 🏗️ | Review PRs, architecture decisions, scope trade-offs |
 | Scope & priorities | Rusty 🏗️ | What to build next, trade-offs, decisions |
 | Async issue work (bugs, tests, small features) | @copilot 🤖 | Well-defined tasks matching capability profile |
@@ -50,5 +51,6 @@ When triaging, the Lead should ask:
 4. **When two agents could handle it**, pick the one whose domain is the primary concern.
 5. **"Team, ..." → fan-out.** Spawn all relevant agents in parallel as `mode: "background"`.
 6. **Anticipate downstream work.** If a feature is being built, spawn the tester to write test cases from requirements simultaneously.
-7. **Issue-labeled work** — when a `squad:{member}` label is applied to an issue, route to that member. The Lead handles all `squad` (base label) triage.
-8. **@copilot routing** — when evaluating issues, check @copilot's capability profile in `team.md`. Route 🟢 good-fit tasks to `squad:copilot`. Flag 🟡 needs-review tasks for PR review. Keep 🔴 not-suitable tasks with squad members.
+7. **Visual gate on features** — when a feature touches rendering, slides, or CSS, Virgil runs a visual audit BEFORE the feature is declared done. Route to Virgil after implementation, before merge.
+8. **Issue-labeled work** — when a `squad:{member}` label is applied to an issue, route to that member. The Lead handles all `squad` (base label) triage.
+9. **@copilot routing** — when evaluating issues, check @copilot's capability profile in `team.md`. Route 🟢 good-fit tasks to `squad:copilot`. Flag 🟡 needs-review tasks for PR review. Keep 🔴 not-suitable tasks with squad members.

@@ -1,23 +1,197 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   DECKIO Design Token System
+   ═══════════════════════════════════════════════════════════════════════════
+
+   Token architecture aligned with shadcn/ui naming conventions for
+   multi-theme compatibility, extended with presentation-specific tokens.
+
+   LAYER STRATEGY (Tailwind v4 + shadcn/ui compatibility):
+   ────────────────────────────────────────────────────────
+   Tailwind v4 wraps its output in @layer directives. In the CSS cascade,
+   unlayered styles ALWAYS beat layered styles — regardless of specificity.
+   Without layers, our `* { margin: 0 }` would override every Tailwind
+   utility (`p-4`, `m-2`, etc.), breaking shadcn/ui components entirely.
+
+   We declare the canonical layer order up front (global.css is imported
+   before theme CSS), then place engine styles in the appropriate layers:
+     @layer base        — token defaults, reset, html/body
+     @layer components  — engine component styles (.slide, .deck, etc.)
+   Theme CSS `:root` blocks remain unlayered (highest priority).
+   Tailwind utilities live in @layer utilities and override components.
+
+   CATEGORIES:
+
+   1. Core Semantic Colors  (shadcn-aligned)
+      --background / --foreground         Page-level background & text
+      --card / --card-foreground           Card / panel surfaces
+      --primary / --primary-foreground     Brand / action color
+      --secondary / --secondary-foreground Subtle surfaces (panels, kbd)
+      --muted / --muted-foreground         Muted text & backgrounds
+      --accent / --accent-foreground       Accent highlights (= primary in dark theme)
+      --destructive / --destructive-foreground  Errors & warnings
+      --border                             Default border
+      --input                              Form input borders
+      --ring                               Focus ring color
+      --radius                             Default border radius
+
+   2. Decorative Palette
+      --purple, --purple-deep, --pink, --cyan, --green
+      --blue-glow                          Glow base for interactive elements
+
+   3. Derived Overlays & Glows
+      Translucent surfaces, glow effects, and shadows. Explicit tokens
+      (not computed) so each theme can override independently.
+
+   4. Presentation Layout
+      --slide-bg, --content-max-width, --content-gutter
+
+   5. Typography Scale
+      Font family, sizes (2xs → display), weights, letter-spacing, line-height
+
+   6. Spacing Scale   (4 px base)
+      --space-0 through --space-14
+
+   7. Border Radius Scale
+      --radius-sm through --radius-full
+
+   8. Z-Index Scale
+      Named layers: content → bar → nav → progress → overlay
+
+   9. Transitions
+      Duration + easing presets
+
+   THEMING:
+   Override any token in :root for a global theme, or scope overrides to a
+   class (e.g. .theme-light, .theme-shadcn) for per-section theming.
+   Current values represent the "dark" theme (default).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Establish canonical layer order — must come before any @layer blocks.
+   Tailwind v4 uses these exact names; declaring them here (global.css is
+   imported first) guarantees the ordering is: theme < base < components < utilities. */
+@layer theme, base, components, utilities;
+
+/* ── Base layer: token defaults + reset ─────────────────────────────────── */
+@layer base {
+
 :root {
-  --bg: #0d1117;
-  --bg-deep: #080b10;
-  --surface: #161b22;
-  --border: #30363d;
-  --text: #e6edf3;
-  --text-muted: #8b949e;
-  --accent: #58a6ff;
-  --blue-bright: #79c0ff;
-  --blue-glow: #1f6feb;
-  --purple: #bc8cff;
-  --purple-deep: #6e40c9;
-  --pink: #f778ba;
-  --cyan: #56d4dd;
-  --green: #3fb950;
-  --orange: #d29922;
-  --content-max-width: 1280px;
-  --content-gutter: 72px;
+  /* ── 1. Core Semantic Colors (shadcn-aligned) ────────────────────────── */
+  --background:              #080b10;
+  --foreground:              #e6edf3;
+  --card:                    #0d1117;
+  --card-foreground:         #e6edf3;
+  --primary:                 #58a6ff;
+  --primary-foreground:      #ffffff;
+  --secondary:               #161b22;
+  --secondary-foreground:    #e6edf3;
+  --muted:                   #161b22;
+  --muted-foreground:        #8b949e;
+  --accent:                  #58a6ff;
+  --accent-foreground:       #ffffff;
+  --destructive:             #f85149;
+  --destructive-foreground:  #ffffff;
+  --border:                  #30363d;
+  --input:                   #30363d;
+  --ring:                    #58a6ff;
+  --radius:                  10px;
+
+  /* ── 2. Decorative Palette ───────────────────────────────────────────── */
+  --blue-glow:    #1f6feb;
+  --purple:       #bc8cff;
+  --purple-deep:  #6e40c9;
+  --pink:         #f778ba;
+  --cyan:         #56d4dd;
+  --green:        #3fb950;
+
+  /* ── 3. Derived Overlays & Glows ─────────────────────────────────────── */
+  --surface-overlay:         rgba(22, 27, 34, 0.8);
+  --surface-overlay-heavy:   rgba(22, 27, 34, 0.95);
+  --background-overlay:      rgba(13, 17, 23, 0.85);
+  --border-subtle:           rgba(48, 54, 61, 0.6);
+  --glow-primary:            rgba(31, 111, 235, 0.2);
+  --glow-primary-strong:     rgba(31, 111, 235, 0.22);
+  --glow-primary-shadow:     rgba(31, 111, 235, 0.18);
+  --glow-ring:               rgba(121, 192, 255, 0.18);
+  --glow-accent:             rgba(88, 166, 255, 0.10);
+  --glow-purple:             rgba(188, 140, 255, 0.10);
+  --glow-cyan:               rgba(86, 212, 221, 0.08);
+  --dot-color:               rgba(139, 148, 158, 0.25);
+  --destructive-subtle:      rgba(248, 81, 73, 0.04);
+  --shadow-elevated:         0 8px 24px rgba(0, 0, 0, 0.4);
+
+  /* ── 4. Presentation Layout ──────────────────────────────────────────── */
+  --slide-bg:            var(--background);
+  --content-max-width:   1280px;
+  --content-gutter:      72px;
+
+  /* ── 5. Typography Scale ─────────────────────────────────────────────── */
+  --font-family:           'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-size-2xs:         10px;
+  --font-size-xs:          11px;
+  --font-size-sm:          12px;
+  --font-size-md:          13px;
+  --font-size-base:        16px;
+  --font-size-lg:          20px;
+  --font-size-xl:          24px;
+  --font-size-2xl:         32px;
+  --font-size-display:     clamp(40px, 6vw, 64px);
+
+  --font-weight-light:     300;
+  --font-weight-regular:   400;
+  --font-weight-medium:    500;
+  --font-weight-semibold:  600;
+  --font-weight-bold:      700;
+  --font-weight-extrabold: 800;
+
+  --letter-spacing-tight:   -2px;
+  --letter-spacing-normal:  0;
+  --letter-spacing-wide:    0.5px;
+  --letter-spacing-wider:   2.5px;
+  --letter-spacing-widest:  3px;
+
+  --line-height-tight:     1.2;
+  --line-height-normal:    1.5;
+  --line-height-relaxed:   1.75;
+
+  /* ── 6. Spacing Scale (4 px base) ────────────────────────────────────── */
+  --space-0:    0px;
+  --space-0-5:  2px;
+  --space-1:    4px;
+  --space-1-5:  6px;
+  --space-2:    8px;
+  --space-3:    12px;
+  --space-4:    16px;
+  --space-5:    20px;
+  --space-6:    24px;
+  --space-8:    32px;
+  --space-10:   40px;
+  --space-11:   44px;
+  --space-12:   48px;
+  --space-14:   56px;
+
+  /* ── 7. Border Radius Scale ──────────────────────────────────────────── */
+  --radius-sm:    4px;
+  --radius-md:    6px;
+  --radius-lg:    10px;
+  --radius-xl:    20px;
+  --radius-full:  50%;
+
+  /* ── 8. Z-Index Scale ────────────────────────────────────────────────── */
+  --z-content:   2;
+  --z-bar:       100;
+  --z-nav:       200;
+  --z-progress:  300;
+  --z-overlay:   9999;
+
+  /* ── 9. Transitions ──────────────────────────────────────────────────── */
+  --transition-fast:     0.15s ease;
+  --transition-base:     0.25s ease;
+  --transition-slow:     0.4s ease;
+  --ease-slide:          cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-slide:      0.6s;
+  --duration-progress:   0.5s;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,10 +199,15 @@
 html, body, #root {
   width: 100%; height: 100%;
   overflow: hidden;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg-deep);
-  color: var(--text);
+  font-family: var(--font-family);
+  background: var(--background);
+  color: var(--foreground);
 }
+
+} /* end @layer base */
+
+/* ── Components layer: engine chrome + slide primitives ─────────────────── */
+@layer components {
 
 /* ── Slide Engine ── */
 .deck {
@@ -45,8 +224,8 @@ html, body, #root {
   align-items: stretch;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity var(--duration-slide) var(--ease-slide),
+              transform var(--duration-slide) var(--ease-slide);
   transform: translateX(60px);
   overflow: hidden;
 }
@@ -67,31 +246,31 @@ html, body, #root {
 .slide-overflow-warn {
   position: absolute;
   inset: 0;
-  border: 3px dashed #f85149;
+  border: 3px dashed var(--destructive);
   pointer-events: none;
-  z-index: 9999;
+  z-index: var(--z-overlay);
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding-bottom: 56px;
-  background: rgba(248, 81, 73, 0.04);
-  font-size: 13px;
-  font-weight: 600;
-  color: #f85149;
+  padding-bottom: var(--space-14);
+  background: var(--destructive-subtle);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--destructive);
   letter-spacing: 0.3px;
 }
 
 /* ── Shared Decorations ── */
 .orb {
   position: absolute;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   filter: blur(2px);
   opacity: 0.7;
 }
 .grid-dots {
   position: absolute;
   width: 200px; height: 200px;
-  background-image: radial-gradient(circle, rgba(139,148,158,0.25) 1px, transparent 1px);
+  background-image: radial-gradient(circle, var(--dot-color) 1px, transparent 1px);
   background-size: 18px 18px;
   opacity: 0.5;
 }
@@ -99,7 +278,7 @@ html, body, #root {
 /* Accent bar left */
 .accent-bar {
   position: absolute;
-  left: 48px; top: 15%; bottom: 15%;
+  left: var(--space-12); top: 15%; bottom: 15%;
   width: 4px;
   border-radius: 2px;
   background: linear-gradient(to bottom, var(--purple), var(--accent), var(--cyan));
@@ -121,21 +300,21 @@ html, body, #root {
    Generic Thank-You Slide  (deck-ty-* namespace)
    ══════════════════════════════════════════════════ */
 .deck-ty {
-  background: var(--bg-deep);
-  padding: 0 0 44px 0;
+  background: var(--background);
+  padding: 0 0 var(--space-11) 0;
 }
 
 /* Ambient glow orbs */
 .deck-ty-glow {
   position: absolute;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   filter: blur(80px);
   pointer-events: none;
   animation: deck-ty-pulse 6s ease-in-out infinite;
 }
-.deck-ty-glow1 { width: 300px; height: 300px; background: rgba(88,166,255,0.10); top: -80px; left: -60px; }
-.deck-ty-glow2 { width: 250px; height: 250px; background: rgba(188,140,255,0.10); bottom: -40px; right: -40px; animation-delay: -2s; }
-.deck-ty-glow3 { width: 200px; height: 200px; background: rgba(86,212,221,0.08); top: 50%; left: 60%; transform: translate(-50%,-50%); animation-delay: -4s; }
+.deck-ty-glow1 { width: 300px; height: 300px; background: var(--glow-accent); top: -80px; left: -60px; }
+.deck-ty-glow2 { width: 250px; height: 250px; background: var(--glow-purple); bottom: -40px; right: -40px; animation-delay: -2s; }
+.deck-ty-glow3 { width: 200px; height: 200px; background: var(--glow-cyan); top: 50%; left: 60%; transform: translate(-50%,-50%); animation-delay: -4s; }
 
 @keyframes deck-ty-pulse {
   0%, 100% { transform: scale(1); opacity: 0.7; }
@@ -170,19 +349,19 @@ html, body, #root {
 .deck-ty-content {
   text-align: left;
   position: relative;
-  z-index: 2;
+  z-index: var(--z-content);
 }
 .deck-ty-title {
-  font-size: clamp(40px, 6vw, 64px);
-  font-weight: 800;
-  letter-spacing: -2px;
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: var(--letter-spacing-tight);
   background: linear-gradient(135deg, var(--accent), var(--purple), var(--cyan), var(--accent));
   background-size: 300% 300%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: deck-ty-grad-shift 6s ease infinite;
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
 }
 @keyframes deck-ty-grad-shift {
   0% { background-position: 0% 50%; }
@@ -190,22 +369,24 @@ html, body, #root {
   100% { background-position: 0% 50%; }
 }
 .deck-ty-subtitle {
-  font-size: 20px;
-  font-weight: 400;
-  color: var(--text-muted);
-  letter-spacing: 0.5px;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-regular);
+  color: var(--muted-foreground);
+  letter-spacing: var(--letter-spacing-wide);
 }
 .deck-ty-divider {
   width: 60px;
   height: 2px;
   background: linear-gradient(90deg, var(--accent), var(--purple));
-  margin: 24px 0;
+  margin: var(--space-6) 0;
   border-radius: 1px;
 }
 .deck-ty-tagline {
-  font-size: 13px;
+  font-size: var(--font-size-md);
   text-transform: uppercase;
-  letter-spacing: 3px;
-  color: var(--text-muted);
+  letter-spacing: var(--letter-spacing-widest);
+  color: var(--muted-foreground);
   opacity: 0.5;
 }
+
+} /* end @layer components */

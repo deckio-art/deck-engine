@@ -1,0 +1,404 @@
+{
+  "theme": {
+    "background": "oklch(1 0 0)",
+    "foreground": "oklch(0.145 0 0)",
+    "primary": "oklch(0.205 0 0)",
+    "accent": "#6366f1",
+    "card": "oklch(1 0 0)",
+    "muted": "oklch(0.97 0 0)",
+    "border": "oklch(0.922 0 0)",
+    "radius": "0.625rem",
+    "bodyBg": "oklch(1 0 0)",
+    "themeClass": "light",
+    "dataTheme": "shadcn",
+    "htmlAttrs": [
+      "lang=\"en\"",
+      "class=\"light\"",
+      "data-theme=\"shadcn\"",
+      "style=\"--accent: #6366f1;\""
+    ]
+  },
+  "slides": {
+    "count": 5,
+    "elements": [
+      {
+        "tag": "DIV",
+        "class": "slide active _cover_fzxxc_1",
+        "position": "absolute",
+        "width": 1280,
+        "height": 44,
+        "top": 0,
+        "left": 0,
+        "zIndex": "auto",
+        "overflow": "hidden"
+      },
+      {
+        "tag": "DIV",
+        "class": "slide-overflow-warn",
+        "position": "absolute",
+        "width": 1280,
+        "height": 62,
+        "top": 0,
+        "left": 0,
+        "zIndex": "9999",
+        "overflow": "visible"
+      },
+      {
+        "tag": "DIV",
+        "class": "slide  _slide_uaoo4_1",
+        "position": "absolute",
+        "width": 1280,
+        "height": 44,
+        "top": 0,
+        "left": 0,
+        "zIndex": "auto",
+        "overflow": "hidden"
+      },
+      {
+        "tag": "DIV",
+        "class": "slide  _slide_mtsda_1",
+        "position": "absolute",
+        "width": 1280,
+        "height": 44,
+        "top": 0,
+        "left": 0,
+        "zIndex": "auto",
+        "overflow": "hidden"
+      },
+      {
+        "tag": "DIV",
+        "class": "slide  _slide_c4fvr_1",
+        "position": "absolute",
+        "width": 1280,
+        "height": 44,
+        "top": 0,
+        "left": 0,
+        "zIndex": "auto",
+        "overflow": "hidden"
+      }
+    ]
+  },
+  "aurora": {
+    "canvasCount": 1,
+    "canvasInfo": [
+      {
+        "w": 1280,
+        "h": 720,
+        "cls": "",
+        "parentCls": "aurora-container"
+      }
+    ],
+    "auroraWrapperByClass": true,
+    "auroraElements": [
+      {
+        "tag": "DIV",
+        "cls": "aurora-container",
+        "childCount": 1
+      }
+    ]
+  },
+  "consoleErrors": [],
+  "failedRequests": [],
+  "stylesheets": [
+    {
+      "href": "(inline)",
+      "rules": 4
+    },
+    {
+      "href": "(inline)",
+      "rules": 29
+    },
+    {
+      "href": "(inline)",
+      "rules": 29
+    },
+    {
+      "href": "(inline)",
+      "rules": 1
+    },
+    {
+      "href": "(inline)",
+      "rules": 1
+    },
+    {
+      "href": "(inline)",
+      "rules": 17
+    },
+    {
+      "href": "(inline)",
+      "rules": 15
+    },
+    {
+      "href": "(inline)",
+      "rules": 21
+    },
+    {
+      "href": "(inline)",
+      "rules": 13
+    }
+  ],
+  "reactBits": {
+    "blurText": 2,
+    "shinyText": 1,
+    "spotlightCard": 0,
+    "decryptedText": 9,
+    "allAnimatedElements": [
+      {
+        "tag": "DIV",
+        "cls": "aurora-container"
+      },
+      {
+        "tag": "svg",
+        "cls": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "cls": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "cls": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "svg",
+        "cls": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "cls": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "polyline",
+        "cls": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "cls": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "cls": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "cls": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "svg",
+        "cls": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "polyline",
+        "cls": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "svg",
+        "cls": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "polyline",
+        "cls": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "P",
+        "cls": "blur-text _title_fzxxc_45 flex flex-wrap"
+      },
+      {
+        "tag": "P",
+        "cls": "blur-text _subtitle_fzxxc_63 flex flex-wrap"
+      },
+      {
+        "tag": "SPAN",
+        "cls": "_decryptedChar_c4fvr_64"
+      },
+      {
+        "tag": "SPAN",
+        "cls": "_decryptedChar_c4fvr_64"
+      },
+      {
+        "tag": "SPAN",
+        "cls": "_decryptedChar_c4fvr_64"
+      },
+      {
+        "tag": "SPAN",
+        "cls": "_decryptedChar_c4fvr_64"
+      }
+    ],
+    "svgCount": 5,
+    "canvasCount": 1
+  },
+  "dom": {
+    "rootChildCount": 2,
+    "totalElements": 208,
+    "h1s": [],
+    "h2s": [
+      "What You Can Build",
+      "Getting Started",
+      "Thank YouThank You"
+    ],
+    "tree": {
+      "tag": "div",
+      "id": "root",
+      "childCount": 2,
+      "children": [
+        {
+          "tag": "div",
+          "childCount": 2,
+          "children": [
+            {
+              "tag": "div",
+              "childCount": 1,
+              "children": [
+                {
+                  "tag": "div",
+                  "class": "aurora-container",
+                  "childCount": 1,
+                  "children": [
+                    {
+                      "tag": "canvas",
+                      "text": "",
+                      "childCount": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "childCount": 2,
+              "children": [
+                {
+                  "tag": "div",
+                  "class": "_navWrapper_1jwat_1 _navHidden_1jwat_6",
+                  "childCount": 5,
+                  "children": [
+                    {
+                      "tag": "div",
+                      "class": "_progressTrack_1jwat_11",
+                      "childCount": 1
+                    },
+                    {
+                      "tag": "button",
+                      "class": "_homeBtn_1jwat_27",
+                      "childCount": 1
+                    },
+                    {
+                      "tag": "div",
+                      "class": "_exportGroup_1jwat_101",
+                      "childCount": 1
+                    },
+                    {
+                      "tag": "button",
+                      "class": "_navBtn_1jwat_157 _prev_1jwat_176",
+                      "childCount": 1
+                    },
+                    {
+                      "tag": "button",
+                      "class": "_navBtn_1jwat_157 _next_1jwat_177",
+                      "childCount": 1
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "class": "deck",
+                  "childCount": 4,
+                  "children": [
+                    {
+                      "tag": "div",
+                      "class": "slide exit-left _cover_fzxxc_1",
+                      "childCount": 3
+                    },
+                    {
+                      "tag": "div",
+                      "class": "slide exit-left _slide_uaoo4_1",
+                      "childCount": 3
+                    },
+                    {
+                      "tag": "div",
+                      "class": "slide exit-left _slide_mtsda_1",
+                      "childCount": 3
+                    },
+                    {
+                      "tag": "div",
+                      "class": "slide active _slide_c4fvr_1",
+                      "childCount": 3
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "button",
+          "childCount": 1,
+          "children": [
+            {
+              "tag": "svg",
+              "class": "[object SVGAnimatedString]",
+              "childCount": 9,
+              "children": [
+                {
+                  "tag": "circle",
+                  "class": "[object SVGAnimatedString]",
+                  "text": "",
+                  "childCount": 0
+                },
+                {
+                  "tag": "line",
+                  "class": "[object SVGAnimatedString]",
+                  "text": "",
+                  "childCount": 0
+                },
+                {
+                  "tag": "line",
+                  "class": "[object SVGAnimatedString]",
+                  "text": "",
+                  "childCount": 0
+                },
+                {
+                  "tag": "line",
+                  "class": "[object SVGAnimatedString]",
+                  "text": "",
+                  "childCount": 0
+                },
+                {
+                  "tag": "line",
+                  "class": "[object SVGAnimatedString]",
+                  "text": "",
+                  "childCount": 0
+                },
+                {
+                  "tag": "line",
+                  "class": "[object SVGAnimatedString]",
+                  "text": "",
+                  "childCount": 0
+                },
+                {
+                  "tag": "line",
+                  "class": "[object SVGAnimatedString]",
+                  "text": "",
+                  "childCount": 0
+                },
+                {
+                  "tag": "line",
+                  "class": "[object SVGAnimatedString]",
+                  "text": "",
+                  "childCount": 0
+                },
+                {
+                  "tag": "line",
+                  "class": "[object SVGAnimatedString]",
+                  "text": "",
+                  "childCount": 0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "totalSlides": 4
+}
