@@ -5,56 +5,117 @@ applyTo: "**/slides/**/*.jsx"
 
 # Slide JSX Conventions
 
-## Theme Detection
+## Step 0 — Read `deck.config.js` → check `designSystem`
 
-**Before writing any slide JSX**, read `deck.config.js` and check `designSystem`:
-- `designSystem: 'shadcn'` → follow the **shadcn skeleton** below
-- `designSystem: 'none'` or absent → follow the **default skeleton** below
+Before writing any slide JSX:
 
-## Imports
+- If `designSystem === 'shadcn'` → use the **shadcn skeleton**
+- If `designSystem` is missing or any value other than `'shadcn'` → use the **default skeleton**
+
+Do not mix the two.
+
+## Common imports
 
 ```jsx
 import { BottomBar, Slide } from '@deckio/deck-engine'
 import styles from './MySlide.module.css'
 ```
 
-## Default skeleton (in order inside `<Slide>`)
+## Default skeleton (`designSystem` is NOT `'shadcn'`)
 
-1. `<div className="accent-bar" />` — always first
-2. 2–4 orbs: `<div className={\`orb ${styles.orbN}\`} />`
-3. Content wrapper: `<div className={\`${styles.body} content-frame content-gutter\`}>` — all visible content here
-4. `<BottomBar text="..." />` — always last child
+```jsx
+import { BottomBar, Slide } from '@deckio/deck-engine'
+import styles from './MySlide.module.css'
 
-## shadcn skeleton (in order inside `<Slide>`)
+export default function MySlide({ index, project }) {
+  return (
+    <Slide index={index} className={styles.mySlide}>
+      <div className="accent-bar" />
+      <div className={`orb ${styles.orb1}`} />
+      <div className={`orb ${styles.orb2}`} />
 
-1. Content wrapper: `<div className={\`${styles.body} content-frame content-gutter\`}>` — all visible content here
-2. `<BottomBar text="..." />` — always last child
+      <div className={`${styles.body} content-frame content-gutter`}>
+        {/* slide content */}
+      </div>
 
-**NO `accent-bar`. NO orbs.** The Aurora background animation shows through the semi-transparent slide background.
+      <BottomBar text="Project Footer Text" />
+    </Slide>
+  )
+}
+```
 
-### shadcn component imports
+Required order inside `<Slide>`:
+
+1. `accent-bar`
+2. `orb` elements
+3. `content-frame content-gutter`
+4. `BottomBar` last
+
+## shadcn skeleton (`designSystem === 'shadcn'`)
+
+```jsx
+import { BottomBar, Slide } from '@deckio/deck-engine'
+import styles from './MySlide.module.css'
+
+export default function MySlide({ index, project }) {
+  return (
+    <Slide index={index} className={styles.mySlide}>
+      <div className={`${styles.body} content-frame content-gutter`}>
+        <div className={styles.overline}>
+          <span className={styles.overlineDash} />
+          <span className={styles.overlineText}>SECTION LABEL</span>
+        </div>
+
+        <h2 className={styles.title}>Slide Title</h2>
+        <p className={styles.subtitle}>Supporting copy.</p>
+
+        <div className={styles.cards}>
+          <article className={styles.card}>
+            <h3>Card title</h3>
+            <p>Card body text.</p>
+          </article>
+        </div>
+      </div>
+
+      <BottomBar text="Project Footer Text" />
+    </Slide>
+  )
+}
+```
+
+### shadcn / ReactBits import examples
 
 ```jsx
 import BlurText from '@/components/ui/blur-text'
 import ShinyText from '@/components/ui/shiny-text'
 import DecryptedText from '@/components/ui/decrypted-text'
 import SpotlightCard from '@/components/ui/spotlight-card'
+import { Button } from '@/components/ui/button'
 ```
-
-shadcn/ui components (if installed): `import { Button } from '@/components/ui/button'`
 
 ## Props
 
-Every slide receives `{ index, project, title, subtitle }`. Pass `index` to `<Slide>`.
+Every slide receives `{ index, project }`. Pass `index` to `<Slide>`.
 
-## Available engine exports
+## Registration
 
-`Slide`, `BottomBar`, `Navigation`, `SlideProvider`, `useSlides`, `GenericThankYouSlide`
+After creating the slide component, register it in `deck.config.js`:
 
-## Anti-patterns
+```js
+import MySlide from './src/slides/MySlide.jsx'
+```
 
-- Never omit `content-frame content-gutter` or `BottomBar`
+Then add `MySlide` to the `slides` array.
+
+## Hard rules
+
+- Never omit `content-frame content-gutter`
+- Never omit `BottomBar`
 - Never use string paths for images — always `import logo from '../data/...'`
 - Never hardcode slide indices — use `useSlides().goTo()` for navigation
-- Never use `accent-bar` or `orb` in a shadcn project
-- Never use dark-theme tokens (`--bg-deep`, `--surface`, `--text`, `--text-muted`) in a shadcn project
+- **NEVER use `accent-bar` class in a shadcn project**
+- **NEVER use `orb` class in a shadcn project**
+- **NEVER use `var(--bg-deep)` in a shadcn project**
+- **NEVER use `var(--surface)` in a shadcn project**
+- **NEVER use `var(--text)` in a shadcn project**
+- **NEVER use `var(--text-muted)` in a shadcn project**

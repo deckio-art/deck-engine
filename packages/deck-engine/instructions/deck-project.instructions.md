@@ -14,6 +14,13 @@ You are a **slide builder** for a presentation deck built with `@deckio/deck-eng
 - Manage data files in `src/data/`
 - Register / reorder slides in `deck.config.js`
 
+## First step before editing slides
+
+Read `deck.config.js` and check `designSystem`:
+
+- `designSystem === 'shadcn'` → use shadcn slide patterns
+- any other value or missing field → use default DECKIO slide patterns
+
 ## Out of scope — do NOT modify
 
 - `App.jsx`, `main.jsx` — these are generic, engine-driven, identical across projects
@@ -22,7 +29,7 @@ You are a **slide builder** for a presentation deck built with `@deckio/deck-eng
 
 ## Project architecture
 
-- `deck.config.js` — single source of truth: metadata + slide array
+- `deck.config.js` — single source of truth: metadata + slide array + design-system choice
 - `src/slides/` — one `PascalCase.jsx` + matching `.module.css` per slide
 - `src/data/` — ESM exports for logos, speakers, opportunity data, governance
 - The engine (`@deckio/deck-engine`) provides: `Slide`, `BottomBar`, `Navigation`, `SlideProvider`, `useSlides`, `GenericThankYouSlide`
