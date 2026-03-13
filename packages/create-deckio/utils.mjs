@@ -52,6 +52,7 @@ export function packageJson(name, engineRef, { designSystem = 'none' } = {}) {
     deps['class-variance-authority'] = '^0.7.1'
     deps['clsx'] = '^2.1.1'
     deps['motion'] = '^12.23.12'
+    deps['ogl'] = '^1.0.11'
     deps['tailwind-merge'] = '^3.3.0'
   }
   return JSON.stringify({
@@ -90,9 +91,10 @@ createRoot(document.getElementById('root')).render(
 `
 }
 
-export function deckConfig(slug, title, subtitle, icon, accent, theme = 'dark', designSystem = 'none') {
+export function deckConfig(slug, title, subtitle, icon, accent, theme = 'dark', designSystem = 'none', aurora = null) {
   const esc = (s) => s.replace(/'/g, "\\'")
   const dsLine = designSystem !== 'none' ? `\n  designSystem: '${esc(designSystem)}',` : ''
+  const auroraBlock = aurora ? `\n  aurora: {\n    palette: '${esc(aurora.palette)}',\n    colors: ${JSON.stringify(aurora.colors)},\n  },` : ''
 
   if (designSystem === 'shadcn') {
     return `\
@@ -108,7 +110,7 @@ export default {
   description: '${esc(subtitle)}',
   icon: '${esc(icon)}',
   accent: '${esc(accent)}',
-  theme: '${esc(theme)}',${dsLine}
+  theme: '${esc(theme)}',${dsLine}${auroraBlock}
   order: 1,
   slides: [
     CoverSlide,
@@ -210,6 +212,15 @@ export const COLOR_PRESETS = [
   { value: '#3b82f6', label: 'Blue' },
 ]
 
+export const AURORA_PALETTES = [
+  { value: 'ocean',   label: 'Ocean',   hint: 'blue, indigo, violet',    colors: ['#0ea5e9', '#6366f1', '#8b5cf6'] },
+  { value: 'sunset',  label: 'Sunset',  hint: 'orange, red, pink',      colors: ['#f97316', '#ef4444', '#ec4899'] },
+  { value: 'forest',  label: 'Forest',  hint: 'green, cyan, blue',      colors: ['#10b981', '#06b6d4', '#3b82f6'] },
+  { value: 'nebula',  label: 'Nebula',  hint: 'purple, pink, rose',     colors: ['#8b5cf6', '#ec4899', '#f43f5e'] },
+  { value: 'arctic',  label: 'Arctic',  hint: 'cyan, blue, indigo',     colors: ['#06b6d4', '#3b82f6', '#6366f1'] },
+  { value: 'minimal', label: 'Minimal', hint: 'neutral zinc',           colors: ['#71717a', '#a1a1aa', '#d4d4d8'] },
+]
+
 export function jsConfig() {
   return JSON.stringify({
     compilerOptions: {
@@ -231,18 +242,18 @@ export function jsConfig() {
 export function coverSlideJsxShadcn(title, subtitle, slug) {
   return `\
 import { BottomBar, Slide } from '@deckio/deck-engine'
+import Aurora from '@/components/ui/aurora'
 import BlurText from '@/components/ui/blur-text'
 import ShinyText from '@/components/ui/shiny-text'
+import project from '../../deck.config.js'
 import styles from './CoverSlide.module.css'
 
 export default function CoverSlide() {
+  const auroraColors = project.aurora?.colors ?? ['#0ea5e9', '#6366f1', '#8b5cf6']
+
   return (
     <Slide index={0} className={styles.cover}>
-      <div className={styles.geometricBg}>
-        <div className={styles.geoLine} />
-        <div className={styles.geoLine} />
-        <div className={styles.geoLine} />
-      </div>
+      <Aurora colorStops={auroraColors} amplitude={1.0} blend={0.5} speed={0.6} />
 
       <div className="content-frame content-gutter">
         <div className={styles.layout}>
@@ -310,28 +321,8 @@ export const COVER_SLIDE_CSS_SHADCN = `\
   background: var(--background);
   padding: 0 0 44px 0;
   overflow: hidden;
+  position: relative;
 }
-
-/* Geometric background — diagonal accent lines */
-.geometricBg {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.geoLine {
-  position: absolute;
-  width: 1px;
-  height: 200%;
-  background: var(--border);
-  opacity: 0.4;
-  transform: rotate(25deg);
-  transform-origin: top left;
-}
-.geoLine:nth-child(1) { left: 65%; top: -20%; }
-.geoLine:nth-child(2) { left: 72%; top: -20%; opacity: 0.2; }
-.geoLine:nth-child(3) { left: 79%; top: -20%; opacity: 0.1; }
 
 /* Two-column asymmetric layout */
 .layout {

@@ -11,7 +11,7 @@ import { join, resolve, dirname } from 'path'
 import { execSync } from 'child_process'
 import { fileURLToPath } from 'url'
 import * as clack from '@clack/prompts'
-import { slugify, packageJson, deckConfig, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS, coverSlideJsxShadcn, COVER_SLIDE_CSS_SHADCN, featuresSlideJsxShadcn, FEATURES_SLIDE_CSS_SHADCN, gettingStartedSlideJsxShadcn, GETTING_STARTED_SLIDE_CSS_SHADCN, thankYouSlideJsxShadcn, THANK_YOU_SLIDE_CSS_SHADCN, themeProviderJsx, modeToggleJsx, appJsx } from './utils.mjs'
+import { slugify, packageJson, deckConfig, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS, AURORA_PALETTES, coverSlideJsxShadcn, COVER_SLIDE_CSS_SHADCN, featuresSlideJsxShadcn, FEATURES_SLIDE_CSS_SHADCN, gettingStartedSlideJsxShadcn, GETTING_STARTED_SLIDE_CSS_SHADCN, thankYouSlideJsxShadcn, THANK_YOU_SLIDE_CSS_SHADCN, themeProviderJsx, modeToggleJsx, appJsx } from './utils.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -333,7 +333,7 @@ async function main() {
   const defaultTitle = slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
   const isInteractive = process.stdin.isTTY
 
-  let title, subtitle, accent, icon, theme, appearance, designSystem = 'none'
+  let title, subtitle, accent, icon, theme, appearance, designSystem = 'none', aurora = null
 
   if (isInteractive) {
     clack.intro('DECKIO — Create a new deck')
@@ -410,6 +410,25 @@ async function main() {
       designSystem = 'none'
     }
 
+    // Aurora palette picker (shadcn only)
+    if (designSystem === 'shadcn') {
+      const paletteOptions = AURORA_PALETTES.map((p) => ({
+        value: p.value,
+        label: `${swatch(p.colors[0])}${swatch(p.colors[1])}${swatch(p.colors[2])} ${p.label}`,
+        hint: p.hint,
+      }))
+
+      const chosenPalette = await clack.select({
+        message: 'Choose an aurora palette',
+        options: paletteOptions,
+        initialValue: 'ocean',
+      })
+      if (clack.isCancel(chosenPalette)) { clack.cancel('Cancelled.'); process.exit(0) }
+
+      const palette = AURORA_PALETTES.find((p) => p.value === chosenPalette)
+      aurora = { palette: palette.value, colors: palette.colors }
+    }
+
     icon = await clack.text({
       message: 'Icon emoji',
       placeholder: '🎴',
@@ -444,6 +463,13 @@ async function main() {
       designSystem = theme === 'shadcn' ? 'shadcn' : 'none'
     }
 
+    // Aurora palette from env (shadcn only, defaults to 'ocean')
+    if (designSystem === 'shadcn') {
+      const envPalette = process.env.DECK_AURORA_PALETTE || 'ocean'
+      const palette = AURORA_PALETTES.find((p) => p.value === envPalette) || AURORA_PALETTES[0]
+      aurora = { palette: palette.value, colors: palette.colors }
+    }
+
     clack.log.info('Using defaults (non-interactive mode)')
   }
 
@@ -464,7 +490,7 @@ async function main() {
     designSystem === 'shadcn'
       ? COVER_SLIDE_CSS_SHADCN
       : COVER_SLIDE_CSS)
-  write(dir, 'deck.config.js', deckConfig(slug, title, subtitle, icon, accent, theme, designSystem))
+  write(dir, 'deck.config.js', deckConfig(slug, title, subtitle, icon, accent, theme, designSystem, aurora))
 
   // shadcn ThankYouSlide is a local file (editorial style); default uses engine's GenericThankYouSlide
   if (designSystem === 'shadcn') {
@@ -491,7 +517,7 @@ async function main() {
     // Pre-install ReactBits components for out-of-the-box animations
     const reactBitsDir = join(__dirname, 'templates', 'react-bits')
     const uiDir = join(dir, 'src', 'components', 'ui')
-    for (const file of ['blur-text.jsx', 'shiny-text.jsx', 'spotlight-card.jsx', 'decrypted-text.jsx']) {
+    for (const file of ['aurora.jsx', 'blur-text.jsx', 'shiny-text.jsx', 'spotlight-card.jsx', 'decrypted-text.jsx']) {
       copyFileSync(join(reactBitsDir, file), join(uiDir, file))
     }
   }

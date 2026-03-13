@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { slugify, packageJson, deckConfig, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS, themeProviderJsx, modeToggleJsx, appJsx, coverSlideJsxShadcn, COVER_SLIDE_CSS_SHADCN, featuresSlideJsxShadcn, FEATURES_SLIDE_CSS_SHADCN, gettingStartedSlideJsxShadcn, GETTING_STARTED_SLIDE_CSS_SHADCN, thankYouSlideJsxShadcn, THANK_YOU_SLIDE_CSS_SHADCN } from '../utils.mjs'
+import { slugify, packageJson, deckConfig, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS, AURORA_PALETTES, themeProviderJsx, modeToggleJsx, appJsx, coverSlideJsxShadcn, COVER_SLIDE_CSS_SHADCN, featuresSlideJsxShadcn, FEATURES_SLIDE_CSS_SHADCN, gettingStartedSlideJsxShadcn, GETTING_STARTED_SLIDE_CSS_SHADCN, thankYouSlideJsxShadcn, THANK_YOU_SLIDE_CSS_SHADCN } from '../utils.mjs'
 
 describe('slugify', () => {
   it('lowercases and hyphenates spaces', () => {
@@ -620,10 +620,26 @@ describe('deckConfig shadcn slides', () => {
 })
 
 describe('coverSlideJsxShadcn', () => {
-  it('includes geometric background element', () => {
+  it('imports Aurora component', () => {
     const jsx = coverSlideJsxShadcn('Title', 'Sub', 'slug')
-    expect(jsx).toContain('geometricBg')
-    expect(jsx).toContain('geoLine')
+    expect(jsx).toContain("import Aurora from '@/components/ui/aurora'")
+  })
+
+  it('renders Aurora with colorStops from project config', () => {
+    const jsx = coverSlideJsxShadcn('Title', 'Sub', 'slug')
+    expect(jsx).toContain('<Aurora')
+    expect(jsx).toContain('colorStops={auroraColors}')
+  })
+
+  it('reads aurora colors from project config with fallback', () => {
+    const jsx = coverSlideJsxShadcn('Title', 'Sub', 'slug')
+    expect(jsx).toContain("project.aurora?.colors")
+  })
+
+  it('imports deck.config.js for aurora config', () => {
+    const jsx = coverSlideJsxShadcn('Title', 'Sub', 'slug')
+    expect(jsx).toContain("import project from")
+    expect(jsx).toContain("deck.config.js")
   })
 
   it('has asymmetric two-column layout', () => {
@@ -647,10 +663,8 @@ describe('coverSlideJsxShadcn', () => {
 })
 
 describe('COVER_SLIDE_CSS_SHADCN', () => {
-  it('has geometric diagonal background lines', () => {
-    expect(COVER_SLIDE_CSS_SHADCN).toContain('.geometricBg')
-    expect(COVER_SLIDE_CSS_SHADCN).toContain('.geoLine')
-    expect(COVER_SLIDE_CSS_SHADCN).toContain('rotate(25deg)')
+  it('sets position relative on cover for Aurora absolute positioning', () => {
+    expect(COVER_SLIDE_CSS_SHADCN).toContain('position: relative')
   })
 
   it('uses accent color for overline and highlight', () => {
@@ -779,5 +793,94 @@ describe('thankYouSlideJsxShadcn', () => {
   it('accepts custom slide index', () => {
     const jsx = thankYouSlideJsxShadcn('test-slug', 5)
     expect(jsx).toContain('<Slide index={5}')
+  })
+})
+
+describe('AURORA_PALETTES', () => {
+  it('is an array of at least 6 palettes', () => {
+    expect(Array.isArray(AURORA_PALETTES)).toBe(true)
+    expect(AURORA_PALETTES.length).toBeGreaterThanOrEqual(6)
+  })
+
+  it('each palette has value, label, hint, and 3 colors', () => {
+    for (const p of AURORA_PALETTES) {
+      expect(p).toHaveProperty('value')
+      expect(p).toHaveProperty('label')
+      expect(p).toHaveProperty('hint')
+      expect(p).toHaveProperty('colors')
+      expect(p.colors).toHaveLength(3)
+    }
+  })
+
+  it('all colors are valid hex codes', () => {
+    for (const p of AURORA_PALETTES) {
+      for (const c of p.colors) {
+        expect(c).toMatch(/^#[0-9a-fA-F]{6}$/)
+      }
+    }
+  })
+
+  it('includes Ocean palette as first option', () => {
+    expect(AURORA_PALETTES[0].value).toBe('ocean')
+  })
+
+  it('has unique palette values', () => {
+    const values = AURORA_PALETTES.map((p) => p.value)
+    expect(new Set(values).size).toBe(values.length)
+  })
+
+  it('includes all expected palettes', () => {
+    const values = AURORA_PALETTES.map((p) => p.value)
+    expect(values).toContain('ocean')
+    expect(values).toContain('sunset')
+    expect(values).toContain('forest')
+    expect(values).toContain('nebula')
+    expect(values).toContain('arctic')
+    expect(values).toContain('minimal')
+  })
+})
+
+describe('deckConfig with aurora', () => {
+  it('includes aurora block when aurora config is provided', () => {
+    const aurora = { palette: 'ocean', colors: ['#0ea5e9', '#6366f1', '#8b5cf6'] }
+    const config = deckConfig('s', 'T', 'S', '📦', '#000', 'shadcn', 'shadcn', aurora)
+    expect(config).toContain("palette: 'ocean'")
+    expect(config).toContain('colors:')
+    expect(config).toContain('#0ea5e9')
+  })
+
+  it('omits aurora block when aurora is null', () => {
+    const config = deckConfig('s', 'T', 'S', '📦', '#000', 'shadcn', 'shadcn', null)
+    expect(config).not.toContain('aurora')
+    expect(config).not.toContain('palette')
+  })
+
+  it('omits aurora block by default', () => {
+    const config = deckConfig('s', 'T', 'S', '📦', '#000', 'dark')
+    expect(config).not.toContain('aurora')
+  })
+
+  it('works with different palettes', () => {
+    const aurora = { palette: 'sunset', colors: ['#f97316', '#ef4444', '#ec4899'] }
+    const config = deckConfig('s', 'T', 'S', '📦', '#000', 'shadcn', 'shadcn', aurora)
+    expect(config).toContain("palette: 'sunset'")
+    expect(config).toContain('#f97316')
+  })
+})
+
+describe('packageJson with ogl dependency', () => {
+  it('includes ogl when designSystem is shadcn', () => {
+    const pkg = JSON.parse(packageJson('x', undefined, { designSystem: 'shadcn' }))
+    expect(pkg.dependencies).toHaveProperty('ogl')
+  })
+
+  it('does NOT include ogl when designSystem is none', () => {
+    const pkg = JSON.parse(packageJson('x', undefined, { designSystem: 'none' }))
+    expect(pkg.dependencies).not.toHaveProperty('ogl')
+  })
+
+  it('does NOT include ogl by default', () => {
+    const pkg = JSON.parse(packageJson('x'))
+    expect(pkg.dependencies).not.toHaveProperty('ogl')
   })
 })
