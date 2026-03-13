@@ -11,7 +11,7 @@ import { join, resolve, dirname } from 'path'
 import { execSync } from 'child_process'
 import { fileURLToPath } from 'url'
 import * as clack from '@clack/prompts'
-import { slugify, packageJson, deckConfig, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS } from './utils.mjs'
+import { slugify, packageJson, deckConfig, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS, coverSlideJsxShadcn, COVER_SLIDE_CSS_SHADCN, featuresSlideJsxShadcn, FEATURES_SLIDE_CSS_SHADCN, gettingStartedSlideJsxShadcn, GETTING_STARTED_SLIDE_CSS_SHADCN, thankYouSlideJsxShadcn, THANK_YOU_SLIDE_CSS_SHADCN, themeProviderJsx, modeToggleJsx, appJsx } from './utils.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -44,32 +44,6 @@ const INDEX_HTML = `\
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
-`
-
-const APP_JSX = `\
-import { useEffect } from 'react'
-import { Navigation, SlideProvider } from '@deckio/deck-engine'
-import project from '../deck.config.js'
-
-export default function App() {
-  const { accent, id, slides, theme, title } = project
-
-  useEffect(() => {
-    document.documentElement.style.setProperty('--accent', accent)
-    document.title = title
-  }, [accent, title])
-
-  return (
-    <SlideProvider totalSlides={slides.length} project={id} slides={slides} theme={theme}>
-      <Navigation />
-      <div className="deck" data-project-id={id}>
-        {slides.map((SlideComponent, index) => (
-          <SlideComponent key={\`\${id}-slide-\${index}\`} index={index} project={project} />
-        ))}
-      </div>
-    </SlideProvider>
-  )
-}
 `
 
 function coverSlideJsx(title, subtitle, slug) {
@@ -449,11 +423,27 @@ async function main() {
   write(dir, 'vite.config.js', viteConfig({ designSystem }))
   write(dir, 'index.html', INDEX_HTML)
   write(dir, 'src/main.jsx', mainJsx(theme))
-  write(dir, 'src/App.jsx', APP_JSX)
+  write(dir, 'src/App.jsx', appJsx({ designSystem }))
   write(dir, 'src/data/.gitkeep', '')
-  write(dir, 'src/slides/CoverSlide.jsx', coverSlideJsx(title, subtitle, slug))
-  write(dir, 'src/slides/CoverSlide.module.css', COVER_SLIDE_CSS)
+  write(dir, 'src/slides/CoverSlide.jsx',
+    designSystem === 'shadcn'
+      ? coverSlideJsxShadcn(title, subtitle, slug)
+      : coverSlideJsx(title, subtitle, slug))
+  write(dir, 'src/slides/CoverSlide.module.css',
+    designSystem === 'shadcn'
+      ? COVER_SLIDE_CSS_SHADCN
+      : COVER_SLIDE_CSS)
   write(dir, 'deck.config.js', deckConfig(slug, title, subtitle, icon, accent, theme, designSystem))
+
+  // shadcn ThankYouSlide is a local file (editorial style); default uses engine's GenericThankYouSlide
+  if (designSystem === 'shadcn') {
+    write(dir, 'src/slides/FeaturesSlide.jsx', featuresSlideJsxShadcn(slug))
+    write(dir, 'src/slides/FeaturesSlide.module.css', FEATURES_SLIDE_CSS_SHADCN)
+    write(dir, 'src/slides/GettingStartedSlide.jsx', gettingStartedSlideJsxShadcn(slug))
+    write(dir, 'src/slides/GettingStartedSlide.module.css', GETTING_STARTED_SLIDE_CSS_SHADCN)
+    write(dir, 'src/slides/ThankYouSlide.jsx', thankYouSlideJsxShadcn(slug))
+    write(dir, 'src/slides/ThankYouSlide.module.css', THANK_YOU_SLIDE_CSS_SHADCN)
+  }
   write(dir, 'AGENTS.md', agentsMd())
   write(dir, 'README.md', README(designSystem))
   write(dir, '.gitignore', 'node_modules\ndist\n.vite\n')
@@ -463,6 +453,8 @@ async function main() {
     write(dir, 'components.json', componentsJson())
     write(dir, 'src/lib/utils.js', cnUtility())
     write(dir, 'jsconfig.json', jsConfig())
+    write(dir, 'src/components/theme-provider.jsx', themeProviderJsx())
+    write(dir, 'src/components/mode-toggle.jsx', modeToggleJsx())
     mkdirSync(join(dir, 'src', 'components', 'ui'), { recursive: true })
   }
 

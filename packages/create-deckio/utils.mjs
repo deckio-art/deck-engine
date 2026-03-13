@@ -92,9 +92,34 @@ createRoot(document.getElementById('root')).render(
 export function deckConfig(slug, title, subtitle, icon, accent, theme = 'dark', designSystem = 'none') {
   const esc = (s) => s.replace(/'/g, "\\'")
   const dsLine = designSystem !== 'none' ? `\n  designSystem: '${esc(designSystem)}',` : ''
-  const tyImport = designSystem === 'shadcn'
-    ? "import ThankYouSlide from './src/slides/ThankYouSlide.jsx'"
-    : "import { GenericThankYouSlide as ThankYouSlide } from '@deckio/deck-engine'"
+
+  if (designSystem === 'shadcn') {
+    return `\
+import CoverSlide from './src/slides/CoverSlide.jsx'
+import FeaturesSlide from './src/slides/FeaturesSlide.jsx'
+import GettingStartedSlide from './src/slides/GettingStartedSlide.jsx'
+import ThankYouSlide from './src/slides/ThankYouSlide.jsx'
+
+export default {
+  id: '${esc(slug)}',
+  title: '${esc(title)}',
+  subtitle: '${esc(subtitle)}',
+  description: '${esc(subtitle)}',
+  icon: '${esc(icon)}',
+  accent: '${esc(accent)}',
+  theme: '${esc(theme)}',${dsLine}
+  order: 1,
+  slides: [
+    CoverSlide,
+    FeaturesSlide,
+    GettingStartedSlide,
+    ThankYouSlide,
+  ],
+}
+`
+  }
+
+  const tyImport = "import { GenericThankYouSlide as ThankYouSlide } from '@deckio/deck-engine'"
   return `\
 import CoverSlide from './src/slides/CoverSlide.jsx'
 ${tyImport}
@@ -213,6 +238,8 @@ import styles from './CoverSlide.module.css'
 export default function CoverSlide() {
   return (
     <Slide index={0} className={styles.cover}>
+      <div className={styles.gridBg} />
+      <div className={styles.accentGlow} />
       <div className={styles.accentLine} />
 
       <div className="content-frame content-gutter">
@@ -241,6 +268,12 @@ export default function CoverSlide() {
               <span className={styles.metaValue}>${new Date().getFullYear()}</span>
             </div>
           </div>
+
+          <div className={styles.decorStrip}>
+            <span className={styles.decorBlock} />
+            <span className={styles.decorBlock} />
+            <span className={styles.decorBlock} />
+          </div>
         </div>
       </div>
 
@@ -259,7 +292,37 @@ export const COVER_SLIDE_CSS_SHADCN = `\
   overflow: hidden;
 }
 
-/* Subtle top accent line with shimmer */
+/* Dot grid background — fills the lower half with texture */
+.gridBg {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(to bottom, transparent 15%, rgba(0,0,0,0.04) 40%, rgba(0,0,0,0.08) 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 15%, rgba(0,0,0,0.04) 40%, rgba(0,0,0,0.08) 100%);
+  pointer-events: none;
+}
+
+/* Soft accent glow — anchored bottom-right */
+.accentGlow {
+  position: absolute;
+  bottom: -120px;
+  right: -60px;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, var(--accent), transparent 70%);
+  opacity: 0.07;
+  pointer-events: none;
+  animation: glow-breathe 6s ease-in-out infinite;
+}
+
+@keyframes glow-breathe {
+  0%, 100% { opacity: 0.07; transform: scale(1); }
+  50% { opacity: 0.12; transform: scale(1.05); }
+}
+
+/* Accent top shimmer line */
 .accentLine {
   position: absolute;
   top: 0;
@@ -269,32 +332,32 @@ export const COVER_SLIDE_CSS_SHADCN = `\
   background: linear-gradient(
     90deg,
     transparent,
-    var(--border) 20%,
+    var(--accent) 30%,
     var(--foreground) 50%,
-    var(--border) 80%,
+    var(--accent) 70%,
     transparent
   );
-  opacity: 0.4;
+  opacity: 0.5;
 }
 .accentLine::after {
   content: '';
   position: absolute;
   top: 0;
-  left: -100%;
+  left: -60%;
   width: 60%;
   height: 100%;
   background: linear-gradient(
     90deg,
     transparent,
-    var(--foreground) 50%,
+    var(--accent) 50%,
     transparent
   );
-  animation: shimmer 4s ease-in-out infinite;
+  animation: shimmer 3.5s ease-in-out infinite;
 }
 
 @keyframes shimmer {
   0% { left: -60%; opacity: 0; }
-  30% { opacity: 0.6; }
+  20% { opacity: 0.8; }
   100% { left: 100%; opacity: 0; }
 }
 
@@ -330,7 +393,8 @@ export const COVER_SLIDE_CSS_SHADCN = `\
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--foreground);
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
   animation: pulse 2.5s ease-in-out infinite;
 }
 
@@ -353,9 +417,8 @@ export const COVER_SLIDE_CSS_SHADCN = `\
   background: linear-gradient(
     135deg,
     var(--foreground) 0%,
-    var(--muted-foreground) 40%,
-    var(--foreground) 60%,
-    var(--muted-foreground) 100%
+    var(--accent) 50%,
+    var(--foreground) 100%
   );
   background-size: 200% 200%;
   -webkit-background-clip: text;
@@ -376,7 +439,7 @@ export const COVER_SLIDE_CSS_SHADCN = `\
   font-weight: 400;
   color: var(--muted-foreground);
   line-height: 1.7;
-  margin-bottom: 48px;
+  margin-bottom: 40px;
   max-width: 560px;
 }
 
@@ -389,6 +452,7 @@ export const COVER_SLIDE_CSS_SHADCN = `\
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  margin-bottom: 32px;
 }
 
 .metaItem {
@@ -416,9 +480,363 @@ export const COVER_SLIDE_CSS_SHADCN = `\
   height: 32px;
   background: var(--border);
 }
+
+/* Decorative accent blocks — visual rhythm in the lower zone */
+.decorStrip {
+  display: flex;
+  gap: 8px;
+}
+
+.decorBlock {
+  width: 32px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0.25;
+}
+.decorBlock:first-child {
+  width: 48px;
+  opacity: 0.45;
+}
+.decorBlock:last-child {
+  width: 20px;
+  opacity: 0.15;
+}
 `
 
-export function thankYouSlideJsxShadcn(slug) {
+export function featuresSlideJsxShadcn(slug) {
+  return `\
+// 💡 npx shadcn add @react-bits/animated-content
+import { BottomBar, Slide } from '@deckio/deck-engine'
+import styles from './FeaturesSlide.module.css'
+
+export default function FeaturesSlide() {
+  return (
+    <Slide index={1} className={styles.slide}>
+      <div className={styles.gridBg} />
+
+      <div className="content-frame content-gutter">
+        <div className={styles.content}>
+          <p className={styles.eyebrow}>Capabilities</p>
+          <h2 className={styles.title}>What You Can Build</h2>
+
+          <div className={styles.cards}>
+            <div className={styles.card} style={{ animationDelay: '0s' }}>
+              <div className={styles.cardIcon}>\u{1F9E9}</div>
+              <h3 className={styles.cardTitle}>shadcn Components</h3>
+              <p className={styles.cardDesc}>
+                Button, Card, Dialog \\u2014 add any component with one command.
+              </p>
+              <code className={styles.cardHint}>npx shadcn add button</code>
+            </div>
+
+            <div className={styles.card} style={{ animationDelay: '0.15s' }}>
+              <div className={styles.cardIcon}>\\u2728</div>
+              <h3 className={styles.cardTitle}>CSS Animations</h3>
+              <p className={styles.cardDesc}>
+                Smooth transitions, staggered reveals, hover effects \\u2014 pure CSS.
+              </p>
+              <code className={styles.cardHint}>@react-bits/animated-content</code>
+            </div>
+
+            <div className={styles.card} style={{ animationDelay: '0.3s' }}>
+              <div className={styles.cardIcon}>\u{1F3A8}</div>
+              <h3 className={styles.cardTitle}>Theme System</h3>
+              <p className={styles.cardDesc}>
+                Light, dark, system. One toggle switches everything.
+              </p>
+              <code className={styles.cardHint}>Built-in mode toggle</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <BottomBar text="${slug}" />
+    </Slide>
+  )
+}
+`
+}
+
+export const FEATURES_SLIDE_CSS_SHADCN = `\
+.slide {
+  background: var(--background);
+  padding: 0 0 44px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.gridBg {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.03) 50%, rgba(0,0,0,0.06) 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.03) 50%, rgba(0,0,0,0.06) 100%);
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 10;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  color: var(--foreground);
+  margin-bottom: 48px;
+  line-height: 1.1;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: card-in 0.6s ease both;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cardIcon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--foreground);
+  letter-spacing: -0.3px;
+}
+
+.cardDesc {
+  font-size: 14px;
+  color: var(--muted-foreground);
+  line-height: 1.55;
+}
+
+.cardHint {
+  font-size: 12px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  color: var(--accent);
+  background: var(--secondary);
+  padding: 4px 10px;
+  border-radius: calc(var(--radius) * 0.6);
+  width: fit-content;
+  margin-top: auto;
+}
+`
+
+export function gettingStartedSlideJsxShadcn(slug) {
+  return `\
+// 💡 npx shadcn add @react-bits/code-block
+import { BottomBar, Slide } from '@deckio/deck-engine'
+import styles from './GettingStartedSlide.module.css'
+
+export default function GettingStartedSlide() {
+  return (
+    <Slide index={2} className={styles.slide}>
+      <div className="content-frame content-gutter">
+        <div className={styles.content}>
+          <p className={styles.eyebrow}>Workflow</p>
+          <h2 className={styles.title}>Getting Started</h2>
+
+          <div className={styles.steps}>
+            <div className={styles.step} style={{ animationDelay: '0s' }}>
+              <div className={styles.stepNumber}>1</div>
+              <div className={styles.stepBody}>
+                <h3 className={styles.stepTitle}>Add Components</h3>
+                <div className={styles.codeBlock}>
+                  <span className={styles.codeDim}>$</span> npx shadcn add button
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.stepConnector} />
+
+            <div className={styles.step} style={{ animationDelay: '0.2s' }}>
+              <div className={styles.stepNumber}>2</div>
+              <div className={styles.stepBody}>
+                <h3 className={styles.stepTitle}>Use in Slides</h3>
+                <div className={styles.codeBlock}>
+                  <span className={styles.codeKeyword}>import</span> {"{"} Button {"}"} <span className={styles.codeKeyword}>from</span> <span className={styles.codeString}>'@/components/ui/button'</span>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.stepConnector} />
+
+            <div className={styles.step} style={{ animationDelay: '0.4s' }}>
+              <div className={styles.stepNumber}>3</div>
+              <div className={styles.stepBody}>
+                <h3 className={styles.stepTitle}>Present</h3>
+                <div className={styles.codeBlock}>
+                  <span className={styles.codeDim}>$</span> npm run dev
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <BottomBar text="${slug}" />
+    </Slide>
+  )
+}
+`
+}
+
+export const GETTING_STARTED_SLIDE_CSS_SHADCN = `\
+.slide {
+  background: var(--background);
+  padding: 0 0 44px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.content {
+  position: relative;
+  z-index: 10;
+  max-width: 680px;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  color: var(--foreground);
+  margin-bottom: 48px;
+  line-height: 1.1;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.step {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  animation: step-in 0.5s ease both;
+}
+
+@keyframes step-in {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.stepNumber {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--background);
+  background: var(--accent);
+}
+
+.stepBody {
+  flex: 1;
+}
+
+.stepTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 10px;
+  letter-spacing: -0.2px;
+}
+
+.stepConnector {
+  width: 2px;
+  height: 24px;
+  margin-left: 17px;
+  background: var(--border);
+}
+
+.codeBlock {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 14px;
+  color: var(--foreground);
+  background: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  line-height: 1.5;
+}
+
+.codeDim {
+  color: var(--muted-foreground);
+  margin-right: 8px;
+}
+
+.codeKeyword {
+  color: var(--accent);
+}
+
+.codeString {
+  color: var(--muted-foreground);
+}
+`
+
+
+export function thankYouSlideJsxShadcn(slug, slideIndex = 3) {
   return `\
 // 💡 Add animated components: npx shadcn add @react-bits/animated-content
 import { BottomBar, Slide } from '@deckio/deck-engine'
@@ -426,7 +844,7 @@ import styles from './ThankYouSlide.module.css'
 
 export default function ThankYouSlide() {
   return (
-    <Slide index={1} className={styles.slide}>
+    <Slide index={${slideIndex}} className={styles.slide}>
       <div className={styles.topLine} />
 
       <div className="content-frame content-gutter">

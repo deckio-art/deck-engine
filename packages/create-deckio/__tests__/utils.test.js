@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { slugify, packageJson, deckConfig, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS, themeProviderJsx, modeToggleJsx, appJsx } from '../utils.mjs'
+import { slugify, packageJson, deckConfig, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS, themeProviderJsx, modeToggleJsx, appJsx, coverSlideJsxShadcn, COVER_SLIDE_CSS_SHADCN, featuresSlideJsxShadcn, FEATURES_SLIDE_CSS_SHADCN, gettingStartedSlideJsxShadcn, GETTING_STARTED_SLIDE_CSS_SHADCN, thankYouSlideJsxShadcn, THANK_YOU_SLIDE_CSS_SHADCN } from '../utils.mjs'
 
 describe('slugify', () => {
   it('lowercases and hyphenates spaces', () => {
@@ -574,5 +574,186 @@ describe('appJsx', () => {
     const withDefault = appJsx()
     const withNone = appJsx({ designSystem: 'none' })
     expect(withDefault).toBe(withNone)
+  })
+})
+
+describe('deckConfig shadcn slides', () => {
+  it('imports all 4 slides when designSystem is shadcn', () => {
+    const config = deckConfig('s', 'T', 'S', '📦', '#000', 'shadcn', 'shadcn')
+    expect(config).toContain("import CoverSlide from './src/slides/CoverSlide.jsx'")
+    expect(config).toContain("import FeaturesSlide from './src/slides/FeaturesSlide.jsx'")
+    expect(config).toContain("import GettingStartedSlide from './src/slides/GettingStartedSlide.jsx'")
+    expect(config).toContain("import ThankYouSlide from './src/slides/ThankYouSlide.jsx'")
+  })
+
+  it('registers all 4 slides in order when shadcn', () => {
+    const config = deckConfig('s', 'T', 'S', '📦', '#000', 'shadcn', 'shadcn')
+    const slidesSection = config.slice(config.indexOf('slides: ['))
+    expect(slidesSection).toContain('CoverSlide,')
+    expect(slidesSection).toContain('FeaturesSlide,')
+    expect(slidesSection).toContain('GettingStartedSlide,')
+    expect(slidesSection).toContain('ThankYouSlide,')
+  })
+
+  it('does NOT include showcase slides when designSystem is none', () => {
+    const config = deckConfig('s', 'T', 'S', '📦', '#000', 'dark', 'none')
+    expect(config).not.toContain('FeaturesSlide')
+    expect(config).not.toContain('GettingStartedSlide')
+  })
+})
+
+describe('coverSlideJsxShadcn', () => {
+  it('includes grid background element', () => {
+    const jsx = coverSlideJsxShadcn('Title', 'Sub', 'slug')
+    expect(jsx).toContain('gridBg')
+  })
+
+  it('includes accent glow element', () => {
+    const jsx = coverSlideJsxShadcn('Title', 'Sub', 'slug')
+    expect(jsx).toContain('accentGlow')
+  })
+
+  it('includes decorative strip', () => {
+    const jsx = coverSlideJsxShadcn('Title', 'Sub', 'slug')
+    expect(jsx).toContain('decorStrip')
+    expect(jsx).toContain('decorBlock')
+  })
+
+  it('includes ReactBits hint comment', () => {
+    const jsx = coverSlideJsxShadcn('Title', 'Sub', 'slug')
+    expect(jsx).toContain('npx shadcn add @react-bits')
+  })
+})
+
+describe('COVER_SLIDE_CSS_SHADCN', () => {
+  it('has dot grid background', () => {
+    expect(COVER_SLIDE_CSS_SHADCN).toContain('.gridBg')
+    expect(COVER_SLIDE_CSS_SHADCN).toContain('radial-gradient(circle, var(--border) 1px')
+  })
+
+  it('uses accent color in glow and shimmer', () => {
+    expect(COVER_SLIDE_CSS_SHADCN).toContain('.accentGlow')
+    expect(COVER_SLIDE_CSS_SHADCN).toContain('var(--accent)')
+  })
+
+  it('has shimmer animation', () => {
+    expect(COVER_SLIDE_CSS_SHADCN).toContain('@keyframes shimmer')
+  })
+
+  it('has decorative blocks using accent', () => {
+    expect(COVER_SLIDE_CSS_SHADCN).toContain('.decorBlock')
+    expect(COVER_SLIDE_CSS_SHADCN).toContain('background: var(--accent)')
+  })
+})
+
+describe('featuresSlideJsxShadcn', () => {
+  it('exports a function that returns JSX string', () => {
+    const jsx = featuresSlideJsxShadcn('test-slug')
+    expect(jsx).toContain('export default function FeaturesSlide()')
+  })
+
+  it('includes three capability cards', () => {
+    const jsx = featuresSlideJsxShadcn('test-slug')
+    expect(jsx).toContain('shadcn Components')
+    expect(jsx).toContain('CSS Animations')
+    expect(jsx).toContain('Theme System')
+  })
+
+  it('includes ReactBits hint comment', () => {
+    const jsx = featuresSlideJsxShadcn('test-slug')
+    expect(jsx).toContain('npx shadcn add @react-bits')
+  })
+
+  it('imports Slide and BottomBar from deck-engine', () => {
+    const jsx = featuresSlideJsxShadcn('test-slug')
+    expect(jsx).toContain("import { BottomBar, Slide } from '@deckio/deck-engine'")
+  })
+
+  it('uses slide index 1', () => {
+    const jsx = featuresSlideJsxShadcn('test-slug')
+    expect(jsx).toContain('<Slide index={1}')
+  })
+})
+
+describe('FEATURES_SLIDE_CSS_SHADCN', () => {
+  it('has card grid layout', () => {
+    expect(FEATURES_SLIDE_CSS_SHADCN).toContain('grid-template-columns: repeat(3, 1fr)')
+  })
+
+  it('has staggered card-in animation', () => {
+    expect(FEATURES_SLIDE_CSS_SHADCN).toContain('@keyframes card-in')
+  })
+
+  it('uses semantic tokens for card styling', () => {
+    expect(FEATURES_SLIDE_CSS_SHADCN).toContain('var(--card)')
+    expect(FEATURES_SLIDE_CSS_SHADCN).toContain('var(--border)')
+    expect(FEATURES_SLIDE_CSS_SHADCN).toContain('var(--accent)')
+  })
+
+  it('has hover effect on cards', () => {
+    expect(FEATURES_SLIDE_CSS_SHADCN).toContain('.card:hover')
+    expect(FEATURES_SLIDE_CSS_SHADCN).toContain('border-color: var(--accent)')
+  })
+})
+
+describe('gettingStartedSlideJsxShadcn', () => {
+  it('exports a function that returns JSX string', () => {
+    const jsx = gettingStartedSlideJsxShadcn('test-slug')
+    expect(jsx).toContain('export default function GettingStartedSlide()')
+  })
+
+  it('includes three workflow steps', () => {
+    const jsx = gettingStartedSlideJsxShadcn('test-slug')
+    expect(jsx).toContain('Add Components')
+    expect(jsx).toContain('Use in Slides')
+    expect(jsx).toContain('Present')
+  })
+
+  it('includes code block with npx shadcn command', () => {
+    const jsx = gettingStartedSlideJsxShadcn('test-slug')
+    expect(jsx).toContain('npx shadcn add button')
+  })
+
+  it('includes ReactBits code-block hint', () => {
+    const jsx = gettingStartedSlideJsxShadcn('test-slug')
+    expect(jsx).toContain('npx shadcn add @react-bits/code-block')
+  })
+
+  it('uses slide index 2', () => {
+    const jsx = gettingStartedSlideJsxShadcn('test-slug')
+    expect(jsx).toContain('<Slide index={2}')
+  })
+})
+
+describe('GETTING_STARTED_SLIDE_CSS_SHADCN', () => {
+  it('has step-in animation', () => {
+    expect(GETTING_STARTED_SLIDE_CSS_SHADCN).toContain('@keyframes step-in')
+  })
+
+  it('styles code blocks with semantic tokens', () => {
+    expect(GETTING_STARTED_SLIDE_CSS_SHADCN).toContain('.codeBlock')
+    expect(GETTING_STARTED_SLIDE_CSS_SHADCN).toContain('var(--secondary)')
+    expect(GETTING_STARTED_SLIDE_CSS_SHADCN).toContain('var(--border)')
+  })
+
+  it('uses accent for step numbers', () => {
+    expect(GETTING_STARTED_SLIDE_CSS_SHADCN).toContain('.stepNumber')
+    expect(GETTING_STARTED_SLIDE_CSS_SHADCN).toContain('background: var(--accent)')
+  })
+
+  it('has step connector lines', () => {
+    expect(GETTING_STARTED_SLIDE_CSS_SHADCN).toContain('.stepConnector')
+  })
+})
+
+describe('thankYouSlideJsxShadcn', () => {
+  it('defaults to slide index 3', () => {
+    const jsx = thankYouSlideJsxShadcn('test-slug')
+    expect(jsx).toContain('<Slide index={3}')
+  })
+
+  it('accepts custom slide index', () => {
+    const jsx = thankYouSlideJsxShadcn('test-slug', 5)
+    expect(jsx).toContain('<Slide index={5}')
   })
 })
