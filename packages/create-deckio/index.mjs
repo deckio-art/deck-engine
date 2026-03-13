@@ -347,10 +347,10 @@ async function main() {
   let title, subtitle, accent, icon, theme, appearance, designSystem = 'none', aurora = null
 
   if (isInteractive) {
-    clack.intro('DECKIO — Create a new deck')
+    clack.intro('✦ DECKIO — new deck')
 
     title = await clack.text({
-      message: "What's the title of your deck?",
+      message: 'Deck title',
       placeholder: defaultTitle,
       defaultValue: defaultTitle,
     })
@@ -364,7 +364,7 @@ async function main() {
     if (clack.isCancel(subtitle)) { clack.cancel('Cancelled.'); process.exit(0) }
 
     icon = await clack.text({
-      message: 'Icon emoji',
+      message: 'Deck icon',
       placeholder: '🎴',
       defaultValue: '🎴',
     })
@@ -372,11 +372,11 @@ async function main() {
 
     // Choose design system
     const chosenDesignSystem = await clack.select({
-      message: 'Choose a design system',
+      message: 'Design system',
       options: [
-        { value: 'default', label: 'Default', hint: 'classic DECKIO with CSS custom properties' },
-        { value: 'shadcn', label: 'shadcn', hint: 'editorial design with Tailwind + shadcn/ui components' },
-        { value: 'funky-punk', label: 'Funky Punk 🤘', hint: 'neon pink + lime + chaos — LOUD & REBELLIOUS' },
+        { value: 'default', label: 'Default', hint: 'classic DECKIO — CSS custom properties' },
+        { value: 'shadcn', label: 'shadcn/ui', hint: 'editorial — Tailwind + shadcn/ui components' },
+        { value: 'funky-punk', label: 'Funky Punk 🤘', hint: 'neon pink + lime + chaos' },
       ],
       initialValue: 'default',
     })
@@ -390,9 +390,9 @@ async function main() {
     } else {
       // Choose appearance / theme
       appearance = await clack.select({
-        message: 'Choose appearance',
+        message: 'Appearance',
         options: [
-          { value: 'dark', label: 'Dark', hint: 'clean midnight palette' },
+          { value: 'dark', label: 'Dark', hint: 'midnight' },
           { value: 'light', label: 'Light', hint: 'bright and airy' },
         ],
         initialValue: 'dark',
@@ -419,7 +419,7 @@ async function main() {
       }))
 
       const chosenPalette = await clack.select({
-        message: 'Choose an aurora palette',
+        message: 'Aurora palette',
         options: paletteOptions,
         initialValue: 'ocean',
       })
@@ -441,7 +441,7 @@ async function main() {
       ]
 
       accent = await clack.select({
-        message: 'Choose an accent color',
+        message: 'Accent color',
         options: colorOptions,
         initialValue: '#6366f1',
       })
@@ -449,7 +449,7 @@ async function main() {
 
       if (accent === '__custom') {
         accent = await clack.text({
-          message: 'Enter a hex color',
+          message: 'Hex color',
           placeholder: '#6366f1',
           defaultValue: '#6366f1',
           validate: (v) => /^#[0-9a-fA-F]{6}$/.test(v) ? undefined : 'Must be a valid hex color (e.g. #6366f1)',
@@ -500,6 +500,7 @@ async function main() {
 
   const s = clack.spinner()
 
+  s.start('Scaffolding project...')
   const engineRef = resolveEngineRef(dir)
   write(dir, 'package.json', packageJson(slug, engineRef, { designSystem }))
   write(dir, 'vite.config.js', viteConfig({ designSystem }))
@@ -550,8 +551,7 @@ async function main() {
   // Copy deckio.png to public/ for favicon and branding
   mkdirSync(join(dir, 'public'), { recursive: true })
   copyFileSync(join(__dirname, 'deckio.png'), join(dir, 'public', 'deckio.png'))
-
-  clack.log.success('Project scaffolded!')
+  s.stop('Project scaffolded')
 
   s.start('Installing dependencies...')
   try {
@@ -574,7 +574,7 @@ async function main() {
     clack.log.info('🤖 shadcn MCP server pre-configured — use AI to browse & add components')
   }
 
-  clack.outro(`Done! cd ${slug} && npm run dev`)
+  clack.outro(`✦ Ready! cd ${slug} && npm run dev`)
 }
 
 main()
