@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
@@ -23,8 +23,10 @@ jobs:
         package:
           - name: '@deckio/deck-engine'
             path: 'packages/deck-engine'
+            releases_dir: 'deck-engine'
           - name: '@deckio/create-deck-project'
             path: 'packages/create-deckio'
+            releases_dir: 'create-deck-project'
     steps:
       - uses: actions/checkout@v4
 
@@ -63,3 +65,36 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           PUPPETEER_SKIP_DOWNLOAD: 'true'
+
+      - name: Create GitHub Release
+        if: steps.check.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${{ steps.check.outputs.package_version }}"
+          PACKAGE_NAME="${{ steps.check.outputs.package_name }}"
+          RELEASES_DIR="${{ matrix.package.releases_dir }}"
+          TAG="${RELEASES_DIR}/v${VERSION}"
+          NOTES_FILE="releases/${RELEASES_DIR}/v${VERSION}.md"
+
+          # Use curated release notes if available, otherwise auto-generate from commits
+          if [ -f "$NOTES_FILE" ]; then
+            BODY=$(cat "$NOTES_FILE")
+          else
+            BODY="## ${PACKAGE_NAME} v${VERSION}
+
+          Published to npm on $(date -u +%Y-%m-%d).
+
+          **Auto-generated** — no curated release notes found at \`${NOTES_FILE}\`.
+
+          ### Commits since last release
+          $(git log --oneline -20 -- "${{ matrix.package.path }}")"
+          fi
+
+          # Create a lightweight tag and GitHub Release
+          git tag "$TAG" || true
+          git push origin "$TAG" || true
+          gh release create "$TAG" \
+            --title "${PACKAGE_NAME} v${VERSION}" \
+            --notes "$BODY" \
+            --latest=false
