@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "assignments": [
+    {
+      "assignment_id": "deck-engine-001",
+      "universe": "Ocean's Eleven",
+      "created_at": "2026-03-13T00:00:00Z",
+      "project": "deck-engine",
+      "agents": [
+        { "name": "Rusty", "role": "Lead" },
+        { "name": "Basher", "role": "Backend Dev" },
+        { "name": "Livingston", "role": "Frontend Dev" },
+        { "name": "Linus", "role": "Tester" },
+        { "name": "Saul", "role": "UI/UX & Theme Coherence" }
+      ]
+    }
+  ]
+}
