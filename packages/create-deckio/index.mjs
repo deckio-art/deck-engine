@@ -52,7 +52,7 @@ import { Navigation, SlideProvider } from '@deckio/deck-engine'
 import project from '../deck.config.js'
 
 export default function App() {
-  const { accent, id, slides, title } = project
+  const { accent, id, slides, theme, title } = project
 
   useEffect(() => {
     document.documentElement.style.setProperty('--accent', accent)
@@ -60,7 +60,7 @@ export default function App() {
   }, [accent, title])
 
   return (
-    <SlideProvider totalSlides={slides.length} project={id} slides={slides}>
+    <SlideProvider totalSlides={slides.length} project={id} slides={slides} theme={theme}>
       <Navigation />
       <div className="deck" data-project-id={id}>
         {slides.map((SlideComponent, index) => (
@@ -127,17 +127,17 @@ const COVER_SLIDE_CSS = `\
 .orb1 {
   width: 520px; height: 520px;
   top: -120px; right: -80px;
-  background: radial-gradient(circle at 40% 40%, var(--accent), rgba(63,185,80,0.3) 50%, transparent 70%);
+  background: radial-gradient(circle at 40% 40%, var(--accent), color-mix(in srgb, var(--green) 30%, transparent) 50%, transparent 70%);
 }
 .orb2 {
   width: 380px; height: 380px;
   bottom: -80px; right: 140px;
-  background: radial-gradient(circle at 50% 50%, var(--purple-deep), rgba(110,64,201,0.3) 60%, transparent 75%);
+  background: radial-gradient(circle at 50% 50%, var(--purple-deep), color-mix(in srgb, var(--purple-deep) 30%, transparent) 60%, transparent 75%);
 }
 .orb3 {
   width: 260px; height: 260px;
   top: 60px; right: 280px;
-  background: radial-gradient(circle at 50% 50%, var(--cyan), rgba(86,212,221,0.15) 60%, transparent 75%);
+  background: radial-gradient(circle at 50% 50%, var(--cyan), color-mix(in srgb, var(--cyan) 15%, transparent) 60%, transparent 75%);
 }
 
 .content {
@@ -184,7 +184,7 @@ const COVER_SLIDE_CSS = `\
   align-items: center;
   gap: 24px;
   padding: 14px 28px;
-  background: rgba(22, 27, 34, 0.8);
+  background: var(--surface-overlay);
   border: 1px solid var(--border);
   border-radius: 10px;
   backdrop-filter: blur(8px);
