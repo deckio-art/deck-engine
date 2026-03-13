@@ -12,7 +12,7 @@ import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
-const BUILTIN_THEMES = ['dark', 'light', 'shadcn']
+const BUILTIN_THEMES = ['dark', 'light', 'shadcn', 'funky-punk']
 const DEFAULT_THEME = 'dark'
 
 /**

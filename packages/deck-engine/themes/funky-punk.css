@@ -1,0 +1,249 @@
+/*
+ * DECKIO — Funky Punk Theme 🤘
+ *
+ * LOUD. NEON. CHAOS. The anti-corporate theme that screams rebellion.
+ * Hot pink meets electric lime on a jet-black canvas.
+ * Clashing colors, sharp edges, unapologetic attitude.
+ *
+ * CSS custom properties → Tailwind utility bridge via @theme inline.
+ */
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root {
+  color-scheme: dark;
+
+  /* ── 1. Core Semantic Colors ─────────────────────────────────────────── */
+  --background:              #0a0a0a;
+  --foreground:              #f0f0f0;
+  --card:                    #1a1a1a;
+  --card-foreground:         #f0f0f0;
+  --primary:                 #ff2d6f;
+  --primary-foreground:      #000000;
+  --secondary:               #1c1c2e;
+  --secondary-foreground:    #e0ff00;
+  --muted:                   #2a2a2a;
+  --muted-foreground:        #888888;
+  --accent:                  #e0ff00;
+  --accent-foreground:       #000000;
+  --destructive:             #ff0040;
+  --destructive-foreground:  #ffffff;
+  --border:                  #ff2d6f;
+  --input:                   #2a2a2a;
+  --ring:                    rgba(224, 255, 0, 0.6);
+  --radius:                  2px;
+
+  /* ── 2. Decorative Palette — MAXIMUM VOLUME ──────────────────────────── */
+  --blue-glow:    #00e5ff;
+  --purple:       #bf00ff;
+  --purple-deep:  #7b00cc;
+  --pink:         #ff2d6f;
+  --cyan:         #00e5ff;
+  --green:        #e0ff00;
+
+  /* ── 3. Derived Overlays & Glows ─────────────────────────────────────── */
+  --surface-overlay:         rgba(10, 10, 10, 0.85);
+  --surface-overlay-heavy:   rgba(10, 10, 10, 0.95);
+  --background-overlay:      rgba(10, 10, 10, 0.9);
+  --border-subtle:           rgba(255, 45, 111, 0.35);
+  --glow-primary:            rgba(255, 45, 111, 0.3);
+  --glow-primary-strong:     rgba(255, 45, 111, 0.45);
+  --glow-primary-shadow:     rgba(255, 45, 111, 0.25);
+  --glow-ring:               rgba(224, 255, 0, 0.3);
+  --glow-accent:             rgba(224, 255, 0, 0.15);
+  --glow-purple:             rgba(191, 0, 255, 0.2);
+  --glow-cyan:               rgba(0, 229, 255, 0.15);
+  --dot-color:               rgba(255, 45, 111, 0.2);
+  --destructive-subtle:      rgba(255, 0, 64, 0.08);
+  --shadow-elevated:         0 8px 32px rgba(255, 45, 111, 0.3), 0 0 80px rgba(224, 255, 0, 0.08);
+
+  /* ── 4. Presentation Layout ──────────────────────────────────────────── */
+  --slide-bg:            var(--background);
+  --content-max-width:   1280px;
+  --content-gutter:      72px;
+
+  /* ── 5. Typography — PUNK FONTS ──────────────────────────────────────── */
+  --font-family:           'Bebas Neue', 'Impact', 'Arial Black', sans-serif;
+  --font-family-mono:      'Space Mono', 'Courier New', monospace;
+  --font-size-2xs:         10px;
+  --font-size-xs:          11px;
+  --font-size-sm:          13px;
+  --font-size-md:          14px;
+  --font-size-base:        17px;
+  --font-size-lg:          22px;
+  --font-size-xl:          28px;
+  --font-size-2xl:         40px;
+  --font-size-display:     clamp(48px, 8vw, 80px);
+
+  --font-weight-light:     300;
+  --font-weight-regular:   400;
+  --font-weight-medium:    500;
+  --font-weight-semibold:  600;
+  --font-weight-bold:      700;
+  --font-weight-extrabold: 900;
+
+  --letter-spacing-tight:   -1px;
+  --letter-spacing-normal:  1px;
+  --letter-spacing-wide:    3px;
+  --letter-spacing-wider:   5px;
+  --letter-spacing-widest:  8px;
+
+  --line-height-tight:     1.1;
+  --line-height-normal:    1.4;
+  --line-height-relaxed:   1.7;
+
+  /* ── 6. Spacing Scale (4 px base) ────────────────────────────────────── */
+  --space-0:    0px;
+  --space-0-5:  2px;
+  --space-1:    4px;
+  --space-1-5:  6px;
+  --space-2:    8px;
+  --space-3:    12px;
+  --space-4:    16px;
+  --space-5:    20px;
+  --space-6:    24px;
+  --space-8:    32px;
+  --space-10:   40px;
+  --space-11:   44px;
+  --space-12:   48px;
+  --space-14:   56px;
+
+  /* ── 7. Border Radius — SHARP EDGES, PUNK DOESN'T DO SMOOTH ──────── */
+  --radius-sm:    0px;
+  --radius-md:    2px;
+  --radius-lg:    2px;
+  --radius-xl:    4px;
+  --radius-full:  50%;
+
+  /* ── 8. Z-Index Scale ────────────────────────────────────────────────── */
+  --z-content:   2;
+  --z-bar:       100;
+  --z-nav:       200;
+  --z-progress:  300;
+  --z-overlay:   9999;
+
+  /* ── 9. Transitions — FAST AND SNAPPY ────────────────────────────────── */
+  --transition-fast:     0.08s ease-out;
+  --transition-base:     0.15s ease-out;
+  --transition-slow:     0.3s ease-out;
+  --ease-slide:          cubic-bezier(0.7, 0, 0.3, 1);
+  --duration-slide:      0.4s;
+  --duration-progress:   0.3s;
+}
+
+/* ── PUNK TEXTURE — scanlines + noise ──────────────────────────────────── */
+:root::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 45, 111, 0.03) 2px,
+      rgba(255, 45, 111, 0.03) 4px
+    );
+  mix-blend-mode: overlay;
+}
+
+/* ── SELECTION — hot pink highlight ────────────────────────────────────── */
+::selection {
+  background: #ff2d6f;
+  color: #000;
+}
+
+/* ── HEADINGS — uppercase screaming ────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Bebas Neue', 'Impact', sans-serif !important;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+h1 {
+  text-shadow:
+    4px 4px 0px #e0ff00,
+    -2px -2px 0px #00e5ff;
+}
+
+h2 {
+  text-shadow:
+    2px 2px 0px #ff2d6f;
+}
+
+/* ── CODE — mono with neon accent ──────────────────────────────────────── */
+code, pre {
+  font-family: 'Space Mono', monospace !important;
+  border: 1px solid #ff2d6f;
+}
+
+pre {
+  background: #111 !important;
+  box-shadow: inset 0 0 30px rgba(255, 45, 111, 0.08);
+}
+
+/* ── LINKS — electric ──────────────────────────────────────────────────── */
+a {
+  color: #e0ff00;
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-underline-offset: 4px;
+  transition: color 0.1s;
+}
+a:hover {
+  color: #00e5ff;
+}
+
+/* ── STRONG / BOLD — pink highlight ────────────────────────────────────── */
+strong, b {
+  color: #ff2d6f;
+  font-weight: 900;
+}
+
+/* ── EMPHASIS — lime italic ────────────────────────────────────────────── */
+em, i {
+  color: #e0ff00;
+  font-style: italic;
+}
+
+/* ── BORDERS — neon stripes ────────────────────────────────────────────── */
+hr {
+  border: none;
+  height: 3px;
+  background: linear-gradient(90deg, #ff2d6f, #e0ff00, #00e5ff, #bf00ff);
+}
+
+/* ── LISTS — punk bullets ──────────────────────────────────────────────── */
+ul {
+  list-style: none;
+}
+ul > li::before {
+  content: '✘ ';
+  color: #ff2d6f;
+  font-weight: 900;
+}
+
+/* ── Tailwind ↔ CSS variable bridge ── */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius: var(--radius);
+}
