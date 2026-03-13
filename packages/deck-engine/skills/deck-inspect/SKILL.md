@@ -57,4 +57,20 @@ Study the screenshot and check for:
 - Color and contrast issues
 - Overflow or clipping
 
-Report any issues found to the user.
+### Step 5 — Check for theme mismatches
+
+Read `deck.config.js` and note the `designSystem` field. Then check the screenshot for design system inconsistencies:
+
+**If `designSystem: 'shadcn'`**, flag these visual issues:
+- Visible glowing orbs in the background (dark-theme decoration)
+- Left-side gradient accent bar (dark-theme element)
+- Dark backgrounds (`#080b10` or similar deep-space color) instead of light/neutral
+- Neon gradient text effects that clash with the editorial aesthetic
+- Cards with gradient top-bar decorations
+
+**If `designSystem: 'none'` or absent**, flag these visual issues:
+- Missing accent bar on the left edge
+- No ambient orb glow in the background
+- Overly light/white backgrounds that don't match the dark theme
+
+Report any theme mismatches alongside other visual issues. Theme mismatches indicate the slide was built with the wrong design system patterns — reference `deck-add-slide` skill for the correct patterns.
