@@ -106,10 +106,20 @@ Verify the preinstalled component set is intact:
 - [ ] `src/components/ui/separator.jsx` exists
 - [ ] `src/components/ui/alert.jsx` exists
 - [ ] `src/lib/utils.js` exists (provides `cn()`)
-- [ ] `components.json` exists at project root
+- [ ] `components.json` exists at project root with correct aliases and registries
+- [ ] `.vscode/mcp.json` exists with shadcn MCP server configured
+- [ ] `MCP-GUIDE.md` exists at project root
 - [ ] ReactBits files exist: `aurora.jsx`, `blur-text.jsx`, `shiny-text.jsx`, `decrypted-text.jsx`, `spotlight-card.jsx` in `src/components/ui/`
 
 If any preinstalled file is missing, report it as a **scaffold integrity issue** — the file may have been accidentally deleted.
+
+### Validate MCP integration
+
+- [ ] `.vscode/mcp.json` exists and contains a `shadcn` server entry
+- [ ] `components.json` has `registries` with `@react-bits` configured
+- [ ] `components.json` has correct `aliases` (`@/components`, `@/lib/utils`, `@/components/ui`)
+
+If MCP config is missing, the author loses the primary component expansion workflow.
 
 ### Validate component usage patterns
 
@@ -138,6 +148,7 @@ Summarize:
 - [ ] Read the active descriptor
 - [ ] If `designSystem === 'shadcn'`: read shadcn supplement instructions
 - [ ] If `designSystem === 'shadcn'`: verified preinstalled component files exist
+- [ ] If `designSystem === 'shadcn'`: verified MCP config (`.vscode/mcp.json`, `components.json` registries)
 - [ ] If `designSystem === 'shadcn'`: verified slides use real components over CSS imitation
 - [ ] All `deck.config.js` imports resolve
 - [ ] `slides` array matches imports

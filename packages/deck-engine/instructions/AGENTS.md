@@ -32,4 +32,7 @@ Check `designSystem` in `deck.config.js`. When it is `'shadcn'`:
 - Real shadcn/ui components are preinstalled: `Button`, `Card`, `Badge`, `Separator`, `Alert`
 - ReactBits motion components are preinstalled: `Aurora`, `BlurText`, `ShinyText`, `DecryptedText`, `SpotlightCard`
 - **Prefer real component imports over CSS imitation** — this is the default authoring pattern
+- **Expand via MCP** — the shadcn MCP server is pre-configured in `.vscode/mcp.json`. To add new components, prompt Copilot (e.g., *"Add Dialog from shadcn"*) or use `npx shadcn@latest add <name>`
+- Both shadcn/ui and ReactBits registries are configured in `components.json` and coexist cleanly
 - Read the shadcn supplement instructions (`shadcn-setup.instructions.md`, `shadcn-components.instructions.md`) for the full reference
+- See `MCP-GUIDE.md` for detailed MCP authoring prompts and workflows

@@ -51,10 +51,16 @@ Scaffolded shadcn decks ship with **real, working components** out of the box. T
 | `jsconfig.json` | project root | `@/*` path alias |
 | `.vscode/mcp.json` | `.vscode/` | shadcn MCP server config |
 
-### Add via CLI or MCP (not preinstalled)
+### Add via MCP or CLI (not preinstalled)
 
-Everything else in the shadcn/ui and ReactBits registries must be added before importing:
+Everything else in the shadcn/ui and ReactBits registries must be added before importing.
 
+**MCP (recommended):** The shadcn MCP server is pre-configured in `.vscode/mcp.json`. Prompt Copilot directly:
+- *"Add the Dialog component from shadcn"*
+- *"Add Sheet and Tooltip from shadcn"*
+- *"Add AnimatedContent from React Bits"*
+
+**CLI (fallback):**
 ```bash
 # Official shadcn/ui components
 npx shadcn@latest add dialog
@@ -65,7 +71,16 @@ npx shadcn@latest add @react-bits/code-block
 npx shadcn@latest add @react-bits/animated-content
 ```
 
-Or use the shadcn MCP server (preconfigured in `.vscode/mcp.json`) to add components through Copilot.
+Both methods produce the same result — component source files in `src/components/ui/`.
+
+### Registry coexistence
+
+`components.json` declares two registries that share the same output directory and infrastructure:
+
+- **shadcn/ui** (default): UI primitives — no prefix needed
+- **ReactBits** (`@react-bits/`): Animation and effect components
+
+They never conflict. shadcn/ui components use Radix + Tailwind, ReactBits components use their own animation systems. Both use the `cn()` utility and `@/` alias.
 
 ## Default authoring pattern
 
@@ -75,7 +90,7 @@ Or use the shadcn MCP server (preconfigured in `.vscode/mcp.json`) to add compon
 2. **Use ReactBits for motion** — `BlurText`, `SpotlightCard`, etc. for animation inside content blocks.
 3. **Use CSS Modules only for layout** — grid, spacing, density, positioning. Not for recreating what components already do.
 4. **Never imitate a component with raw markup** — if `<Card>` exists, use it. Don't hand-build a card-like div with border-radius and background.
-5. **Add more components via CLI when needed** — if the slide needs a dialog, accordion, or tabs, run `npx shadcn@latest add <name>` first, then import.
+5. **Expand via MCP when needed** — if the slide needs a dialog, accordion, or tabs, prompt Copilot (e.g., *"Add Dialog from shadcn"*) or run `npx shadcn@latest add <name>`, then import.
 
 ## Design-system supplement layer
 
@@ -92,9 +107,11 @@ This two-layer approach (theme descriptor + design-system supplement) lets the t
 Before claiming a deck is "using shadcn":
 
 - `src/index.css` exists and is imported by `src/main.jsx`
-- `components.json` exists
+- `components.json` exists with correct aliases (`@/components`, `@/lib/utils`, `@/components/ui`) and registries (`@react-bits`)
 - `@/` resolves to `src`
 - `src/lib/utils.js` exists
 - Preinstalled shadcn/ui components exist: `button.jsx`, `card.jsx`, `badge.jsx`, `separator.jsx`, `alert.jsx` in `src/components/ui/`
 - Preinstalled ReactBits components exist in `src/components/ui/`
+- `.vscode/mcp.json` exists with the shadcn MCP server configured
+- `MCP-GUIDE.md` exists at project root
 - Any additional imported component actually exists under `src/components/ui/`

@@ -190,8 +190,63 @@ When building a new slide element in a shadcn deck:
 
 1. **Is there a preinstalled component for this?** → Use it. (`Card`, `Badge`, `Button`, `Alert`, `Separator`)
 2. **Is there a preinstalled ReactBits component?** → Use it for motion/effects. (`BlurText`, `SpotlightCard`, etc.)
-3. **Would a non-preinstalled shadcn component fit?** → Run `npx shadcn@latest add <name>`, then import.
+3. **Would a non-preinstalled shadcn component fit?** → Add it via MCP or CLI, then import.
 4. **None of the above?** → Write custom JSX + CSS Module using semantic tokens from the descriptor.
+
+## Expanding with MCP — the primary workflow
+
+**MCP is the recommended way to add components** beyond the preinstalled set. The shadcn MCP server is pre-configured in `.vscode/mcp.json` and gives AI assistants direct access to both the shadcn/ui and ReactBits registries.
+
+### How it works
+
+When an author (or an AI agent acting on behalf of the author) needs a component that isn't preinstalled:
+
+1. **Prompt Copilot** with what you need — e.g., *"Add the Dialog component from shadcn"*
+2. The MCP server resolves the component from the registry
+3. The component source is written to `src/components/ui/`
+4. Import it in your slide: `import { Dialog } from '@/components/ui/dialog'`
+
+### Example prompts for agents and authors
+
+**shadcn/ui components:**
+- *"Add the Dialog component from shadcn"*
+- *"Add Sheet, Tooltip, and Tabs from shadcn"*
+- *"I need a data table — add Table from shadcn"*
+- *"Add Accordion from shadcn for collapsible sections"*
+- *"What shadcn components would work for a pricing comparison slide?"*
+
+**ReactBits components:**
+- *"Add Hyperspeed from React Bits for an animated background"*
+- *"Show me available text animations from React Bits"*
+- *"Add AnimatedContent from React Bits for scroll reveals"*
+
+### Registry coexistence
+
+Both registries are declared in `components.json` and share the same output directory:
+
+| Registry | CLI syntax | MCP prompt pattern |
+|----------|-----------|-------------------|
+| **shadcn/ui** | `npx shadcn@latest add dialog` | *"Add Dialog from shadcn"* |
+| **ReactBits** | `npx shadcn@latest add @react-bits/code-block` | *"Add code-block from React Bits"* |
+
+They never conflict — shadcn/ui components use Radix primitives and Tailwind, ReactBits components use their own animation systems. Both consume the same `cn()` utility and `@/` path alias.
+
+### CLI fallback
+
+If MCP is unavailable, the CLI produces identical results:
+
+```bash
+npx shadcn@latest add dialog sheet tooltip
+npx shadcn@latest add @react-bits/animated-content
+```
+
+### For agents: when to suggest MCP expansion
+
+When generating slide code that would benefit from a non-preinstalled component:
+
+1. **Don't silently import a component that doesn't exist** — check the preinstalled list above
+2. **Suggest the MCP prompt** — e.g., "This slide would benefit from a Dialog. Run: *Add Dialog from shadcn* or `npx shadcn@latest add dialog`"
+3. **Then generate the slide code** using the component, noting the dependency
 
 ## Design-system supplement discovery
 

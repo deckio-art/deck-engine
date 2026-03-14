@@ -56,7 +56,7 @@ If the descriptor and `designSystem` disagree, follow `designSystem` for structu
 Also read the shadcn supplement instructions before generating code:
 
 1. `shadcn-setup.instructions.md` — infrastructure contract
-2. `shadcn-components.instructions.md` — component reference, migration patterns, decision tree
+2. `shadcn-components.instructions.md` — component reference, migration patterns, MCP expansion workflow
 
 These tell you which real components are preinstalled and ready to import:
 
@@ -70,6 +70,12 @@ These tell you which real components are preinstalled and ready to import:
 | `Aurora`, `BlurText`, `ShinyText`, `DecryptedText`, `SpotlightCard` | `'@/components/ui/<name>'` |
 
 **Always prefer real component imports over CSS imitation.** If a preinstalled component can replace a hand-built div, use the component.
+
+**Need a component that isn't preinstalled?** Use MCP (recommended) or CLI to add it first:
+- MCP: Prompt Copilot — *"Add Dialog from shadcn"* or *"Add AnimatedContent from React Bits"*
+- CLI: `npx shadcn@latest add dialog` or `npx shadcn@latest add @react-bits/animated-content`
+
+Never import a component file that doesn't exist. Add it first, then import.
 
 ## Step 3 — Create the slide from the descriptor
 
@@ -131,6 +137,7 @@ After writing the slide:
 - [ ] Read the active theme descriptor before writing code
 - [ ] If `designSystem === 'shadcn'`: read the shadcn supplement instructions
 - [ ] If `designSystem === 'shadcn'`: used real component imports (Card, Badge, Button, Alert, Separator) instead of CSS imitation
+- [ ] If `designSystem === 'shadcn'` and a non-preinstalled component is needed: added it via MCP or CLI before importing
 - [ ] Used the descriptor's exact JSX skeleton or direct variant of it
 - [ ] Used the descriptor's exact CSS skeleton or direct variant of it
 - [ ] Stayed inside the descriptor's token set and component ecosystem

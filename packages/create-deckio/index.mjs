@@ -12,7 +12,7 @@ import { exec } from 'child_process'
 import { promisify } from 'util'
 import { fileURLToPath } from 'url'
 import * as clack from '@clack/prompts'
-import { slugify, packageJson, deckConfig, indexCss, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS, AURORA_PALETTES, auroraAccent, coverSlideJsxShadcn, COVER_SLIDE_CSS_SHADCN, featuresSlideJsxShadcn, FEATURES_SLIDE_CSS_SHADCN, gettingStartedSlideJsxShadcn, GETTING_STARTED_SLIDE_CSS_SHADCN, thankYouSlideJsxShadcn, THANK_YOU_SLIDE_CSS_SHADCN, themeProviderJsx, appJsx, vscodeMcpConfig } from './utils.mjs'
+import { slugify, packageJson, deckConfig, indexCss, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS, AURORA_PALETTES, auroraAccent, coverSlideJsxShadcn, COVER_SLIDE_CSS_SHADCN, featuresSlideJsxShadcn, FEATURES_SLIDE_CSS_SHADCN, gettingStartedSlideJsxShadcn, GETTING_STARTED_SLIDE_CSS_SHADCN, thankYouSlideJsxShadcn, THANK_YOU_SLIDE_CSS_SHADCN, themeProviderJsx, appJsx, vscodeMcpConfig, mcpGuide } from './utils.mjs'
 
 const execAsync = promisify(exec)
 
@@ -307,39 +307,82 @@ src/
 │   └── utils.js         ← cn() helper for class merging
 └── App.jsx
 deck.config.js           ← slide order, theme, metadata
-components.json           ← shadcn CLI configuration
+components.json           ← shadcn CLI + ReactBits registry configuration
 jsconfig.json             ← @/ path alias
+.vscode/mcp.json          ← shadcn MCP server (pre-configured)
 \`\`\`
 
-### Adding more components
+## 🤖 Expanding Your Deck with AI (MCP)
 
-Use the shadcn CLI to pull in any component from the registry:
+This project is pre-configured for **MCP-powered component authoring** — the recommended way
+to add new components to your deck. The shadcn MCP server is already wired into
+\`.vscode/mcp.json\`. Just open this project in VS Code or GitHub Codespaces and start prompting.
+
+### Adding shadcn/ui components
+
+Ask Copilot to pull components from the official shadcn/ui registry:
+
+| What you want | Example prompt |
+|---------------|---------------|
+| Add a single component | *"Add the Dialog component from shadcn"* |
+| Add multiple at once | *"Add Sheet, Tooltip, and Tabs from shadcn"* |
+| Explore what's available | *"What shadcn components would work for a pricing comparison slide?"* |
+| Build with a component | *"Create a slide that uses the Accordion component to show FAQ items"* |
+| Add form elements | *"Add Input, Select, and Textarea from shadcn for a feedback form slide"* |
+| Add data display | *"Add the Table component from shadcn for a metrics comparison"* |
+
+### Adding ReactBits components
+
+The ReactBits registry is configured in \`components.json\` alongside shadcn. Ask for animations:
+
+| What you want | Example prompt |
+|---------------|---------------|
+| Animated backgrounds | *"Add Hyperspeed from React Bits for a dramatic intro slide"* |
+| Text effects | *"Show me all available text animations from React Bits"* |
+| Card effects | *"Add a TiltCard from React Bits for interactive team member cards"* |
+| Content transitions | *"Add AnimatedContent from React Bits for reveal-on-scroll sections"* |
+
+### How the two registries coexist
+
+Both registries are declared in \`components.json\`. The shadcn CLI resolves them by prefix:
+
+- **No prefix** → shadcn/ui registry (e.g., \`npx shadcn@latest add dialog\`)
+- **\`@react-bits/\` prefix** → ReactBits registry (e.g., \`npx shadcn@latest add @react-bits/code-block\`)
+
+They share the same output directory (\`src/components/ui/\`) and the same \`@/\` alias.
+No configuration conflicts — they were designed to work together.
+
+### CLI fallback
+
+If you prefer the terminal over AI prompts, the CLI works identically:
 
 \`\`\`bash
+# shadcn/ui components
 npx shadcn@latest add dialog
-npx shadcn@latest add tabs
-npx shadcn@latest add tooltip
+npx shadcn@latest add sheet tooltip tabs
+
+# ReactBits components
+npx shadcn@latest add @react-bits/code-block
+npx shadcn@latest add @react-bits/animated-content
 \`\`\`
 
 New components land in \`src/components/ui/\`. Import them in your slides:
 
 \`\`\`jsx
-import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 \`\`\`
 
 The \`@/\` alias maps to \`src/\` — configured in \`vite.config.js\` and \`jsconfig.json\`.
 
-### 🤖 AI-powered component discovery
+### Other editors
 
-This project comes with the **shadcn MCP server** pre-configured for VS Code.
-Open the project in VS Code and use prompts like:
+The MCP server is pre-configured for VS Code. For other editors:
 
-- "Add the Dialog component from shadcn"
-- "Show me all available backgrounds from React Bits"
-- "Add a fade-in animation using React Bits"
+\`\`\`bash
+npx shadcn@latest mcp init --client <your-client>
+\`\`\`
 
-For other editors, run: \`npx shadcn@latest mcp init --client <your-client>\`
+See \`MCP-GUIDE.md\` for the full MCP authoring reference.
 
 ` : ''
   return `\
@@ -648,6 +691,7 @@ async function main() {
     write(dir, 'jsconfig.json', jsConfig())
     write(dir, 'src/components/theme-provider.jsx', themeProviderJsx())
     write(dir, '.vscode/mcp.json', vscodeMcpConfig())
+    write(dir, 'MCP-GUIDE.md', mcpGuide())
     mkdirSync(join(dir, 'src', 'components', 'ui'), { recursive: true })
 
     // Pre-install real shadcn/ui components for out-of-the-box usage
@@ -700,7 +744,8 @@ async function main() {
     clack.log.info(
       '🎨 Real shadcn/ui components preinstalled: Button, Card, Badge, Separator, Alert\n' +
       '   Plus ReactBits animations: Aurora, BlurText, ShinyText, SpotlightCard, DecryptedText\n' +
-      '   Add more: npx shadcn@latest add [component]  •  AI: shadcn MCP pre-configured'
+      '   Add more: npx shadcn@latest add [component]  •  AI: shadcn MCP pre-configured\n' +
+      '   📖 See MCP-GUIDE.md for AI-powered component authoring prompts'
     )
   }
 

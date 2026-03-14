@@ -31,9 +31,9 @@ Use the descriptor as the source of truth for slide structure, CSS patterns, dec
 
 If `designSystem` is `shadcn`, also read the shadcn supplement instructions:
 - `shadcn-setup.instructions.md` — infrastructure contract
-- `shadcn-components.instructions.md` — component reference, preinstalled set, migration patterns
+- `shadcn-components.instructions.md` — component reference, preinstalled set, MCP expansion workflow
 
-Real shadcn/ui components (`Button`, `Card`, `Badge`, `Separator`, `Alert`) are preinstalled — prefer them over CSS imitation.
+Real shadcn/ui components (`Button`, `Card`, `Badge`, `Separator`, `Alert`) are preinstalled — prefer them over CSS imitation. To add more components, use MCP (prompt Copilot, e.g., *"Add Dialog from shadcn"*) or CLI (`npx shadcn@latest add dialog`). See `MCP-GUIDE.md` for the full MCP authoring reference.
 
 ## Out of scope — do NOT modify
 
