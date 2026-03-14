@@ -51,8 +51,10 @@ export function packageJson(name, engineRef, { designSystem = 'none' } = {}) {
   if (designSystem === 'shadcn') {
     deps['class-variance-authority'] = '^0.7.1'
     deps['clsx'] = '^2.1.1'
+    deps['lucide-react'] = '^0.511.0'
     deps['motion'] = '^12.23.12'
     deps['ogl'] = '^1.0.11'
+    deps['radix-ui'] = '^1.4.2'
     deps['tailwind-merge'] = '^3.3.0'
   }
   return JSON.stringify({
@@ -278,6 +280,9 @@ export function jsConfig() {
 export function coverSlideJsxShadcn(title, subtitle, slug) {
   return `\
 import { BottomBar, Slide } from '@deckio/deck-engine'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 import BlurText from '@/components/ui/blur-text'
 import ShinyText from '@/components/ui/shiny-text'
 import styles from './CoverSlide.module.css'
@@ -289,14 +294,15 @@ export default function CoverSlide() {
         <div className={styles.layout}>
           <div className={styles.main}>
             <div className={styles.overline}>
-              <span className={styles.overlineDash} />
-              <ShinyText
-                text="${slug}"
-                speed={3}
-                color="var(--muted-foreground)"
-                shineColor="var(--accent)"
-                className={styles.overlineText}
-              />
+              <Badge variant="outline" className={styles.overlineBadge}>
+                <ShinyText
+                  text="${slug}"
+                  speed={3}
+                  color="currentColor"
+                  shineColor="var(--accent)"
+                  className={styles.overlineText}
+                />
+              </Badge>
             </div>
 
             <BlurText
@@ -319,22 +325,24 @@ export default function CoverSlide() {
           </div>
 
           <div className={styles.aside}>
-            <div className={styles.card}>
-              <div className={styles.cardRow}>
-                <span className={styles.cardLabel}>Project</span>
-                <span className={styles.cardValue}>${title}</span>
-              </div>
-              <div className={styles.cardDivider} />
-              <div className={styles.cardRow}>
-                <span className={styles.cardLabel}>Date</span>
-                <span className={styles.cardValue}>${new Date().getFullYear()}</span>
-              </div>
-              <div className={styles.cardDivider} />
-              <div className={styles.cardRow}>
-                <span className={styles.cardLabel}>Stack</span>
-                <span className={styles.cardValue}>React + DECKIO</span>
-              </div>
-            </div>
+            <Card className={styles.metaCard}>
+              <CardContent className={styles.metaContent}>
+                <div className={styles.metaRow}>
+                  <span className={styles.metaLabel}>Project</span>
+                  <span className={styles.metaValue}>${title}</span>
+                </div>
+                <Separator />
+                <div className={styles.metaRow}>
+                  <span className={styles.metaLabel}>Date</span>
+                  <span className={styles.metaValue}>${new Date().getFullYear()}</span>
+                </div>
+                <Separator />
+                <div className={styles.metaRow}>
+                  <span className={styles.metaLabel}>Stack</span>
+                  <span className={styles.metaValue}>React + DECKIO</span>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
@@ -369,25 +377,17 @@ export const COVER_SLIDE_CSS_SHADCN = `\
   flex-direction: column;
 }
 
-/* Overline with dash */
+/* Overline with Badge */
 .overline {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.overlineBadge {
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--muted-foreground);
-  margin-bottom: 28px;
-}
-
-.overlineDash {
-  display: inline-block;
-  width: 32px;
-  height: 2px;
-  background: var(--accent);
-  border-radius: 1px;
+  padding: 4px 14px;
 }
 
 /* Title — large editorial type (BlurText renders a <p>) */
@@ -417,23 +417,15 @@ export const COVER_SLIDE_CSS_SHADCN = `\
   max-width: 480px;
 }
 
-/* Aside card — vertical metadata */
+/* Aside card — vertical metadata using real Card + Separator */
 .aside {
   display: flex;
   align-items: center;
   justify-content: flex-end;
 }
 
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 28px 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+.metaCard {
   min-width: 220px;
-  box-shadow: 0 1px 3px color-mix(in srgb, var(--foreground) 4%, transparent);
   animation: card-enter 0.7s ease both;
 }
 
@@ -448,16 +440,19 @@ export const COVER_SLIDE_CSS_SHADCN = `\
   }
 }
 
-.cardRow {
+.metaContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.metaRow {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 12px 0;
 }
-.cardRow:first-child { padding-top: 0; }
-.cardRow:last-child { padding-bottom: 0; }
 
-.cardLabel {
+.metaLabel {
   font-size: 11px;
   font-weight: 500;
   text-transform: uppercase;
@@ -465,21 +460,18 @@ export const COVER_SLIDE_CSS_SHADCN = `\
   color: var(--muted-foreground);
 }
 
-.cardValue {
+.metaValue {
   font-size: 14px;
   font-weight: 600;
   color: var(--foreground);
-}
-
-.cardDivider {
-  height: 1px;
-  background: var(--border);
 }
 `
 
 export function featuresSlideJsxShadcn(slug) {
   return `\
 import { BottomBar, Slide } from '@deckio/deck-engine'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import SpotlightCard from '@/components/ui/spotlight-card'
 import styles from './FeaturesSlide.module.css'
 
@@ -487,13 +479,15 @@ const features = [
   {
     icon: '🧩',
     title: 'shadcn Ready',
-    desc: 'components.json, aliases, cn(), and MCP are prewired. Add official primitives only when you need them.',
-    code: 'npx shadcn@latest add button card badge',
+    badge: 'UI',
+    desc: 'Real shadcn/ui components pre-installed — Button, Card, Badge, Separator, and Alert. Add more with the CLI.',
+    code: 'npx shadcn@latest add dialog sheet tabs',
     delay: '0s',
   },
   {
     icon: '✨',
     title: 'ReactBits Animations',
+    badge: 'Motion',
     desc: 'BlurText, SpotlightCard, DecryptedText — hover these cards to see the spotlight effect live.',
     code: '@react-bits/spotlight-card',
     delay: '0.12s',
@@ -501,6 +495,7 @@ const features = [
   {
     icon: '🎨',
     title: 'Theme System',
+    badge: 'Design',
     desc: 'Choose light or dark appearance during scaffolding. Set once, consistent everywhere.',
     code: 'Appearance via ThemeProvider',
     delay: '0.24s',
@@ -508,6 +503,7 @@ const features = [
   {
     icon: '📦',
     title: 'Export Anywhere',
+    badge: 'Build',
     desc: 'Export to PDF, capture screenshots, or deploy as a static site. Your slides, your way.',
     code: 'npm run build',
     delay: '0.36s',
@@ -520,8 +516,7 @@ export default function FeaturesSlide() {
       <div className="content-frame content-gutter">
         <div className={styles.content}>
           <div className={styles.header}>
-            <span className={styles.overlineDash} />
-            <p className={styles.eyebrow}>Capabilities</p>
+            <Badge variant="outline" className={styles.eyebrow}>Capabilities</Badge>
             <h2 className={styles.title}>What You Can Build</h2>
             <p className={styles.lead}>
               Everything you need to create polished, interactive presentations.
@@ -539,6 +534,7 @@ export default function FeaturesSlide() {
                 <div className={styles.cardHeader}>
                   <span className={styles.cardIcon}>{f.icon}</span>
                   <h3 className={styles.cardTitle}>{f.title}</h3>
+                  <Badge variant="secondary" className={styles.cardBadge}>{f.badge}</Badge>
                 </div>
                 <p className={styles.cardDesc}>{f.desc}</p>
                 <code className={styles.cardCode}>{f.code}</code>
@@ -571,22 +567,12 @@ export const FEATURES_SLIDE_CSS_SHADCN = `\
   margin-bottom: 48px;
 }
 
-.overlineDash {
-  display: block;
-  width: 24px;
-  height: 2px;
-  background: var(--accent);
-  border-radius: 1px;
-  margin-bottom: 16px;
-}
-
 .eyebrow {
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 2.5px;
   text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 10px;
+  margin-bottom: 16px;
 }
 
 .title {
@@ -654,6 +640,10 @@ export const FEATURES_SLIDE_CSS_SHADCN = `\
   letter-spacing: -0.3px;
 }
 
+.cardBadge {
+  margin-left: auto;
+}
+
 .cardDesc {
   font-size: 14px;
   color: var(--muted-foreground);
@@ -675,8 +665,12 @@ export const FEATURES_SLIDE_CSS_SHADCN = `\
 
 export function gettingStartedSlideJsxShadcn(slug) {
   return `\
-// 💡 Optional expansion: npx shadcn@latest add @react-bits/code-block
 import { BottomBar, Slide } from '@deckio/deck-engine'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
+import { Separator } from '@/components/ui/separator'
+import { Lightbulb } from 'lucide-react'
 import styles from './GettingStartedSlide.module.css'
 
 export default function GettingStartedSlide() {
@@ -685,16 +679,15 @@ export default function GettingStartedSlide() {
       <div className="content-frame content-gutter">
         <div className={styles.content}>
           <div className={styles.header}>
-            <span className={styles.overlineDash} />
-            <p className={styles.eyebrow}>Workflow</p>
+            <Badge variant="outline" className={styles.eyebrow}>Workflow</Badge>
             <h2 className={styles.title}>Getting Started</h2>
           </div>
 
           <div className={styles.timeline}>
             <div className={styles.step} style={{ animationDelay: '0s' }}>
               <div className={styles.stepIndicator}>
-                <span className={styles.stepNum}>1</span>
-                <span className={styles.stepLine} />
+                <Badge className={styles.stepBadge}>1</Badge>
+                <Separator className={styles.stepLine} />
               </div>
               <div className={styles.stepContent}>
                 <h3 className={styles.stepTitle}>Inspect</h3>
@@ -711,17 +704,17 @@ export default function GettingStartedSlide() {
 
             <div className={styles.step} style={{ animationDelay: '0.15s' }}>
               <div className={styles.stepIndicator}>
-                <span className={styles.stepNum}>2</span>
-                <span className={styles.stepLine} />
+                <Badge className={styles.stepBadge}>2</Badge>
+                <Separator className={styles.stepLine} />
               </div>
               <div className={styles.stepContent}>
-                <h3 className={styles.stepTitle}>Add</h3>
+                <h3 className={styles.stepTitle}>Expand</h3>
                 <div className={styles.codeBlock}>
                   <div className={styles.codeDots}>
                     <span /><span /><span />
                   </div>
                   <div className={styles.codeLine}>
-                    <span className={styles.codeDim}>$</span> npx shadcn@latest add button card alert
+                    <span className={styles.codeDim}>$</span> npx shadcn@latest add dialog sheet tabs
                   </div>
                 </div>
               </div>
@@ -729,7 +722,7 @@ export default function GettingStartedSlide() {
 
             <div className={styles.step} style={{ animationDelay: '0.3s' }}>
               <div className={styles.stepIndicator}>
-                <span className={styles.stepNum}>3</span>
+                <Badge className={styles.stepBadge}>3</Badge>
               </div>
               <div className={styles.stepContent}>
                 <h3 className={styles.stepTitle}>Compose</h3>
@@ -744,6 +737,14 @@ export default function GettingStartedSlide() {
               </div>
             </div>
           </div>
+
+          <Alert className={styles.tip}>
+            <Lightbulb />
+            <AlertTitle>Pro tip</AlertTitle>
+            <AlertDescription>
+              Use the shadcn MCP server in VS Code for AI-assisted component expansion.
+            </AlertDescription>
+          </Alert>
         </div>
       </div>
 
@@ -770,22 +771,12 @@ export const GETTING_STARTED_SLIDE_CSS_SHADCN = `\
   margin-bottom: 48px;
 }
 
-.overlineDash {
-  display: block;
-  width: 24px;
-  height: 2px;
-  background: var(--accent);
-  border-radius: 1px;
-  margin-bottom: 16px;
-}
-
 .eyebrow {
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 2.5px;
   text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 10px;
+  margin-bottom: 16px;
 }
 
 .title {
@@ -801,6 +792,7 @@ export const GETTING_STARTED_SLIDE_CSS_SHADCN = `\
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
+  margin-bottom: 32px;
 }
 
 .step {
@@ -824,10 +816,10 @@ export const GETTING_STARTED_SLIDE_CSS_SHADCN = `\
 .stepIndicator {
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 12px;
 }
 
-.stepNum {
+.stepBadge {
   flex-shrink: 0;
   width: 32px;
   height: 32px;
@@ -837,15 +829,11 @@ export const GETTING_STARTED_SLIDE_CSS_SHADCN = `\
   justify-content: center;
   font-size: 13px;
   font-weight: 700;
-  color: var(--background);
-  background: var(--accent);
+  padding: 0;
 }
 
 .stepLine {
   flex: 1;
-  height: 1px;
-  background: var(--border);
-  margin-left: 12px;
 }
 
 .stepContent {
@@ -901,14 +889,22 @@ export const GETTING_STARTED_SLIDE_CSS_SHADCN = `\
 .codeString {
   color: var(--muted-foreground);
 }
+
+/* Pro-tip alert */
+.tip {
+  animation: step-in 0.5s ease 0.45s both;
+}
 `
 
 
 export function thankYouSlideJsxShadcn(slug, slideIndex = 3) {
   return `\
 import { BottomBar, Slide } from '@deckio/deck-engine'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import DecryptedText from '@/components/ui/decrypted-text'
 import ShinyText from '@/components/ui/shiny-text'
+import { Github, AtSign } from 'lucide-react'
 import styles from './ThankYouSlide.module.css'
 
 export default function ThankYouSlide() {
@@ -916,7 +912,7 @@ export default function ThankYouSlide() {
     <Slide index={${slideIndex}} className={styles.slide}>
       <div className="content-frame content-gutter">
         <div className={styles.content}>
-          <span className={styles.accentDash} />
+          <Separator className={styles.accentDash} />
           <h2 className={styles.title}>
             <DecryptedText
               text="Thank You"
@@ -940,9 +936,14 @@ export default function ThankYouSlide() {
             />
           </p>
           <div className={styles.links}>
-            <span className={styles.link}>github.com</span>
-            <span className={styles.linkDot} />
-            <span className={styles.link}>@yourhandle</span>
+            <Button variant="ghost" size="sm">
+              <Github />
+              github.com
+            </Button>
+            <Button variant="ghost" size="sm">
+              <AtSign />
+              yourhandle
+            </Button>
           </div>
         </div>
       </div>
@@ -1103,9 +1104,8 @@ export const THANK_YOU_SLIDE_CSS_SHADCN = `\
 }
 
 .accentDash {
-  display: block;
   width: 40px;
-  height: 3px;
+  height: 3px !important;
   background: var(--accent);
   border-radius: 2px;
   margin-bottom: 32px;
@@ -1161,7 +1161,7 @@ export const THANK_YOU_SLIDE_CSS_SHADCN = `\
 .links {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   animation: links-in 0.7s ease both 0.3s;
 }
 
@@ -1174,19 +1174,5 @@ export const THANK_YOU_SLIDE_CSS_SHADCN = `\
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.link {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--accent);
-  letter-spacing: 0.3px;
-}
-
-.linkDot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--border);
 }
 `

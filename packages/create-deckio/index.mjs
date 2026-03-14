@@ -279,27 +279,34 @@ const README = (designSystem = 'none') => {
   const shadcnSection = designSystem === 'shadcn' ? `
 ## shadcn/ui Components
 
-This project is configured for [shadcn/ui](https://ui.shadcn.com) expansion. Today it already includes `components.json`, the `@/` alias, `src/lib/utils.js` (`cn()`), `src/components/theme-provider.jsx`, `.vscode/mcp.json`, and local ReactBits files in `src/components/ui/`.
+This project ships with real [shadcn/ui](https://ui.shadcn.com) components pre-installed in \`src/components/ui/\`:
 
-Official shadcn/ui primitives like `Button`, `Card`, `Badge`, `Separator`, and `Alert` are **not** preinstalled yet. Add them with:
+- **Button** — variant-driven button with CVA (default, destructive, outline, secondary, ghost, link)
+- **Card** — flexible card container (Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter)
+- **Badge** — inline status/label badge with variants
+- **Separator** — horizontal/vertical divider (Radix primitive)
+- **Alert** — contextual alert with icon support (default, destructive)
+
+Plus **ReactBits** animation components: Aurora, BlurText, ShinyText, SpotlightCard, DecryptedText.
+
+### Expanding your component library
+
+Add more shadcn/ui components with the CLI:
 
 \`\`\`bash
-npx shadcn@latest add button
-npx shadcn@latest add card
-npx shadcn@latest add badge
-npx shadcn@latest add separator
-npx shadcn@latest add alert
+npx shadcn@latest add dialog
+npx shadcn@latest add sheet
+npx shadcn@latest add tabs
 \`\`\`
 
-When you add official shadcn/ui primitives, they land in `src/components/ui/`. Import them in your slides only after the file exists locally:
+New components land in \`src/components/ui/\`. Import them in your slides:
 
 \`\`\`jsx
 import { Button } from '@/components/ui/button'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 \`\`\`
 
-The canonical CSS entrypoint is `src/index.css`, imported by `src/main.jsx`. It pulls in the engine global layer order plus the active theme CSS.
-
-The `@/` alias maps to `src/` — configured in `vite.config.js`.
+The \`@/\` alias maps to \`src/\` — configured in \`vite.config.js\` and \`jsconfig.json\`.
 
 ## 🤖 AI-Powered Component Discovery
 
@@ -621,9 +628,15 @@ async function main() {
     write(dir, '.vscode/mcp.json', vscodeMcpConfig())
     mkdirSync(join(dir, 'src', 'components', 'ui'), { recursive: true })
 
+    // Pre-install real shadcn/ui components for out-of-the-box usage
+    const shadcnUiDir = join(__dirname, 'templates', 'shadcn-ui')
+    const uiDir = join(dir, 'src', 'components', 'ui')
+    for (const file of ['button.jsx', 'card.jsx', 'badge.jsx', 'separator.jsx', 'alert.jsx']) {
+      copyFileSync(join(shadcnUiDir, file), join(uiDir, file))
+    }
+
     // Pre-install ReactBits components for out-of-the-box animations
     const reactBitsDir = join(__dirname, 'templates', 'react-bits')
-    const uiDir = join(dir, 'src', 'components', 'ui')
     for (const file of ['aurora.jsx', 'aurora.css', 'blur-text.jsx', 'shiny-text.jsx', 'spotlight-card.jsx', 'decrypted-text.jsx']) {
       copyFileSync(join(reactBitsDir, file), join(uiDir, file))
     }

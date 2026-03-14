@@ -641,9 +641,9 @@ describe('coverSlideJsxShadcn', () => {
     expect(jsx).toContain('aside')
   })
 
-  it('has overline with accent dash', () => {
+  it('has overline with Badge component', () => {
     const jsx = coverSlideJsxShadcn('Title', 'Sub', 'slug')
-    expect(jsx).toContain('overlineDash')
+    expect(jsx).toContain('Badge')
     expect(jsx).toContain('overline')
   })
 
@@ -670,9 +670,8 @@ describe('COVER_SLIDE_CSS_SHADCN', () => {
     expect(COVER_SLIDE_CSS_SHADCN).toContain('transparent')
   })
 
-  it('uses accent color for overline and highlight', () => {
-    expect(COVER_SLIDE_CSS_SHADCN).toContain('.overlineDash')
-    expect(COVER_SLIDE_CSS_SHADCN).toContain('var(--accent)')
+  it('uses Badge for overline styling', () => {
+    expect(COVER_SLIDE_CSS_SHADCN).toContain('.overlineBadge')
   })
 
   it('has two-column grid layout', () => {
@@ -745,7 +744,7 @@ describe('gettingStartedSlideJsxShadcn', () => {
   it('includes three workflow steps', () => {
     const jsx = gettingStartedSlideJsxShadcn('test-slug')
     expect(jsx).toContain('Inspect')
-    expect(jsx).toContain('Add')
+    expect(jsx).toContain('Expand')
     expect(jsx).toContain('Compose')
   })
 
@@ -756,12 +755,13 @@ describe('gettingStartedSlideJsxShadcn', () => {
 
   it('includes code block with npx shadcn command', () => {
     const jsx = gettingStartedSlideJsxShadcn('test-slug')
-    expect(jsx).toContain('npx shadcn@latest add button card alert')
+    expect(jsx).toContain('npx shadcn@latest add dialog sheet tabs')
   })
 
-  it('includes ReactBits code-block hint', () => {
+  it('includes Alert with pro tip', () => {
     const jsx = gettingStartedSlideJsxShadcn('test-slug')
-    expect(jsx).toContain('npx shadcn@latest add @react-bits/code-block')
+    expect(jsx).toContain('Alert')
+    expect(jsx).toContain('Pro tip')
   })
 
   it('uses slide index 2', () => {
@@ -781,9 +781,8 @@ describe('GETTING_STARTED_SLIDE_CSS_SHADCN', () => {
     expect(GETTING_STARTED_SLIDE_CSS_SHADCN).toContain('var(--border)')
   })
 
-  it('uses accent for step numbers', () => {
-    expect(GETTING_STARTED_SLIDE_CSS_SHADCN).toContain('.stepNum')
-    expect(GETTING_STARTED_SLIDE_CSS_SHADCN).toContain('background: var(--accent)')
+  it('uses Badge for step numbers', () => {
+    expect(GETTING_STARTED_SLIDE_CSS_SHADCN).toContain('.stepBadge')
   })
 
   it('has horizontal timeline layout', () => {
