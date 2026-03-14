@@ -29,6 +29,8 @@ Then read the active theme descriptor:
 
 Use the descriptor as the source of truth for slide structure, CSS patterns, decorative language, component ecosystem, and anti-patterns.
 
+If `designSystem` is `shadcn`, also read `.github/instructions/shadcn-setup.instructions.md` before editing setup-sensitive files or claiming component availability.
+
 ## Out of scope — do NOT modify
 
 - `App.jsx`, `main.jsx` — these are generic, engine-driven, identical across projects

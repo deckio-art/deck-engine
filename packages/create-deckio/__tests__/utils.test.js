@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { slugify, packageJson, deckConfig, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS, AURORA_PALETTES, AURORA_ACCENT_MAP, auroraAccent, themeProviderJsx, appJsx, coverSlideJsxShadcn, COVER_SLIDE_CSS_SHADCN, featuresSlideJsxShadcn, FEATURES_SLIDE_CSS_SHADCN, gettingStartedSlideJsxShadcn, GETTING_STARTED_SLIDE_CSS_SHADCN, thankYouSlideJsxShadcn, THANK_YOU_SLIDE_CSS_SHADCN, vscodeMcpConfig } from '../utils.mjs'
+import { slugify, packageJson, deckConfig, indexCss, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS, AURORA_PALETTES, AURORA_ACCENT_MAP, auroraAccent, themeProviderJsx, appJsx, coverSlideJsxShadcn, COVER_SLIDE_CSS_SHADCN, featuresSlideJsxShadcn, FEATURES_SLIDE_CSS_SHADCN, gettingStartedSlideJsxShadcn, GETTING_STARTED_SLIDE_CSS_SHADCN, thankYouSlideJsxShadcn, THANK_YOU_SLIDE_CSS_SHADCN, vscodeMcpConfig } from '../utils.mjs'
 
 describe('slugify', () => {
   it('lowercases and hyphenates spaces', () => {
@@ -174,38 +174,30 @@ describe('deckConfig', () => {
   })
 })
 
+describe('indexCss', () => {
+  it('imports the engine global stylesheet', () => {
+    expect(indexCss('dark')).toContain("@deckio/deck-engine/styles/global.css")
+  })
+
+  it('imports the selected theme stylesheet', () => {
+    expect(indexCss('shadcn')).toContain("@deckio/deck-engine/themes/shadcn.css")
+  })
+})
+
 describe('mainJsx', () => {
-  it('defaults to dark theme import when no theme specified', () => {
+  it('imports the local CSS entrypoint', () => {
     const jsx = mainJsx()
-    expect(jsx).toContain("@deckio/deck-engine/themes/dark.css")
+    expect(jsx).toContain("import './index.css'")
   })
 
-  it('imports the specified dark theme CSS', () => {
+  it('does not inline engine stylesheet imports anymore', () => {
     const jsx = mainJsx('dark')
-    expect(jsx).toContain("import '@deckio/deck-engine/themes/dark.css'")
+    expect(jsx).not.toContain('@deckio/deck-engine/styles/global.css')
+    expect(jsx).not.toContain('@deckio/deck-engine/themes/dark.css')
   })
 
-  it('imports the specified light theme CSS', () => {
-    const jsx = mainJsx('light')
-    expect(jsx).toContain("import '@deckio/deck-engine/themes/light.css'")
-  })
-
-  it('imports the specified shadcn theme CSS', () => {
-    const jsx = mainJsx('shadcn')
-    expect(jsx).toContain("import '@deckio/deck-engine/themes/shadcn.css'")
-  })
-
-  it('theme selection changes the CSS import path', () => {
-    const dark = mainJsx('dark')
-    const light = mainJsx('light')
-    expect(dark).not.toBe(light)
-    expect(dark).toContain('/dark.css')
-    expect(light).toContain('/light.css')
-  })
-
-  it('always imports global.css', () => {
-    const jsx = mainJsx('dark')
-    expect(jsx).toContain("@deckio/deck-engine/styles/global.css")
+  it('theme selection does not change main JSX output', () => {
+    expect(mainJsx('dark')).toBe(mainJsx('light'))
   })
 
   it('renders App component inside StrictMode', () => {
@@ -700,7 +692,7 @@ describe('featuresSlideJsxShadcn', () => {
 
   it('includes four capability cards', () => {
     const jsx = featuresSlideJsxShadcn('test-slug')
-    expect(jsx).toContain('shadcn Components')
+    expect(jsx).toContain('shadcn Ready')
     expect(jsx).toContain('ReactBits Animations')
     expect(jsx).toContain('Theme System')
     expect(jsx).toContain('Export Anywhere')
@@ -752,19 +744,24 @@ describe('gettingStartedSlideJsxShadcn', () => {
 
   it('includes three workflow steps', () => {
     const jsx = gettingStartedSlideJsxShadcn('test-slug')
-    expect(jsx).toContain('Install')
+    expect(jsx).toContain('Inspect')
+    expect(jsx).toContain('Add')
     expect(jsx).toContain('Compose')
-    expect(jsx).toContain('Present')
+  })
+
+  it('shows the scaffold contract before adding primitives', () => {
+    const jsx = gettingStartedSlideJsxShadcn('test-slug')
+    expect(jsx).toContain('cat components.json && ls src/components/ui')
   })
 
   it('includes code block with npx shadcn command', () => {
     const jsx = gettingStartedSlideJsxShadcn('test-slug')
-    expect(jsx).toContain('npx shadcn add button')
+    expect(jsx).toContain('npx shadcn@latest add button card alert')
   })
 
   it('includes ReactBits code-block hint', () => {
     const jsx = gettingStartedSlideJsxShadcn('test-slug')
-    expect(jsx).toContain('npx shadcn add @react-bits/code-block')
+    expect(jsx).toContain('npx shadcn@latest add @react-bits/code-block')
   })
 
   it('uses slide index 2', () => {

@@ -19,6 +19,8 @@ Before writing any slide CSS:
 - Custom themes: read `src/themes/<theme>/descriptor.md` or `src/themes/<theme>.descriptor.md`
 - If the custom descriptor is missing, fall back to the built-in descriptor implied by `designSystem`
 
+If `designSystem` is `shadcn`, also read `.github/instructions/shadcn-setup.instructions.md` before editing setup-sensitive files or claiming component availability.
+
 ## What to read in the descriptor
 
 Before generating CSS, read:

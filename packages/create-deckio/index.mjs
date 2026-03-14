@@ -12,7 +12,7 @@ import { exec } from 'child_process'
 import { promisify } from 'util'
 import { fileURLToPath } from 'url'
 import * as clack from '@clack/prompts'
-import { slugify, packageJson, deckConfig, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS, AURORA_PALETTES, auroraAccent, coverSlideJsxShadcn, COVER_SLIDE_CSS_SHADCN, featuresSlideJsxShadcn, FEATURES_SLIDE_CSS_SHADCN, gettingStartedSlideJsxShadcn, GETTING_STARTED_SLIDE_CSS_SHADCN, thankYouSlideJsxShadcn, THANK_YOU_SLIDE_CSS_SHADCN, themeProviderJsx, appJsx, vscodeMcpConfig } from './utils.mjs'
+import { slugify, packageJson, deckConfig, indexCss, mainJsx, resolveEngineRef, viteConfig, componentsJson, cnUtility, jsConfig, COLOR_PRESETS, AURORA_PALETTES, auroraAccent, coverSlideJsxShadcn, COVER_SLIDE_CSS_SHADCN, featuresSlideJsxShadcn, FEATURES_SLIDE_CSS_SHADCN, gettingStartedSlideJsxShadcn, GETTING_STARTED_SLIDE_CSS_SHADCN, thankYouSlideJsxShadcn, THANK_YOU_SLIDE_CSS_SHADCN, themeProviderJsx, appJsx, vscodeMcpConfig } from './utils.mjs'
 
 const execAsync = promisify(exec)
 
@@ -279,21 +279,27 @@ const README = (designSystem = 'none') => {
   const shadcnSection = designSystem === 'shadcn' ? `
 ## shadcn/ui Components
 
-This project is set up with [shadcn/ui](https://ui.shadcn.com). Add components with:
+This project is configured for [shadcn/ui](https://ui.shadcn.com) expansion. Today it already includes `components.json`, the `@/` alias, `src/lib/utils.js` (`cn()`), `src/components/theme-provider.jsx`, `.vscode/mcp.json`, and local ReactBits files in `src/components/ui/`.
+
+Official shadcn/ui primitives like `Button`, `Card`, `Badge`, `Separator`, and `Alert` are **not** preinstalled yet. Add them with:
 
 \`\`\`bash
 npx shadcn@latest add button
 npx shadcn@latest add card
-npx shadcn@latest add dialog
+npx shadcn@latest add badge
+npx shadcn@latest add separator
+npx shadcn@latest add alert
 \`\`\`
 
-Components are installed to \`src/components/ui/\`. Import them in your slides:
+When you add official shadcn/ui primitives, they land in `src/components/ui/`. Import them in your slides only after the file exists locally:
 
 \`\`\`jsx
 import { Button } from '@/components/ui/button'
 \`\`\`
 
-The \`@/\` alias maps to \`src/\` — configured in \`vite.config.js\`.
+The canonical CSS entrypoint is `src/index.css`, imported by `src/main.jsx`. It pulls in the engine global layer order plus the active theme CSS.
+
+The `@/` alias maps to `src/` — configured in `vite.config.js`.
 
 ## 🤖 AI-Powered Component Discovery
 
@@ -579,6 +585,7 @@ async function main() {
   write(dir, 'package.json', packageJson(slug, engineRef, { designSystem }))
   write(dir, 'vite.config.js', viteConfig({ designSystem }))
   write(dir, 'index.html', INDEX_HTML)
+  write(dir, 'src/index.css', indexCss(theme))
   write(dir, 'src/main.jsx', mainJsx(theme))
   write(dir, 'src/App.jsx', appJsx({ designSystem, appearance }))
   write(dir, 'src/data/.gitkeep', '')
@@ -605,7 +612,7 @@ async function main() {
   write(dir, 'README.md', README(designSystem))
   write(dir, '.gitignore', 'node_modules\ndist\n.vite\n')
 
-  // shadcn/ui design system files
+  // shadcn-ready authoring files (setup contract, not bundled primitives)
   if (designSystem === 'shadcn') {
     write(dir, 'components.json', componentsJson())
     write(dir, 'src/lib/utils.js', cnUtility())

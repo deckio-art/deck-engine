@@ -75,12 +75,18 @@ export function packageJson(name, engineRef, { designSystem = 'none' } = {}) {
   }, null, 2) + '\n'
 }
 
+export function indexCss(theme = 'dark') {
+  return `\
+@import '@deckio/deck-engine/styles/global.css';
+@import '@deckio/deck-engine/themes/${theme}.css';
+`
+}
+
 export function mainJsx(theme = 'dark') {
   return `\
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import '@deckio/deck-engine/styles/global.css'
-import '@deckio/deck-engine/themes/${theme}.css'
+import './index.css'
 import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
@@ -261,10 +267,12 @@ export function jsConfig() {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   shadcn-specific Starter Slide Templates
+   shadcn-ready Starter Slide Templates
    
    When designSystem is "shadcn", these replace the default dark-theme
-   starter slides with a clean, editorial aesthetic that matches shadcn.com.
+   starter slides with a cleaner editorial contract. They showcase the real
+   setup we scaffold today: theme tokens, ReactBits accents, and optional
+   shadcn CLI expansion — not preinstalled official primitives.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export function coverSlideJsxShadcn(title, subtitle, slug) {
@@ -478,9 +486,9 @@ import styles from './FeaturesSlide.module.css'
 const features = [
   {
     icon: '🧩',
-    title: 'shadcn Components',
-    desc: 'Button, Card, Dialog — add any component with one command. Full accessibility built in.',
-    code: 'npx shadcn add button',
+    title: 'shadcn Ready',
+    desc: 'components.json, aliases, cn(), and MCP are prewired. Add official primitives only when you need them.',
+    code: 'npx shadcn@latest add button card badge',
     delay: '0s',
   },
   {
@@ -667,7 +675,7 @@ export const FEATURES_SLIDE_CSS_SHADCN = `\
 
 export function gettingStartedSlideJsxShadcn(slug) {
   return `\
-// 💡 npx shadcn add @react-bits/code-block
+// 💡 Optional expansion: npx shadcn@latest add @react-bits/code-block
 import { BottomBar, Slide } from '@deckio/deck-engine'
 import styles from './GettingStartedSlide.module.css'
 
@@ -689,13 +697,13 @@ export default function GettingStartedSlide() {
                 <span className={styles.stepLine} />
               </div>
               <div className={styles.stepContent}>
-                <h3 className={styles.stepTitle}>Install</h3>
+                <h3 className={styles.stepTitle}>Inspect</h3>
                 <div className={styles.codeBlock}>
                   <div className={styles.codeDots}>
                     <span /><span /><span />
                   </div>
                   <div className={styles.codeLine}>
-                    <span className={styles.codeDim}>$</span> npx shadcn add button card dialog
+                    <span className={styles.codeDim}>$</span> cat components.json && ls src/components/ui
                   </div>
                 </div>
               </div>
@@ -707,13 +715,13 @@ export default function GettingStartedSlide() {
                 <span className={styles.stepLine} />
               </div>
               <div className={styles.stepContent}>
-                <h3 className={styles.stepTitle}>Compose</h3>
+                <h3 className={styles.stepTitle}>Add</h3>
                 <div className={styles.codeBlock}>
                   <div className={styles.codeDots}>
                     <span /><span /><span />
                   </div>
                   <div className={styles.codeLine}>
-                    <span className={styles.codeKeyword}>import</span> {"{"} Button {"}"} <span className={styles.codeKeyword}>from</span> <span className={styles.codeString}>'@/components/ui/button'</span>
+                    <span className={styles.codeDim}>$</span> npx shadcn@latest add button card alert
                   </div>
                 </div>
               </div>
@@ -724,13 +732,13 @@ export default function GettingStartedSlide() {
                 <span className={styles.stepNum}>3</span>
               </div>
               <div className={styles.stepContent}>
-                <h3 className={styles.stepTitle}>Present</h3>
+                <h3 className={styles.stepTitle}>Compose</h3>
                 <div className={styles.codeBlock}>
                   <div className={styles.codeDots}>
                     <span /><span /><span />
                   </div>
                   <div className={styles.codeLine}>
-                    <span className={styles.codeDim}>$</span> npm run dev
+                    <span className={styles.codeKeyword}>import</span> {"{"} Button {"}"} <span className={styles.codeKeyword}>from</span> <span className={styles.codeString}>'@/components/ui/button'</span>
                   </div>
                 </div>
               </div>
