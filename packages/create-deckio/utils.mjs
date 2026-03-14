@@ -634,7 +634,7 @@ const features = [
     icon: '🧩',
     title: 'shadcn Ready',
     badge: 'UI',
-    desc: 'Real shadcn/ui components pre-installed — Button, Card, Badge, Separator, and Alert. Add more with the CLI.',
+    desc: 'shadcn/ui components pre-installed — Button, Card, Badge, Separator, and Alert. Add more with the CLI.',
     code: 'npx shadcn@latest add dialog sheet tabs',
     delay: '0s',
   },

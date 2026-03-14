@@ -277,10 +277,9 @@ Create and maintain slide-based presentations. Each project is a self-contained 
 
 const README = (designSystem = 'none') => {
   const shadcnSection = designSystem === 'shadcn' ? `
-## Design System — Real shadcn/ui
+## Design System — shadcn/ui
 
-This deck ships with **real [shadcn/ui](https://ui.shadcn.com) components** — not an imitation.
-The source files live in your project and you own them completely. Modify, extend, or replace
+This deck ships with **[shadcn/ui](https://ui.shadcn.com) components**. The source files live in your project and you own them completely. Modify, extend, or replace
 any component to match your presentation's needs.
 
 ### Preinstalled components
@@ -694,7 +693,7 @@ async function main() {
     write(dir, 'MCP-GUIDE.md', mcpGuide())
     mkdirSync(join(dir, 'src', 'components', 'ui'), { recursive: true })
 
-    // Pre-install real shadcn/ui components for out-of-the-box usage
+    // Pre-install shadcn/ui components for out-of-the-box usage
     const shadcnUiDir = join(__dirname, 'templates', 'shadcn-ui')
     const uiDir = join(dir, 'src', 'components', 'ui')
     for (const file of ['button.jsx', 'card.jsx', 'badge.jsx', 'separator.jsx', 'alert.jsx']) {
@@ -742,10 +741,8 @@ async function main() {
 
   if (designSystem === 'shadcn') {
     clack.log.info(
-      '🎨 Real shadcn/ui components preinstalled: Button, Card, Badge, Separator, Alert\n' +
-      '   Plus ReactBits animations: Aurora, BlurText, ShinyText, SpotlightCard, DecryptedText\n' +
-      '   Add more: npx shadcn@latest add [component]  •  AI: shadcn MCP pre-configured\n' +
-      '   📖 See MCP-GUIDE.md for AI-powered component authoring prompts'
+      '🎨 shadcn/ui + ReactBits components included\n' +
+      '   Add more: npx shadcn@latest add [component]'
     )
   }
 
