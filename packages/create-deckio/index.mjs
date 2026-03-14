@@ -394,6 +394,26 @@ async function main() {
   const slug = slugify(arg)
   const dir = resolve(slug)
 
+  // Guard: refuse to scaffold into a non-empty existing directory
+  if (existsSync(dir)) {
+    const entries = readdirSync(dir).filter((e) => e !== '.git')
+    if (entries.length > 0) {
+      if (process.stdin.isTTY) {
+        const overwrite = await clack.confirm({
+          message: `Directory "${slug}" already exists and is not empty. Continue anyway?`,
+          initialValue: false,
+        })
+        if (!overwrite || clack.isCancel(overwrite)) {
+          clack.cancel('Cancelled — directory left untouched.')
+          process.exit(1)
+        }
+      } else {
+        console.error(`Error: directory "${slug}" already exists and is not empty.`)
+        process.exit(1)
+      }
+    }
+  }
+
   const defaultTitle = slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
   const isInteractive = process.stdin.isTTY
 
@@ -424,9 +444,9 @@ async function main() {
     })
     if (clack.isCancel(icon)) { clack.cancel('Cancelled.'); process.exit(0) }
 
-    // Choose design system
+    // Choose theme
     const chosenDesignSystem = await clack.select({
-      message: 'Design system',
+      message: 'Choose a theme',
       options: [
         { value: 'default', label: 'Default', hint: 'CSS custom properties' },
         { value: 'shadcn', label: 'shadcn/ui', hint: 'Tailwind + shadcn/ui' },
@@ -610,6 +630,7 @@ async function main() {
   copyEngineAssets(dir)
 
   s.message('Installing dependencies...')
+  let installOk = true
   try {
     await execAsync('npm install', { cwd: dir })
     s.message('Initializing engine skills & instructions...')
@@ -621,15 +642,19 @@ async function main() {
     }
     s.stop('Project ready!')
   } catch {
+    installOk = false
     s.stop('npm install failed — run it manually inside the project folder')
   }
-
 
   if (designSystem === 'shadcn') {
     clack.log.info('🤖 shadcn MCP server pre-configured — use AI to browse & add components')
   }
 
-  clack.outro(`✦ Ready! cd ${slug} && npm run dev`)
+  if (installOk) {
+    clack.outro(`✦ Ready! cd ${slug} && npm run dev`)
+  } else {
+    clack.outro(`⚠ cd ${slug} && npm install   (then npm run dev)`)
+  }
 }
 
 main()
