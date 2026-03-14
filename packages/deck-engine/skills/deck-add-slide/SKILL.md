@@ -51,6 +51,26 @@ If no custom descriptor exists, fall back to the built-in descriptor that matche
 
 If the descriptor and `designSystem` disagree, follow `designSystem` for structure and call out the mismatch in your response so the project owner can fix the configuration.
 
+### When `designSystem === 'shadcn'`: load the component supplement
+
+Also read the shadcn supplement instructions before generating code:
+
+1. `shadcn-setup.instructions.md` — infrastructure contract
+2. `shadcn-components.instructions.md` — component reference, migration patterns, decision tree
+
+These tell you which real components are preinstalled and ready to import:
+
+| Preinstalled | Import |
+|---|---|
+| `Button` | `'@/components/ui/button'` |
+| `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardAction`, `CardContent`, `CardFooter` | `'@/components/ui/card'` |
+| `Badge` | `'@/components/ui/badge'` |
+| `Separator` | `'@/components/ui/separator'` |
+| `Alert`, `AlertTitle`, `AlertDescription` | `'@/components/ui/alert'` |
+| `Aurora`, `BlurText`, `ShinyText`, `DecryptedText`, `SpotlightCard` | `'@/components/ui/<name>'` |
+
+**Always prefer real component imports over CSS imitation.** If a preinstalled component can replace a hand-built div, use the component.
+
 ## Step 3 — Create the slide from the descriptor
 
 The descriptor is the source of truth. Read these sections before generating code:
@@ -109,6 +129,8 @@ After writing the slide:
 
 - [ ] Read `theme` and `designSystem` from `deck.config.js`
 - [ ] Read the active theme descriptor before writing code
+- [ ] If `designSystem === 'shadcn'`: read the shadcn supplement instructions
+- [ ] If `designSystem === 'shadcn'`: used real component imports (Card, Badge, Button, Alert, Separator) instead of CSS imitation
 - [ ] Used the descriptor's exact JSX skeleton or direct variant of it
 - [ ] Used the descriptor's exact CSS skeleton or direct variant of it
 - [ ] Stayed inside the descriptor's token set and component ecosystem

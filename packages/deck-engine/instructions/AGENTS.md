@@ -24,3 +24,12 @@ Create and maintain slide-based presentations. Each project is a self-contained 
 - `@deckio/deck-engine` provides: `Slide`, `BottomBar`, `Navigation`, `SlideProvider`, `useSlides`, `GenericThankYouSlide`
 - See `.github/instructions/` for detailed conventions on slide JSX, CSS modules, and deck.config.js
 - See `.github/skills/` for step-by-step workflows (e.g., adding a slide)
+
+## Design system
+
+Check `designSystem` in `deck.config.js`. When it is `'shadcn'`:
+
+- Real shadcn/ui components are preinstalled: `Button`, `Card`, `Badge`, `Separator`, `Alert`
+- ReactBits motion components are preinstalled: `Aurora`, `BlurText`, `ShinyText`, `DecryptedText`, `SpotlightCard`
+- **Prefer real component imports over CSS imitation** — this is the default authoring pattern
+- Read the shadcn supplement instructions (`shadcn-setup.instructions.md`, `shadcn-components.instructions.md`) for the full reference

@@ -19,7 +19,9 @@ Before writing any slide JSX:
 - Custom themes: read `src/themes/<theme>/descriptor.md` or `src/themes/<theme>.descriptor.md`
 - If the custom descriptor is missing, fall back to the built-in descriptor implied by `designSystem`
 
-If `designSystem` is `shadcn`, also read `.github/instructions/shadcn-setup.instructions.md` before editing setup-sensitive files or claiming component availability.
+If `designSystem` is `shadcn`, also read the shadcn supplement instructions:
+- `shadcn-setup.instructions.md` — infrastructure contract
+- `shadcn-components.instructions.md` — component reference, preinstalled set, migration patterns
 
 ## Common imports
 
@@ -27,6 +29,22 @@ If `designSystem` is `shadcn`, also read `.github/instructions/shadcn-setup.inst
 import { BottomBar, Slide } from '@deckio/deck-engine'
 import styles from './MySlide.module.css'
 ```
+
+### shadcn deck imports (when `designSystem === 'shadcn'`)
+
+Preinstalled components are ready to import — no CLI setup needed:
+
+```jsx
+import { Button } from '@/components/ui/button'
+import { Card, CardHeader, CardTitle, CardDescription, CardAction, CardContent, CardFooter } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
+import SpotlightCard from '@/components/ui/spotlight-card'
+import BlurText from '@/components/ui/blur-text'
+```
+
+**Real components are the default authoring pattern.** Never recreate a Card, Badge, Button, Alert, or Separator with raw `<div>` + CSS when the real component is available.
 
 ## What to read in the descriptor
 

@@ -1698,3 +1698,36 @@ Owner answers to 7 open questions from SHADCN-001 scoping:
 
 **Why:** Owner input unblocks Phase 0 implementation.
 
+
+---
+
+### SKILL-002: Design-System Supplement Layer Pattern
+**Author:** Basher | **Date:** 2026-03-15 | **Status:** Implemented
+
+When `designSystem` is set in `deck.config.js`, skills and agents load a supplementary authoring layer alongside the theme descriptor. For shadcn, three companion files work together:
+
+1. **Theme descriptor** (`shadcn.md`) — visual language, token contract, slide personality
+2. **Setup contract** (`shadcn-setup.instructions.md`) — infrastructure wiring, verification checklist
+3. **Component reference** (`shadcn-components.instructions.md`) — availability matrix, migration patterns, decision tree
+
+The theme descriptor alone doesn't tell agents which components exist and how to use them. Separating visual rules (Saul's domain) from component authoring rules (engineering domain) lets both evolve independently. No new runtime mechanism needed — `designSystem` field is already the trigger.
+
+**Pattern for future design systems:** If a new design system is added (e.g., `designSystem: 'radix'`), create matching `<name>-setup.instructions.md` and `<name>-components.instructions.md` files. Skills already check `designSystem` — they just load the right supplement.
+
+**Team impact:** Saul's descriptors remain his domain. Supplement files don't overlap. Livingston's component reference informs imports validity. Linus's validate skill checks preinstalled integrity. Rusty's pattern extends to future axes.
+
+---
+
+### DESIGN-003: Design System Supplement Layer Architecture
+**Author:** Saul | **Date:** 2026-03-14 | **Status:** Implemented
+
+The design system supplement is a separate descriptor activating alongside the theme descriptor when `designSystem: 'shadcn'` is configured. Orthogonal to theme choice.
+
+1. **File location:** `packages/deck-engine/themes/descriptors/shadcn-design-system.md` — lives alongside theme descriptors but serves a different role
+2. **Activation model:** `theme` loads the theme descriptor (tokens, visual identity); `designSystem` loads the supplement (composition patterns, coherence rules)
+3. **Content scope:** Composition patterns (slide anatomy, header/grid/alert/action patterns), variant usage in slide context, Radix primitive patterns, coherence rules (typography/color/spacing/radius/animation), CSS-modules-vs-Tailwind guidance
+4. **Does not duplicate the theme descriptor** — theme descriptor answers "what do I have"; supplement answers "how do the pieces work together"
+5. **Extensible to future design systems** — if a non-shadcn design system is added, its supplement follows the same pattern: `{design-system}-design-system.md`
+6. **Coherence checklist included** — when authors add new components via CLI/MCP, the supplement provides a verification checklist (font sizing, spacing at 1280×720, animation conflicts)
+
+**Key files:** `packages/deck-engine/themes/descriptors/shadcn-design-system.md` (the supplement), `packages/deck-engine/themes/descriptors/shadcn.md` (updated to reference it).

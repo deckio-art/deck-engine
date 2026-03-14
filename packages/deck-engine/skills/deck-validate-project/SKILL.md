@@ -96,6 +96,30 @@ Check whether the project configuration and descriptor agree:
 - If `designSystem` is not `'shadcn'`, the project should follow a default DECKIO descriptor such as dark or light
 - If the descriptor and `designSystem` disagree, report an **architecture mismatch** even if individual slides render
 
+### When `designSystem === 'shadcn'`: validate preinstalled components
+
+Verify the preinstalled component set is intact:
+
+- [ ] `src/components/ui/button.jsx` exists
+- [ ] `src/components/ui/card.jsx` exists
+- [ ] `src/components/ui/badge.jsx` exists
+- [ ] `src/components/ui/separator.jsx` exists
+- [ ] `src/components/ui/alert.jsx` exists
+- [ ] `src/lib/utils.js` exists (provides `cn()`)
+- [ ] `components.json` exists at project root
+- [ ] ReactBits files exist: `aurora.jsx`, `blur-text.jsx`, `shiny-text.jsx`, `decrypted-text.jsx`, `spotlight-card.jsx` in `src/components/ui/`
+
+If any preinstalled file is missing, report it as a **scaffold integrity issue** — the file may have been accidentally deleted.
+
+### Validate component usage patterns
+
+For each slide in a shadcn deck, check:
+
+- [ ] Slides use real `<Card>`, `<Badge>`, `<Button>`, `<Alert>`, `<Separator>` imports instead of CSS-imitation divs where applicable
+- [ ] No hand-built card-like patterns when the Card component is available
+- [ ] No raw `<button>` or `<span className={styles.badge}>` when real components exist
+- [ ] CSS Modules focus on layout (grid, spacing, positioning) not component surface styling
+
 ## Step 6: Report results
 
 Summarize:
@@ -112,6 +136,9 @@ Summarize:
 
 - [ ] Read `theme` and `designSystem`
 - [ ] Read the active descriptor
+- [ ] If `designSystem === 'shadcn'`: read shadcn supplement instructions
+- [ ] If `designSystem === 'shadcn'`: verified preinstalled component files exist
+- [ ] If `designSystem === 'shadcn'`: verified slides use real components over CSS imitation
 - [ ] All `deck.config.js` imports resolve
 - [ ] `slides` array matches imports
 - [ ] Every `.jsx` slide has a companion `.module.css`

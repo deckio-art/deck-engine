@@ -19,7 +19,13 @@ Before writing any slide CSS:
 - Custom themes: read `src/themes/<theme>/descriptor.md` or `src/themes/<theme>.descriptor.md`
 - If the custom descriptor is missing, fall back to the built-in descriptor implied by `designSystem`
 
-If `designSystem` is `shadcn`, also read `.github/instructions/shadcn-setup.instructions.md` before editing setup-sensitive files or claiming component availability.
+If `designSystem` is `shadcn`, also read the shadcn supplement instructions:
+- `shadcn-setup.instructions.md` — infrastructure contract
+- `shadcn-components.instructions.md` — component reference, preinstalled set, migration patterns
+
+### CSS role in shadcn decks
+
+When real components are available, **CSS Modules handle layout only** — grid, spacing, density, positioning. The components own their own surface styling (background, border, border-radius, typography). Do not rewrite component styles in CSS Modules. Override only when the descriptor explicitly calls for deck-specific layout adjustments (e.g., a card width constraint or grid gap).
 
 ## What to read in the descriptor
 
