@@ -354,3 +354,366 @@ ReactBits (reactbits.dev) should be included as a complementary animation and co
 - All meaningful changes require team consensus
 - Document architectural decisions here
 - Keep history focused on work, decisions focused on direction
+
+---
+
+### BASHER-THEME-CREATOR-FEASIBILITY: Theme Creator Package Architecture Analysis
+**Author:** Basher (Backend) | **Date:** 2026-03-15 | **Status:** Analysis — architecture adopted
+
+Deep technical analysis of theme generation feasibility for the proposed theme creator engine.
+
+**Key Findings:**
+
+1. **Current theme loading is perfectly architected for generation** — themes are pure CSS files, no runtime JavaScript involved. Pipeline: `themes/{name}.css → static import in main.jsx → Vite CSS pipeline → browser`. Generation fits naturally: new `.css` file drops into `packages/deck-engine/themes/` and is auto-discovered by `getAvailableThemes()` directory scan.
+
+2. **Package boundary recommendation: `@deckio/create-theme`** — new workspace package (not embedded in engine). Rationale: (a) keeps engine browser-safe (no Node.js deps), (b) follows existing `create-deckio` convention, (c) clean dependency boundary, (d) independent release cadence from engine.
+
+3. **Export format:** Generated theme = 3 files:
+   - `{name}.css` — full CSS with all 9 token categories + `@import "tailwindcss"` + `@theme inline` bridge
+   - `descriptors/{name}.md` — theme descriptor following established schema
+   - `previews/{name}.png` (optional) — representative screenshot
+
+4. **Token contract drift is the high risk** — all ~84 CSS custom properties must exist in every theme or components break silently. Mitigation: extract canonical token list, add Vitest contract validation test covering all themes.
+
+5. **CSS layer warnings:**
+   - Theme CSS must remain **unlayered** (highest cascade priority)
+   - Never emit `@layer` in generated CSS
+   - `@theme inline` block must be exact (not derived) — use constant template
+
+6. **Standalone CLI workflow (not build-time or runtime)** — theme creation is an authoring step that precedes development. User runs `npm create @deckio/theme`, gets output files, then creates a project using that theme.
+
+**Key risks with mitigations:**
+- Token drift → contract validation test
+- @layer breaches → lint check in test suite
+- @theme typos → use constant block template
+- Font loading deps → document strategy, recommend fallback stacks
+- color-scheme mismatch → ask for base appearance, set accordingly
+
+**Files referenced:**
+- `packages/deck-engine/themes/theme-loader.js` — resolution/discovery utilities
+- `packages/deck-engine/themes/{name}.css` — existing theme files as templates
+- `packages/deck-engine/themes/descriptors/` — descriptor pattern
+
+**Conclusion:** Feasible. Recommend extracting token contract first, then building the creator package.
+
+---
+
+### SAUL-THEME-CREATOR-DESIGN-PERSPECTIVE: Token Tier Classification and Design Constraints
+**Author:** Saul (UI/UX & Design) | **Date:** 2026-03-15 | **Status:** Design perspective — architecture adopted
+
+Design system perspective on the theme creator engine requirements.
+
+**Token Classification (3-tier model):**
+
+| Tier | Tokens | Meaning | v1 Policy |
+|---|---|---|---|
+| **Tier 1: Required Identity Tokens** | 32 tokens | Define the theme's look. Missing any token = visual breakage. Examples: semantic colors (primary, secondary, accent, background, foreground, muted, destructive), ring, radius, key backgrounds | Must exist; validation fails if missing |
+| **Tier 2: Derived Invariant Tokens** | 24 tokens | Generated from Tier 1 to maintain coherence. Never chosen independently. Examples: foreground-on-color pairs (primary-foreground), overlays (surface-overlay), glows (glow-primary), tint ramps, color-scheme | Must be compiler-generated, not AI-authored |
+| **Tier 3: Optional Override Tokens** | ~39 tokens | Structural defaults that may inherit from archetype without breaking identity. Examples: typography families, spacing scale, transition durations | Optional in author input; explicit in final export |
+
+**10 Design Non-Negotiables:**
+
+1. Complete Tier 1 coverage — visual coherence depends on it
+2. Auto-generated `@theme inline` bridge — must be exact, not guessed
+3. Derived tokens always deterministically generated — no AI independent choice
+4. WCAG AA contrast validation on critical pairs (foreground/background, primary-foreground/primary, card-foreground/card)
+5. color-scheme/luminance coherence — dark theme gets `dark`, light gets `light`
+6. Atomic CSS + descriptor generation — same compiled model feeds both files
+7. Strict file structure enforcement — no workarounds or exceptions
+8. No hardcoded hex in component CSS — must use tokens everywhere
+9. Theme loader registration — for skill/descriptor discovery
+10. Single unlayered `:root` block — cascade clarity, no @layer in theme CSS
+
+**6 Major Failure Modes:**
+
+1. **Color soup** — no 60/30/10 color ratio enforcement, results in chaotic unreadable themes
+2. **Token orphans** — mismatched glow/overlay colors (derived from wrong base), breaks visual system coherence
+3. **Typography disasters** — display fonts (e.g., 72px Bebas) used at body sizes, illegible
+4. **Broken Tailwind bridge** — @theme inline typos or missing mappings, utilities silently resolve to nothing
+5. **Design system mismatch** — theme claims shadcn compatibility but breaks under shadcn components
+6. **Stale descriptors** — CSS changes without descriptor updates, skills generate incorrect slides
+
+**Descriptor Minimum Schema (9 required sections):**
+
+1. Metadata (id, authoring pattern, compatible design systems, mood)
+2. Personality (prose description of visual feel)
+3. JSX skeleton (starter code)
+4. CSS skeleton (starter styles)
+5. Token table (which tokens to use/avoid, with values)
+6. Decorative elements table (automatic features vs. explicit JSX)
+7. Anti-patterns list (forbidden styles for this theme)
+8. Component examples
+9. Example slide direction
+
+**Validation scope:**
+- Required checks: recipe schema, token contract, CSS structure, accessibility, color system, descriptor schema, canonical preview build
+- Warning checks: extended contrast pairs, projector-risk heuristics, font warnings, overlay aggressiveness, extreme overrides
+
+**Files referenced:**
+- `packages/deck-engine/themes/descriptors/` — established descriptor pattern
+- `packages/deck-engine/styles/global.css` — token contract definition
+
+---
+
+### ARCH-004: Final Theme Creator Architecture
+**Author:** Rusty | **Requested by:** Ali Soliman | **Date:** 2026-03-14 | **Status:** Final architecture decision
+
+**Moved from inbox decision (too large) — see full text in `.squad/decisions.md` entries above or in `ARCH-004-full.md` reference.**
+
+## Settled Decisions
+
+1. **Primary v1 user:** monorepo maintainers and advanced deck builders, not mass-market end users. End users should keep getting first-class built-in decks by default.
+2. **Product boundary:** the theme creator is authoring-time tooling, not runtime theming, not a marketplace, and not a live browser-side generator.
+3. **Primary v1 output:** local deck themes first. Architecture mirrors engine themes so local themes can be promoted to curated reusable themes later without re-authoring.
+4. **Runtime contract stays intact:** finished theme is **theme CSS + descriptor**. Runtime code stays agnostic to whether theme was hand-authored or generated.
+5. **Package boundary:** new workspace package `packages/create-theme/`, published as `@deckio/create-theme`, thin integration into `create-deckio`.
+6. **Expressiveness:** v1 supports full range from safe corporate/editorial to loud expressive themes (funky-punk spirit). No limiting to conservative palettes.
+7. **Archetypes:** built-in themes remain starting archetypes: `dark`, `light`, `shadcn`-inspired, `funky-punk`-inspired.
+8. **shadcn meaning:** v1 is **visual vibe only**. Generated themes don't claim actual shadcn component compatibility unless future validator explicitly supports it.
+9. **Image and brand ingestion:** included in v1. Images/logos may inform palette extraction, typography mood, decorative direction, but not drive copying of layouts or branded compositions.
+10. **Accessibility bar:** WCAG AA required for critical text pairs. Extended contrast + coherence checks run as warnings.
+11. **Preview step:** mandatory canonical preview deck build before export. Every generated theme must pass.
+12. **AI boundary:** AI interprets brief, summarizes mood, chooses bounded style modules. Does **not** hand-author token bridge, derived values, or freeform CSS.
+
+## Architecture Overview
+
+### Package layout
+**New package:** `packages/create-theme/`
+
+Modules:
+- `brief/` — parses prompt, brand text, optional images into `ThemeRecipe`
+- `archetypes/` — base theme templates + bounded style modules
+- `tokens/` — canonical token contract, tier metadata, deterministic compiler
+- `descriptor/` — markdown descriptor generator
+- `preview/` — canonical preview deck builder + screenshot runner
+- `validate/` — required checks + warning heuristics
+- `export/` — local deck export now; curated/package export later
+
+### Pipeline
+
+```
+Prompt + structured inputs + optional images
+→ ThemeRecipe normalization
+→ Archetype selection
+→ Palette extraction and typography direction
+→ Deterministic token compilation
+→ Deterministic derived-token generation
+→ Bounded style-module application
+→ Descriptor generation (same compiled model)
+→ Validation
+→ Canonical preview build + screenshots
+→ Export
+```
+
+### Source of truth
+
+**`theme.recipe.json`** — normalized source brief and selected options (creator-owned)
+
+**`theme.manifest.json`** — generator version, archetype, export target, timestamps, provenance, validation summary (creator-owned)
+
+**CSS + descriptor** — runtime-facing outputs (generated from recipe + manifest)
+
+### File formats
+
+#### Local deck export layout (v1 primary)
+
+```
+src/themes/<theme-id>.css
+src/themes/descriptors/<theme-id>.md
+.deckio/themes/<theme-id>/theme.recipe.json
+.deckio/themes/<theme-id>/theme.manifest.json
+.deckio/themes/<theme-id>/validation.json
+.deckio/themes/<theme-id>/previews/*.png
+```
+
+- `src/themes/` holds runtime-facing files the deck imports
+- `.deckio/themes/` holds creator metadata, validation, screenshots
+- `src/main.jsx` imports `./themes/<theme-id>.css`
+- `deck.config.js` stores `theme: './src/themes/<theme-id>.css'`
+
+#### Curated reusable export layout (architected now, deferred operationally)
+
+```
+packages/deck-engine/themes/<theme-id>.css
+packages/deck-engine/themes/descriptors/<theme-id>.md
+packages/deck-engine/themes/descriptors/previews/<theme-id>/*.png
+packages/deck-engine/themes/meta/<theme-id>.manifest.json
+```
+
+Compiler and exporter already structured for both layouts; same compiled theme model targets both.
+
+## v1 Scope
+
+### Ships in v1
+1. `@deckio/create-theme` CLI/library
+2. Local deck export as primary workflow
+3. Theme generation from: text brief, structured brand fields, optional image/logo/brand-board inputs
+4. Four visual archetype families: dark, light, shadcn-inspired, expressive/funky-punk-inspired
+5. Deterministic token compiler with bounded style modules
+6. Atomic generation: CSS theme, descriptor, recipe, manifest, validation report, preview screenshots
+7. Required canonical preview build before export
+8. Required WCAG AA validation on critical text pairs
+9. Thin `create-deckio` integration for advanced/maintainer flow
+10. Skill/instruction updates for local custom theme descriptor discovery
+
+### Explicit v1 non-goals
+- no runtime theme marketplace
+- no live runtime theme switching project
+- no arbitrary AI-written CSS blocks
+- no automatic promotion into built-in themes
+- no org-level theme registry UX
+- no promise of actual shadcn component compatibility
+
+## Token Contract (Rule Set)
+
+### Rule 1 — Model the contract in tiers, export the contract in full
+
+| Contract class | Meaning | v1 policy |
+|---|---|---|
+| **Required identity tokens** | Define theme's look; missing token = visual breakage | Must exist; validation fails if missing |
+| **Derived invariant tokens** | Must stay coherent with identity; never chosen independently | Compiler-generated, not AI-authored |
+| **Optional override tokens** | Structural defaults that may inherit from archetype | Optional in recipe, explicit in final export |
+
+### Rule 2 — Exported CSS is always canonical and complete
+
+- **Recipe** may omit structural overrides
+- **Compiler** may inherit from archetype
+- **Exported CSS** still writes full canonical token surface for portability
+
+In practice:
+- Tier 1 correctness tokens: required
+- Tier 2 personality/coherence tokens: required in compiled output (even if derived)
+- Tier 3 structural tokens: optional in author input, explicit in export
+
+### Rule 3 — Derived tokens are not user-authored in v1
+
+Deterministically derived:
+- primary-foreground and foreground-on-fill pairs
+- surface overlays
+- glow tokens
+- tint ramps and border emphasis
+- color-scheme
+- Tailwind @theme inline bridge mappings
+
+Prevents "choose everything independently" chaos.
+
+### Rule 4 — Optional style freedom lives in bounded modules, not open CSS
+
+Non-token CSS through approved modules only:
+- typography treatment
+- heading treatment
+- accent/decor treatment
+- link treatment
+- card treatment
+- ambient texture/overlay treatment
+
+Each module exposes small parameters; no freeform CSS escape hatch in v1.
+
+## Validation Pipeline
+
+### Required checks — export fails on any error
+
+1. **Recipe schema validation** — valid id/slug, supported archetype, supported export target, image assets readable
+2. **Token contract compilation** — required identity tokens resolved, derived tokens generated, final token map complete
+3. **CSS structure validation** — one top-level unlayered `:root`, no `@layer` in theme CSS, valid CSS values, fixed `@import "tailwindcss"`, fixed `@theme inline`
+4. **Accessibility validation** — foreground/background WCAG AA, primary-foreground/primary WCAG AA, card-foreground/card WCAG AA
+5. **Color-system validation** — color-scheme matches luminance intent, derived overlays/glows from same base system
+6. **Descriptor validation** — descriptor in required schema, CSS and descriptor emitted atomically
+7. **Canonical preview build** — preview builds, screenshots render successfully
+
+### Warning checks — export succeeds with warnings
+
+- extended contrast pairs (secondary, accent, muted, callout surfaces)
+- projector-risk heuristics (very low luminance, over-saturation)
+- font fallback/licensing warnings
+- overlay/glow aggressiveness
+- extreme radius/spacing/typography overrides
+- low-confidence image extraction or ambiguous brand input
+
+### Canonical preview deck
+
+Fixed 6-slide set exercising:
+1. Title/hero slide
+2. Content-frame with dense text
+3. Cards/grid surface
+4. Data/callout slide
+5. Image-led or full-bleed composition
+6. Closing/CTA slide
+
+Not optional fluff — proof that theme survives contact with real slide surface.
+
+## Integration Points
+
+### Scaffolder (`packages/create-deckio/`)
+
+Stays simple, prioritizes built-in themes for normal users:
+- add advanced path: "create custom theme"
+- call `@deckio/create-theme`
+- write local artifacts into `src/themes/`
+- write creator metadata into `.deckio/themes/`
+- update `deck.config.js`
+- update `src/main.jsx`
+
+Should **not** absorb theme-generation logic.
+
+### Engine (`packages/deck-engine/`)
+
+Runtime responsibilities small:
+- keep consuming CSS custom properties
+- keep `theme` and `designSystem` as separate axes
+- accept local theme CSS paths via existing custom-theme behavior
+- stay agnostic to generated vs. hand-authored themes
+- expose canonical token contract so creator and engine tests validate against same source
+
+### Skills and descriptors
+
+Descriptors remain first-class:
+- skills/instructions resolve local descriptors at `src/themes/descriptors/<theme-id>.md` when `deck.config.js` points to local theme CSS
+- built-in descriptor fallback for default themes
+- generated descriptors use same structure as built-in descriptors
+- `designSystem` defaults to `default` for generated themes unless stronger future contract says otherwise
+
+## Deferred to v2
+
+- curated reusable theme promotion workflow
+- org-scoped theme libraries
+- marketplace/discovery UI
+- approval workflow for promoting generated theme as built-in
+- true shadcn-compatible output mode
+- watch mode / iterative live regeneration
+- cross-project theme registry and version pinning
+- policy tooling for brand/IP review beyond warnings
+
+## Implementation Order
+
+1. Formalize token contract (canonical list, tier metadata, shared code + tests)
+2. Define canonical preview deck (6-slide set, screenshot harness)
+3. Create `packages/create-theme/` package
+4. Build deterministic compiler (palette → tokens → CSS)
+5. Generate descriptors atomically (same compiled model)
+6. Implement validation (required gates, warning heuristics)
+7. Integrate local theme workflow (create-deckio, deck.config.js, main.jsx, skills)
+8. Add image/brand ingestion (palette extraction, typography hints)
+9. Prepare v2 promotion path (exporter abstraction, curated target disabled until ready)
+
+## Bottom Line
+
+v1 ships as a **maintainer-first, authoring-time theme creator** that generates **local, engine-compatible themes** with **complete canonical token export**, **mandatory descriptor**, **required preview build**, and **required WCAG AA checks on critical pairs**. Runtime stays simple, scaffolder stays thin, output stays portable, system architected for curated reusable themes later.
+
+---
+
+### 2026-03-14T00:46Z: User Directive — Owner decisions on theme creator architecture
+**By:** Ali Soliman (via Copilot) | **Date:** 2026-03-14 | **Status:** Implemented
+
+Owner input on open questions from theme creator design meeting. All points incorporated into ARCH-004.
+
+1. **v1 user:** Monorepo maintainers first. End users get first-class defaults. Architect for future org/user curation.
+2. **Output priority:** Local deck themes first. Curated reusable themes later — but architect for it now.
+3. **Expressiveness:** Full range — user should have a choice (safe corporate through funky-punk).
+4. **shadcn:** Visual vibe only, not actual compatibility. Popular with devs but not a hard requirement.
+5. **Image/brand ingestion:** Yes, include in v1.
+6. **Accessibility bar:** Team's call. WCAG AA on critical pairs confirmed as acceptable bar.
+7. **Preview screenshots:** Team's call. Required mandatory canonical preview build confirmed.
+
+**Why captured:** Owner input on open questions from theme creator design meeting.
+
