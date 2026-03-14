@@ -277,26 +277,48 @@ Create and maintain slide-based presentations. Each project is a self-contained 
 
 const README = (designSystem = 'none') => {
   const shadcnSection = designSystem === 'shadcn' ? `
-## shadcn/ui Components
+## Design System — Real shadcn/ui
 
-This project ships with real [shadcn/ui](https://ui.shadcn.com) components pre-installed in \`src/components/ui/\`:
+This deck ships with **real [shadcn/ui](https://ui.shadcn.com) components** — not an imitation.
+The source files live in your project and you own them completely. Modify, extend, or replace
+any component to match your presentation's needs.
 
-- **Button** — variant-driven button with CVA (default, destructive, outline, secondary, ghost, link)
-- **Card** — flexible card container (Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter)
-- **Badge** — inline status/label badge with variants
-- **Separator** — horizontal/vertical divider (Radix primitive)
-- **Alert** — contextual alert with icon support (default, destructive)
+### Preinstalled components
 
-Plus **ReactBits** animation components: Aurora, BlurText, ShinyText, SpotlightCard, DecryptedText.
+| Component | Path | What it does |
+|-----------|------|-------------|
+| **Button** | \`src/components/ui/button.jsx\` | Variant-driven button (default, destructive, outline, secondary, ghost, link) |
+| **Card** | \`src/components/ui/card.jsx\` | Flexible container (Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter) |
+| **Badge** | \`src/components/ui/badge.jsx\` | Inline status / label badge with variants |
+| **Separator** | \`src/components/ui/separator.jsx\` | Horizontal / vertical divider (Radix primitive) |
+| **Alert** | \`src/components/ui/alert.jsx\` | Contextual alert with icon support (default, destructive) |
 
-### Expanding your component library
+Plus **ReactBits** animation primitives: Aurora, BlurText, ShinyText, SpotlightCard, DecryptedText.
 
-Add more shadcn/ui components with the CLI:
+### Project structure
+
+\`\`\`
+src/
+├── components/
+│   ├── ui/              ← shadcn/ui + ReactBits components (yours to own)
+│   └── presentation/    ← deck-specific wrappers (MetricCard, SectionBadge, etc.)
+├── slides/              ← one file per slide
+├── lib/
+│   └── utils.js         ← cn() helper for class merging
+└── App.jsx
+deck.config.js           ← slide order, theme, metadata
+components.json           ← shadcn CLI configuration
+jsconfig.json             ← @/ path alias
+\`\`\`
+
+### Adding more components
+
+Use the shadcn CLI to pull in any component from the registry:
 
 \`\`\`bash
 npx shadcn@latest add dialog
-npx shadcn@latest add sheet
 npx shadcn@latest add tabs
+npx shadcn@latest add tooltip
 \`\`\`
 
 New components land in \`src/components/ui/\`. Import them in your slides:
@@ -308,13 +330,13 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 
 The \`@/\` alias maps to \`src/\` — configured in \`vite.config.js\` and \`jsconfig.json\`.
 
-## 🤖 AI-Powered Component Discovery
+### 🤖 AI-powered component discovery
 
-This project comes with the shadcn MCP server pre-configured for VS Code.
-Open the project in VS Code and try prompts like:
+This project comes with the **shadcn MCP server** pre-configured for VS Code.
+Open the project in VS Code and use prompts like:
 
+- "Add the Dialog component from shadcn"
 - "Show me all available backgrounds from React Bits"
-- "Add the Aurora background from React Bits"
 - "Add a fade-in animation using React Bits"
 
 For other editors, run: \`npx shadcn@latest mcp init --client <your-client>\`
@@ -640,6 +662,14 @@ async function main() {
     for (const file of ['aurora.jsx', 'aurora.css', 'blur-text.jsx', 'shiny-text.jsx', 'spotlight-card.jsx', 'decrypted-text.jsx']) {
       copyFileSync(join(reactBitsDir, file), join(uiDir, file))
     }
+
+    // Deck-friendly wrapper components that compose shadcn primitives
+    const presentationDir = join(__dirname, 'templates', 'presentation')
+    const destPresentationDir = join(dir, 'src', 'components', 'presentation')
+    mkdirSync(destPresentationDir, { recursive: true })
+    for (const file of ['MetricCard.jsx', 'SectionBadge.jsx', 'CalloutAlert.jsx']) {
+      copyFileSync(join(presentationDir, file), join(destPresentationDir, file))
+    }
   }
 
   // Copy deckio.png to public/ for favicon and branding
@@ -667,7 +697,11 @@ async function main() {
   }
 
   if (designSystem === 'shadcn') {
-    clack.log.info('🤖 shadcn MCP server pre-configured — use AI to browse & add components')
+    clack.log.info(
+      '🎨 Real shadcn/ui components preinstalled: Button, Card, Badge, Separator, Alert\n' +
+      '   Plus ReactBits animations: Aurora, BlurText, ShinyText, SpotlightCard, DecryptedText\n' +
+      '   Add more: npx shadcn@latest add [component]  •  AI: shadcn MCP pre-configured'
+    )
   }
 
   if (installOk) {
