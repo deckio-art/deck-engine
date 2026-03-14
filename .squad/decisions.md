@@ -1165,3 +1165,88 @@ Owner input on open questions from theme creator design meeting. All points inco
 
 **Why captured:** Owner input on open questions from theme creator design meeting.
 
+
+---
+
+### SHADCN-001: Real shadcn/ui Component Integration
+**Author:** Rusty | **Date:** 2026-03-15 | **Status:** Scoping / ready for implementation planning
+
+DECKIO already has a shadcn-looking theme and partial scaffold but **not** real shadcn authoring end to end. The gap is: **turn shadcn from a visual style into an actual component ecosystem path for decks** while keeping the engine lean and not breaking existing CSS-themed decks.
+
+#### Current State
+- `packages/deck-engine/themes/shadcn.css` is semantic token map + Tailwind v4 bridge, **not** component library
+- Descriptor still treats shadcn as CSS-module authoring contract, not real component system
+- Scaffolder already has CLI/MCP setup (`components.json`, aliases, ThemeProvider) but no real preinstalled primitives
+- Slides still authored mostly through custom JSX + CSS Modules
+
+#### What "Real shadcn" Means
+1. Fresh shadcn deck projects can import real components from `@/components/ui/*` immediately
+2. Those files are actual shadcn/ui source, not lookalikes
+3. Projects can continue pulling more components via `npx shadcn@latest add ...`
+4. MCP-based tooling can discover/add components against that registry structure
+5. Starter slides and docs demonstrate component-native composition
+
+#### Recommended Starter Set
+Presentation-relevant preinstalled: `button`, `card`, `badge`, `separator`, `alert`  
+Lower-priority (CLI/MCP expansion): `dialog`, `sheet`, `tooltip`, `input`, form primitives
+
+#### Architecture Impact (Non-Negotiables)
+1. **Engine package remains lean** — stays runtime primitives only, no bundled UI kit
+2. **No breaking changes** — existing CSS-authored decks remain valid, new ones get real components
+3. **`theme` and `designSystem` separate** — separation becomes more important, not less
+4. **Design-system supplement layer** — activate when `designSystem: 'shadcn'`, orthogonal to theme choice
+5. **Verify end to end** — scaffold → install → dev → build must work for real
+
+#### Implementation Phases
+1. **Phase 0:** Contract cleanup, audit CSS entry/Tailwind setup, make docs truthful
+2. **Phase 1:** Scaffold curated starter components, update starter slides, E2E verification
+3. **Phase 2:** Descriptor/instructions/skills updates, migration examples
+4. **Phase 3:** Scaffolder UX refinement, README clarity
+5. **Phase 4:** MCP registry integration polish (after local path is proven)
+
+#### Open Questions for Ali (awaiting owner input)
+1. Preinstalled component set — recommend Button, Card, Badge, Separator, Alert
+2. Scope axis — `theme: 'shadcn'` only or `designSystem: 'shadcn'` independent of theme?
+3. Starter slide visual level — more component-native or keep bespoke/editorial?
+4. Scaffolding approach — pre-scaffolded source or run shadcn CLI during init?
+5. Local wrapper layer — deck-friendly compositions like MetricCard, SectionBadge?
+6. MCP in generated README — core promoted workflow or nice-to-have?
+7. Descriptor architecture — keep theme-primary or add design-system supplement now?
+
+#### Bottom line
+Proceed in phases: clean contract → ship starter set → prove model → upgrade descriptors → polish MCP. Satisfies "immediately but carefully and methodically" directive. Preserves backwards compatibility, keeps engine lean, establishes foundation for future design system work.
+
+Full scope: `.squad/decisions/inbox/rusty-shadcn-component-integration.md` (migrated from inbox)
+
+---
+
+### 2026-03-14T00:53Z: Owner directive — shadcn is real compatibility, not just visual vibe
+**By:** Ali Soliman (via Copilot) | **Date:** 2026-03-14 | **Status:** Implemented
+
+When the theme creator offers a shadcn option, it must use actual shadcn/ui design system and components, not just visual aesthetic. `designSystem: shadcn` should mean real shadcn compatibility.
+
+---
+
+### 2026-03-14T00:56Z: Owner directive — rebuild shadcn theme to use real shadcn/ui components
+**By:** Ali Soliman (via Copilot) | **Date:** 2026-03-14 | **Status:** Implemented
+
+Current shadcn theme uses clever CSS that looks like shadcn but doesn't actually use shadcn/ui components. Rebuild it to use real shadcn components. Devs who build on shadcn should have a native experience — they should be able to use shadcn MCPs to pull components. Tackle immediately but carefully and methodically.
+
+**Why:** Owner directive — shadcn is not just a visual vibe, it's a real design system integration.
+
+---
+
+### 2026-03-14T01:08Z: Owner decisions on shadcn component integration
+**By:** Ali Soliman (via Copilot) | **Date:** 2026-03-14 | **Status:** Implemented
+
+Owner answers to 7 open questions from SHADCN-001 scoping:
+1. **Starter components:** shadcn Button, Card, Badge, Separator, Alert PLUS relevant ReactBits components for initial template
+2. **Design system axis:** Tie to `designSystem: 'shadcn'` independent of theme choice
+3. **Component-native slides:** Yes — starter slides should use real components, less bespoke CSS
+4. **Pre-scaffold approach:** Deterministic pre-scaffolded source for starters, CLI/MCP for expansion
+5. **Deck-friendly wrappers:** Yes (implied by component-native slides)
+6. **MCP authoring:** Core promoted workflow (implied by original directive)
+7. **Design-system supplement layer:** Yes, now is the time (implied by "prerequisite to design system work")
+
+**Why:** Owner input unblocks Phase 0 implementation.
+
