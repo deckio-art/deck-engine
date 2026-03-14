@@ -223,9 +223,11 @@ html, body, #root {
   justify-content: center;
   align-items: stretch;
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
   transition: opacity var(--duration-slide) var(--ease-slide),
-              transform var(--duration-slide) var(--ease-slide);
+              transform var(--duration-slide) var(--ease-slide),
+              visibility 0s var(--duration-slide);
   transform: translateX(60px);
   overflow: hidden;
 }
@@ -234,8 +236,12 @@ html, body, #root {
 }
 .slide.active {
   opacity: 1;
+  visibility: visible;
   pointer-events: auto;
   transform: translateX(0);
+  transition: opacity var(--duration-slide) var(--ease-slide),
+              transform var(--duration-slide) var(--ease-slide),
+              visibility 0s 0s;
 }
 .slide.exit-left {
   opacity: 0;
