@@ -1,61 +1,59 @@
 {
-  "name": "@deckio/deck-engine",
-  "version": "1.17.3",
-  "type": "module",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/deckio-art/deck-engine.git",
-    "directory": "packages/deck-engine"
-  },
-  "main": "./index.js",
-  "module": "./index.js",
-  "exports": {
-    ".": "./index.js",
-    "./slides/*": "./slides/*.jsx",
-    "./components/*": "./components/*.jsx",
-    "./styles/*": "./styles/*",
-    "./themes/*": "./themes/*",
-    "./themes/descriptors/*": "./themes/descriptors/*",
-    "./themes/theme-loader": "./themes/theme-loader.js",
-    "./vite": "./vite.js",
-    "./vite.js": "./vite.js"
-  },
-  "files": [
-    "index.js",
-    "sampleContent.js",
-    "vite.js",
-    "components",
-    "context",
-    "server",
-    "slides",
-    "styles",
-    "themes",
-    "scripts",
-    "skills",
-    "instructions"
-  ],
-  "sideEffects": [
-    "**/*.css"
-  ],
-  "scripts": {
-    "version:sync": "node scripts/sync-version-from-npm.mjs",
-    "prepublishOnly": "npm test --if-present"
-  },
-  "dependencies": {
-    "@dnd-kit/core": "^6.3.1",
-    "@dnd-kit/sortable": "^10.0.0",
-    "@tailwindcss/vite": "^4.2.2",
-    "jspdf": "^3.0.3",
-    "modern-screenshot": "^4.6.8",
-    "pptxgenjs": "^3.12.0",
-    "tailwindcss": "^4.2.2"
-  },
-  "peerDependencies": {
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
-  }
+    "name":  "@deckio/deck-engine",
+    "version":  "1.17.4",
+    "type":  "module",
+    "publishConfig":  {
+                          "registry":  "https://registry.npmjs.org",
+                          "access":  "public"
+                      },
+    "repository":  {
+                       "type":  "git",
+                       "url":  "https://github.com/deckio-art/deck-engine.git",
+                       "directory":  "packages/deck-engine"
+                   },
+    "main":  "./index.js",
+    "module":  "./index.js",
+    "exports":  {
+                    ".":  "./index.js",
+                    "./slides/*":  "./slides/*.jsx",
+                    "./components/*":  "./components/*.jsx",
+                    "./styles/*":  "./styles/*",
+                    "./themes/*":  "./themes/*",
+                    "./themes/descriptors/*":  "./themes/descriptors/*",
+                    "./themes/theme-loader":  "./themes/theme-loader.js",
+                    "./vite":  "./vite.js",
+                    "./vite.js":  "./vite.js"
+                },
+    "files":  [
+                  "index.js",
+                  "sampleContent.js",
+                  "vite.js",
+                  "components",
+                  "context",
+                  "server",
+                  "slides",
+                  "styles",
+                  "themes",
+                  "scripts",
+                  "skills",
+                  "instructions"
+              ],
+    "sideEffects":  [
+                        "**/*.css"
+                    ],
+    "scripts":  {
+                    "version:sync":  "node scripts/sync-version-from-npm.mjs",
+                    "prepublishOnly":  "npm test --if-present"
+                },
+    "dependencies":  {
+                         "@tailwindcss/vite":  "^4.2.2",
+                         "jspdf":  "^4.2.1",
+                         "modern-screenshot":  "^4.6.8",
+                         "pptxgenjs":  "^3.12.0",
+                         "tailwindcss":  "^4.2.2"
+                     },
+    "peerDependencies":  {
+                             "react":  "^19.1.0",
+                             "react-dom":  "^19.1.0"
+                         }
 }
