@@ -919,7 +919,33 @@ async function main() {
   }
   write(dir, 'AGENTS.md', agentsMd())
   write(dir, 'README.md', README(designSystem))
-  write(dir, '.gitignore', 'node_modules\ndist\n.vite\n')
+  write(dir, '.gitignore', [
+    'node_modules',
+    'dist',
+    '.vite',
+    '',
+    '# Environment files (may contain API keys, OAuth tokens)',
+    '.env',
+    '.env.local',
+    '.env.*.local',
+    '',
+    '# Crash artifacts — ELF core dumps and heap snapshots may contain',
+    '# env-var-resident secrets (Copilot/GitHub/Azure tokens) from the',
+    '# crashed process memory. Never commit them.',
+    'core',
+    'core.*',
+    '*.core',
+    '*.dmp',
+    '*.mdmp',
+    '*.hprof',
+    '*.heap',
+    '*.heapsnapshot',
+    '',
+    '# OS / editor noise',
+    '.DS_Store',
+    'Thumbs.db',
+    '',
+  ].join('\n'))
 
   // shadcn-ready authoring files (setup contract, not bundled primitives)
   if (designSystem === 'shadcn') {
