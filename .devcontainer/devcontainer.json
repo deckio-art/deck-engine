@@ -1,0 +1,46 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node
+{
+	"name": "DECKIO Presentation",
+	"image": "mcr.microsoft.com/devcontainers/javascript-node:4-24-trixie@sha256:21f15d367bfc5ceadabb9989be48029cba1e6bd80da323405232614a267a9c45",
+
+	// Forward Vite dev server and auto-open in Simple Browser for live hot-reload preview
+	"forwardPorts": [5173],
+	"portsAttributes": {
+		"5173": {
+			"label": "DECKIO Presentation",
+			"onAutoForward": "openPreview"
+		}
+	},
+
+	// On first container creation: scaffold DECKIO, install deps, and bootstrap git
+	"postCreateCommand": "bash .devcontainer/setup.sh",
+
+	// On every container start: launch the Vite dev server in the background.
+	// nohup + & backgrounds the process so the postStartCommand returns immediately,
+	// letting VS Code finish "Configuring Dev Container" without blocking.
+	"postStartCommand": "echo '\\n🎴 DECKIO is ready! Run: npm run dev\\n   or use the VS Code task: Terminal → Run Task → Start DECKIO'",
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				// GitHub Copilot — drive the deck with natural language prompts
+				"GitHub.copilot",
+				"GitHub.copilot-chat",
+				// Git essentials for GitOps workflow
+				"eamodio.gitlens",
+				"mhutchie.git-graph",
+				// Code quality
+				"esbenp.prettier-vscode",
+				"dbaeumer.vscode-eslint"
+			],
+			"settings": {
+				"chat.agent.enabled": true,
+				"git.autofetch": true,
+				"git.enableSmartCommit": true,
+				"editor.formatOnSave": true,
+				"editor.defaultFormatter": "esbenp.prettier-vscode"
+			}
+		}
+	}
+}

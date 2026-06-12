@@ -1,0 +1,48 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start DECKIO",
+      "type": "shell",
+      "command": "if [ ! -d node_modules ]; then echo '\\n❌ Project not set up yet. Run: bash .devcontainer/setup.sh\\n' && exit 1; fi && npm run dev -- --host",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "vite",
+        "pattern": {
+          "regexp": "^(.*)$",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "VITE",
+          "endsPattern": "ready in"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "dev"
+      }
+    },
+    {
+      "label": "Setup DECKIO",
+      "type": "shell",
+      "command": "bash .devcontainer/setup.sh",
+      "options": {
+        "env": {
+          "DECKIO_INTERACTIVE": "true"
+        }
+      },
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "dev"
+      }
+    }
+  ]
+}
