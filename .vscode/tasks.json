@@ -4,7 +4,7 @@
     {
       "label": "Start DECKIO",
       "type": "shell",
-      "command": "if [ ! -d node_modules ]; then echo '\\n❌ Project not set up yet. Run: bash .devcontainer/setup.sh\\n' && exit 1; fi && npm run dev -- --host",
+      "command": "if [ ! -d node_modules ]; then echo '\\n❌ Project not set up yet. Run: bash .devcontainer/setup.sh\\n' && exit 1; fi && npm run dev",
       "group": {
         "kind": "build",
         "isDefault": true

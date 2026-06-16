@@ -1,0 +1,15 @@
+@import "@deckio/deck-engine/styles/global.css";
+@import "@deckio/deck-engine/styles/editable.css";
+@import "@deckio/deck-engine/themes/dark.css";
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #070b12;
+}

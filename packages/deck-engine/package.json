@@ -42,6 +42,7 @@
     "**/*.css"
   ],
   "scripts": {
+    "dev": "vite demo --host",
     "version:sync": "node scripts/sync-version-from-npm.mjs",
     "prepublishOnly": "npm test --if-present"
   },
@@ -53,6 +54,12 @@
     "modern-screenshot": "^4.6.8",
     "pptxgenjs": "^3.12.0",
     "tailwindcss": "^4.2.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "vite": "^7.0.0"
   },
   "peerDependencies": {
     "react": "^19.1.0",

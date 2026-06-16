@@ -5,6 +5,9 @@ dist/
 nul
 tmpclaude-*
 
+# Vite dev server cache
+.vite/
+
 # Temporary screenshot captures for visual inspection
 .github/eyes/
 test-screenshots/
