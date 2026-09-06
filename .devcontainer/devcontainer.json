@@ -2,7 +2,7 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node
 {
 	"name": "DECKIO Presentation",
-	"image": "mcr.microsoft.com/devcontainers/javascript-node:4-24-trixie@sha256:21f15d367bfc5ceadabb9989be48029cba1e6bd80da323405232614a267a9c45",
+	"image": "mcr.microsoft.com/devcontainers/javascript-node:4-24-trixie@sha256:e39c77a1d840eccb0d90257c20a436d4e90447b92dcfc0e637b15a6f25f90fd8",
 
 	// Forward Vite dev server and auto-open in Simple Browser for live hot-reload preview
 	"forwardPorts": [5173],
