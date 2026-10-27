@@ -95,6 +95,12 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           PUPPETEER_SKIP_DOWNLOAD: 'true'
 
+      - name: Verify published package metadata
+        working-directory: ${{ matrix.package.path }}
+        run: |
+          npm view "${{ steps.check.outputs.package_name }}@${{ steps.check.outputs.package_version }}" \
+            version dist.integrity dist.tarball gitHead --json
+
       - name: Create GitHub Release
         if: steps.check.outputs.exists == 'false'
         env:
