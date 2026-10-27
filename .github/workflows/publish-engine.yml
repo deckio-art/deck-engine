@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -37,6 +37,9 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org
           cache: npm
+
+      - name: Set up npm publishing authentication
+        run: npm install --global npm@11.20.0
 
       - name: Install workspace dependencies
         run: npm ci
