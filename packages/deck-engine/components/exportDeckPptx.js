@@ -11,7 +11,6 @@ import {
   normalizeHexColor,
   resolveExportOptions,
   settleExportFrame,
-  waitForAssets,
   waitForPaint,
   withExportMode,
 } from './exportDeckService.js'
@@ -29,7 +28,7 @@ export async function exportDeckPptx({
   const slides = Array.from(deck?.querySelectorAll('.slide') || [])
   if (!deck || slides.length === 0) throw new Error('No slides found')
 
-  const [{ domToPng }, PptxGenJS] = await Promise.all([
+  const [{ domToCanvas }, PptxGenJS] = await Promise.all([
     import('modern-screenshot'),
     import('pptxgenjs'),
   ])
@@ -44,7 +43,6 @@ export async function exportDeckPptx({
 
   await withExportMode('pptx', async () => {
     await settleExportFrame()
-    await waitForAssets(deck)
 
     try {
       for (let i = 0; i < totalSlides; i++) {
@@ -53,18 +51,18 @@ export async function exportDeckPptx({
         await waitForPaint()
         await settleExportFrame()
 
-        const active = document.querySelector('.slide.active') || slides[i]
+        const active = deck.querySelector('.slide.active') || slides[i]
         if (!active) throw new Error(`Slide ${i + 1} not found`)
 
         const dataUrl = await captureSlidePng({
-          domToPng,
+          domToCanvas,
           deck,
           slide: active,
           layout,
           quality,
           fit,
           backgroundColor: bg,
-        })
+        }).catch((error) => { throw new Error(`Slide ${i + 1}: ${error.message}`, { cause: error }) })
 
         const slide = pptx.addSlide()
         slide.background = { color: normalizeHexColor(bg) }

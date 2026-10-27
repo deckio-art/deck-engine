@@ -1,4 +1,12 @@
 const SETTLE_MS = 600
+const ASSET_TIMEOUT_MS = 30_000
+const EXPORT_IGNORE_SELECTOR = [
+  '.slide-overflow-warn',
+  '.deckio-editable-status',
+  '.deckio-inline-edit-toast-root',
+  '[data-export-ignore="true"]',
+  '[data-deckio-export-ignore="true"]',
+].join(', ')
 
 export const EXPORT_LAYOUTS = Object.freeze([
   {
@@ -69,9 +77,8 @@ const TRANSPARENT_RE = /^(transparent|rgba?\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\s*\))$
  *
  * Gradient-clipped text (`background: linear-gradient(...)` +
  * `-webkit-background-clip: text` + transparent fill) is a very common way to
- * paint headline text. We reduce it to a solid color for export (see
- * `neutralizeClippedText`), so we need a representative color — the first stop
- * is the closest single-color approximation.
+ * paint headline text. The legacy `neutralizeClippedText` fallback uses the
+ * first stop as its closest single-color approximation.
  *
  * Returns a CSS color string (e.g. `rgb(99, 102, 241)` or `#6366f1`) or null.
  */
@@ -89,16 +96,8 @@ function isClippedText(styles) {
 }
 
 /**
- * Make gradient-clipped ("text fill") elements export-safe.
- *
- * Chrome's foreignObject rasterization (used by modern-screenshot) does not
- * honor `-webkit-background-clip: text`, so any element painting its glyphs
- * with a clipped gradient renders fully transparent — i.e. invisible — in the
- * PNG capture. This walks the subtree, and for every clipped-text element
- * temporarily replaces the gradient with a solid color (derived from the first
- * gradient stop, falling back to the element's own color or a provided
- * fallback) so the text actually shows up. Works regardless of class name,
- * which matters for hashed CSS-module classes. Returns a restore fn.
+ * Legacy solid-color fallback for callers that explicitly request it.
+ * Shared PDF/PPTX capture preserves the authored gradient instead.
  */
 export function neutralizeClippedText(root, fallbackColor = '#ffffff') {
   if (!root || typeof getComputedStyle !== 'function') return () => {}
@@ -161,7 +160,9 @@ export function getLayoutPageFormat(layout) {
 
 export function getSlideBackground() {
   const styles = getComputedStyle(document.documentElement)
-  return styles.getPropertyValue('--background').trim() || '#080b10'
+  return styles.backgroundColor && styles.backgroundColor !== 'rgba(0, 0, 0, 0)'
+    ? styles.backgroundColor
+    : styles.getPropertyValue('--background').trim() || '#080b10'
 }
 
 export function normalizeHexColor(value, fallback = '080B10') {
@@ -171,7 +172,12 @@ export function normalizeHexColor(value, fallback = '080B10') {
     return short[1].split('').map((c) => c + c).join('').toUpperCase()
   }
   const long = raw.match(/^#?([0-9a-f]{6})$/i)
-  return long ? long[1].toUpperCase() : fallback
+  if (long) return long[1].toUpperCase()
+  const rgb = raw.match(/^rgba?\(\s*([\d.]+%?)[,\s]+([\d.]+%?)[,\s]+([\d.]+%?)(?:\s*[,/]\s*[\d.]+%?)?\s*\)$/i)
+  return rgb ? rgb.slice(1).map((part) => {
+    const value = part.endsWith('%') ? Number.parseFloat(part) / 100 * 255 : Number.parseFloat(part)
+    return Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, '0')
+  }).join('').toUpperCase() : fallback
 }
 
 export function sanitizeFilePart(v) {
@@ -196,28 +202,76 @@ export async function settleExportFrame() {
   await wait(SETTLE_MS)
 }
 
-export async function waitForAssets(root) {
-  if (document.fonts?.ready) await document.fonts.ready
+async function withAssetTimeout(promise, timeout, message) {
+  let timer
+  try {
+    return await Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(message)), timeout)
+      }),
+    ])
+  } finally {
+    clearTimeout(timer)
+  }
+}
 
-  const images = Array.from(root?.querySelectorAll('img') || [])
-  await Promise.all(images.map(async (img) => {
-    if (img.complete) return
+function waitForImage(img, timeout, signal) {
+  const source = img.currentSrc || img.getAttribute('src') || img.getAttribute('srcset')
+  if (!source) return Promise.resolve()
+  const label = img.alt || source.slice(0, 160)
 
-    if (typeof img.decode === 'function') {
+  return new Promise((resolve, reject) => {
+    const loading = img.getAttribute('loading')
+    let decoding = false
+    let finished = false
+    const done = (error) => {
+      if (finished) return
+      finished = true
+      clearTimeout(timer)
+      img.removeEventListener('load', loaded)
+      img.removeEventListener('error', failed)
+      signal.removeEventListener('abort', aborted)
+      if (loading === null) img.removeAttribute('loading')
+      else img.setAttribute('loading', loading)
+      if (error) reject(error)
+      else resolve()
+    }
+    const failed = () => done(new Error(`Could not load image "${label}". Check its URL and try exporting again.`))
+    const aborted = () => done(new Error('Export asset loading cancelled.'))
+    const loaded = async () => {
+      if (decoding) return
+      decoding = true
+      if (!img.naturalWidth) return failed()
       try {
-        await img.decode()
-        return
+        await img.decode?.()
+        done()
       } catch {
-        // Fall through to load/error listeners for assets decode cannot handle.
+        failed()
       }
     }
+    const timer = setTimeout(() => done(new Error(`Timed out loading image "${label}". Try exporting again when it has loaded.`)), timeout)
+    img.addEventListener('load', loaded, { once: true })
+    img.addEventListener('error', failed, { once: true })
+    signal.addEventListener('abort', aborted, { once: true })
+    img.loading = 'eager'
+    if (img.complete) loaded()
+  })
+}
 
-    await new Promise((resolve) => {
-      const done = () => resolve()
-      img.addEventListener('load', done, { once: true })
-      img.addEventListener('error', done, { once: true })
-    })
-  }))
+export async function waitForAssets(root, { timeout = ASSET_TIMEOUT_MS } = {}) {
+  const ownerDocument = root?.ownerDocument || document
+  if (ownerDocument.fonts?.ready) {
+    await withAssetTimeout(ownerDocument.fonts.ready, timeout, 'Timed out loading slide fonts. Try exporting again when they have loaded.')
+  }
+  const images = Array.from(root?.querySelectorAll('img') || [])
+    .filter((img) => !img.closest(EXPORT_IGNORE_SELECTOR))
+  const controller = new AbortController()
+  try {
+    await Promise.all(images.map((img) => waitForImage(img, timeout, controller.signal)))
+  } finally {
+    controller.abort()
+  }
 }
 
 export async function withExportMode(format, run) {
@@ -227,6 +281,8 @@ export async function withExportMode(format, run) {
   const prevWidth = html.style.getPropertyValue('--deckio-export-width')
   const prevHeight = html.style.getPropertyValue('--deckio-export-height')
   const prevFit = html.style.getPropertyValue('--deckio-export-fit-scale')
+  const priorities = ['--deckio-export-width', '--deckio-export-height', '--deckio-export-fit-scale']
+    .map((name) => html.style.getPropertyPriority(name))
 
   html.setAttribute('data-export-mode', 'capture')
   html.setAttribute('data-export-format', format)
@@ -240,23 +296,26 @@ export async function withExportMode(format, run) {
     if (prevFormat === null) html.removeAttribute('data-export-format')
     else html.setAttribute('data-export-format', prevFormat)
 
-    restoreCssVar(html, '--deckio-export-width', prevWidth)
-    restoreCssVar(html, '--deckio-export-height', prevHeight)
-    restoreCssVar(html, '--deckio-export-fit-scale', prevFit)
+    restoreCssVar(html, '--deckio-export-width', prevWidth, priorities[0])
+    restoreCssVar(html, '--deckio-export-height', prevHeight, priorities[1])
+    restoreCssVar(html, '--deckio-export-fit-scale', prevFit, priorities[2])
   }
 }
 
-function restoreCssVar(el, name, value) {
-  if (value) el.style.setProperty(name, value)
+function restoreCssVar(el, name, value, priority) {
+  if (value) el.style.setProperty(name, value, priority)
   else el.style.removeProperty(name)
 }
 
 function saveInlineStyles(el, props) {
   if (!el) return () => {}
-  const previous = props.map((prop) => [prop, el.style[prop]])
+  const previous = props.map((prop) => {
+    const name = prop.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
+    return [name, el.style.getPropertyValue(name), el.style.getPropertyPriority(name)]
+  })
   return () => {
-    previous.forEach(([prop, value]) => {
-      el.style[prop] = value
+    previous.forEach(([name, value, priority]) => {
+      restoreCssVar(el, name, value, priority)
     })
   }
 }
@@ -275,7 +334,10 @@ function prepareExportStage(deck, slide, layout) {
     height: `${layout.pixelHeight}px`,
   }
   const restores = [
-    saveInlineStyles(html, ['width', 'height', 'overflow']),
+    saveInlineStyles(html, [
+      'width', 'height', 'overflow',
+      '--deckio-export-width', '--deckio-export-height', '--deckio-export-fit-scale',
+    ]),
     saveInlineStyles(body, ['width', 'height', 'overflow']),
     saveInlineStyles(root, ['width', 'height', 'overflow']),
     saveInlineStyles(deck, ['width', 'height', 'overflow', 'position']),
@@ -358,59 +420,29 @@ export async function resolveFitScale(slide, fit) {
   return AUTO_FIT_SCALES[AUTO_FIT_SCALES.length - 1]
 }
 
-function isInfiniteAnimation(anim) {
-  try {
-    return anim.effect?.getComputedTiming?.().iterations === Infinity
-  } catch {
-    return false
-  }
-}
-
-/**
- * Freeze a slide's motion into a single clean still for capture.
- *
- * An export is one frame, but a slide may be captured while transitions and
- * animations are still in flight — most notably the disclosure reveal, where a
- * just-revealed element is mid-way through a multi-hundred-ms opacity/transform
- * transition (e.g. `.deck-steps-step` fades 0.15 → 1 over 0.5s). Freezing such a
- * transition at its current frame bakes the half-faded, washed-out look into the
- * export. So instead of pausing everything, we **finish** finite animations and
- * transitions (snapping them to their final, fully-revealed state) and only
- * **pause** infinite, decorative loops (orbs, glows) at their current frame.
- *
- * This is class-name agnostic: it fixes hand-rolled disclosure slides whose
- * reveal classes the export-mode CSS overrides cannot know about.
- */
 export function pauseAnimations(slide) {
-  if (slide && typeof slide.getAnimations === 'function') {
-    let anims = []
-    try {
-      anims = slide.getAnimations({ subtree: true })
-    } catch {
-      anims = []
-    }
-    const paused = []
-    for (const anim of anims) {
-      if (isInfiniteAnimation(anim)) {
-        try { anim.pause(); paused.push(anim) } catch { /* ignore */ }
-      } else {
-        // Snap finite transitions/animations (e.g. the in-flight disclosure
-        // reveal the export pump just triggered) to their end state so the
-        // capture shows full opacity, not a mid-fade ghost.
-        try { anim.finish() } catch { /* ignore */ }
-      }
-    }
-    return () => { for (const anim of paused) { try { anim.play() } catch { /* ignore */ } } }
-  }
-
-  // Fallback for environments without the Web Animations API: freeze keyframe
-  // animations in place (transitions cannot be settled here, but this preserves
-  // the prior behavior).
   const undo = []
+  let animations = []
+  try {
+    animations = slide.getAnimations?.({ subtree: true }) || []
+  } catch {
+    animations = []
+  }
+  for (const animation of animations) {
+    if (animation.playState === 'finished' || animation.playState === 'idle') continue
+    const { currentTime, playState } = animation
+    const endTime = animation.effect?.getComputedTiming().endTime
+    animation.pause()
+    if (Number.isFinite(endTime)) animation.currentTime = animation.playbackRate < 0 ? 0 : endTime
+    undo.push(() => {
+      animation.currentTime = currentTime
+      if (playState === 'running') animation.play()
+    })
+  }
   const pause = (el) => {
-    const orig = el.style.animationPlayState
-    el.style.animationPlayState = 'paused'
-    undo.push(() => { el.style.animationPlayState = orig })
+    const restore = saveInlineStyles(el, ['animationPlayState'])
+    el.style.setProperty('animation-play-state', 'paused', 'important')
+    undo.push(restore)
   }
   pause(slide)
   slide.querySelectorAll('*').forEach(pause)
@@ -464,8 +496,56 @@ export async function revealDisclosureSteps(slide) {
   }
 }
 
+function preserveTextMetrics(slide) {
+  const metrics = [slide, ...slide.querySelectorAll('*')]
+    .map((el) => [el, getComputedStyle(el).fontKerning])
+  const restores = metrics.map(([el, kerning]) => {
+    const restore = saveInlineStyles(el, ['fontKerning'])
+    // modern-screenshot otherwise changes Chrome's default "auto" to "normal",
+    // which changes glyph widths and can wrap an exactly fitted badge.
+    el.style.setProperty('font-kerning', kerning, 'important')
+    return restore
+  })
+  return () => restores.forEach((restore) => restore())
+}
+
+function assertEmbeddedAssets(svg) {
+  const urls = []
+  const collect = (style) => {
+    for (const property of [
+      'background-image', 'border-image-source', '-webkit-border-image',
+      'mask-image', '-webkit-mask-image', 'list-style-image',
+      'fill', 'stroke', 'filter', 'clip-path', 'content', 'src',
+    ]) {
+      for (const match of style.getPropertyValue(property).matchAll(/url\(\s*(['"]?)(.*?)\1\s*\)/g)) urls.push(match[2])
+    }
+  }
+  const collectRules = (rules) => {
+    for (const rule of rules) {
+      if (rule.style) collect(rule.style)
+      if (rule.cssRules) collectRules(rule.cssRules)
+    }
+  }
+  for (const node of svg.querySelectorAll('[style], style')) {
+    if (node.tagName.toLowerCase() === 'style') {
+      const sheet = new CSSStyleSheet()
+      sheet.replaceSync(node.textContent)
+      collectRules(sheet.cssRules)
+    } else {
+      collect(node.style)
+    }
+  }
+  for (const node of svg.querySelectorAll('img, image')) {
+    urls.push(node.getAttribute('src') || node.getAttribute('href') || node.getAttribute('xlink:href') || '')
+  }
+  const external = urls.find((url) => url && !url.startsWith('#') && !url.startsWith('data:'))
+  if (external) {
+    throw new Error(`Could not embed export asset "${external.slice(0, 160)}". Check that images and fonts allow cross-origin access.`)
+  }
+}
+
 export async function captureSlidePng({
-  domToPng,
+  domToCanvas,
   deck,
   slide,
   layout,
@@ -473,58 +553,59 @@ export async function captureSlidePng({
   fit,
   backgroundColor,
 }) {
-  const restoreStage = prepareExportStage(deck, slide, layout)
+  const restores = [prepareExportStage(deck, slide, layout)]
 
   try {
     await waitForPaint()
-    // Flush any progressive disclosure to its final state before measuring/fit,
-    // so busy fully-revealed slides are sized and captured correctly.
     await revealDisclosureSteps(slide)
+    await waitForAssets(slide)
+    restores.push(pauseAnimations(slide))
+    restores.push(preserveTextMetrics(slide))
+    await waitForPaint()
     const fitScale = await resolveFitScale(slide, fit)
     document.documentElement.style.setProperty('--deckio-export-fit-scale', String(fitScale))
     await waitForPaint()
-    await waitForAssets(slide)
-
-    const restoreAnimations = pauseAnimations(slide)
-    // Gradient-clipped text renders transparent through foreignObject capture;
-    // flatten it to a solid color so it stays visible. White fallback (not the
-    // dark slide background) guards the rare case where no stop color parses.
-    const restoreClippedText = neutralizeClippedText(slide, '#ffffff')
-    try {
-      await waitForPaint()
-      return await domToPng(slide, {
-        width: layout.pixelWidth,
-        height: layout.pixelHeight,
-        backgroundColor,
-        scale: quality.scale,
-        // Defense-in-depth: never rasterize dev-only affordances rendered
-        // inside the slide (e.g. the hide/delete overlay). They are tagged
-        // data-deckio-export-ignore and are also opacity:0 without hover, but
-        // excluding the subtree here guarantees clean exports regardless.
-        filter: (node) =>
-          !(node instanceof Element) ||
-          node.getAttribute('data-deckio-export-ignore') !== 'true',
-        style: {
-          position: 'relative',
-          inset: 'auto',
-          left: '0',
-          top: '0',
-          width: `${layout.pixelWidth}px`,
-          height: `${layout.pixelHeight}px`,
-          maxWidth: 'none',
-          maxHeight: 'none',
-          boxSizing: 'border-box',
-          opacity: '1',
-          visibility: 'visible',
-          transform: 'none',
-          transition: 'none',
-        },
-      })
-    } finally {
-      restoreClippedText()
-      restoreAnimations()
+    const canvas = await domToCanvas(slide, {
+      width: layout.pixelWidth,
+      height: layout.pixelHeight,
+      scale: quality.scale,
+      timeout: ASSET_TIMEOUT_MS,
+      filter: (node) => !(node instanceof Element && node.matches(EXPORT_IGNORE_SELECTOR)),
+      fetch: { placeholderImage: '' },
+      onCreateForeignObjectSvg: assertEmbeddedAssets,
+      style: {
+        position: 'relative',
+        inset: 'auto',
+        left: '0',
+        top: '0',
+        width: `${layout.pixelWidth}px`,
+        height: `${layout.pixelHeight}px`,
+        maxWidth: 'none',
+        maxHeight: 'none',
+        boxSizing: 'border-box',
+        opacity: '1',
+        visibility: 'visible',
+        transform: 'none',
+        transition: 'none',
+      },
+    })
+    if (canvas.width !== layout.pixelWidth * quality.scale || canvas.height !== layout.pixelHeight * quality.scale) {
+      throw new Error('The browser could not capture this slide at the requested size. Try Standard quality.')
     }
+    const context = canvas.getContext('2d')
+    if (!context) throw new Error('The browser could not create an export image.')
+    // Paint behind the capture, never over a slide's own background or gradient.
+    context.save()
+    context.globalCompositeOperation = 'destination-over'
+    context.fillStyle = backgroundColor
+    context.fillRect(0, 0, canvas.width, canvas.height)
+    context.restore()
+    const png = canvas.toDataURL('image/png')
+    canvas.width = 0
+    canvas.height = 0
+    if (!png.startsWith('data:image/png;base64,')) throw new Error('The browser returned an empty export image. Try Standard quality.')
+    return png
   } finally {
-    restoreStage()
+    for (let i = restores.length - 1; i >= 0; i--) restores[i]()
   }
 }

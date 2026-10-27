@@ -234,7 +234,7 @@ export default function Navigation({ pdfPath = null, pdfLabel = 'Deck PDF' }) {
 
         {exportError && !resolvedPdfPath && (
           <div className={styles.exportError} role="alert">
-            <span>Export failed — </span>
+            <span>Export failed: {exportError.message} </span>
             <button type="button" onClick={() => handleExport(exportError.format)} disabled={isExporting}>Retry</button>
             <button type="button" className={styles.exportErrorDismiss} onClick={() => setExportError(null)} aria-label="Dismiss export error">×</button>
           </div>

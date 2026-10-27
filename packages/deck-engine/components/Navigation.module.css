@@ -249,6 +249,7 @@
   top: calc(100% + var(--space-2));
   right: 0;
   min-width: 190px;
+  width: min(420px, calc(100vw - 32px));
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
   border: 1px solid color-mix(in srgb, var(--destructive, #f85149) 35%, var(--border));
@@ -256,7 +257,8 @@
   color: var(--foreground);
   box-shadow: var(--shadow-elevated);
   font-size: var(--font-size-xs);
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .exportError button {
   border: 0;

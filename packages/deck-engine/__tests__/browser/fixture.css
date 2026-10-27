@@ -1,0 +1,27 @@
+@import "tailwindcss";
+@import "../../styles/global.css";
+@source "./fixture.html";
+
+@font-face {
+  font-family: "Inter Variable";
+  font-style: normal;
+  font-weight: 100 900;
+  src: url("@fontsource-variable/inter/files/inter-latin-wght-normal.woff2") format("woff2");
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #18182c;
+  --font-family: "Inter Variable", Arial, sans-serif;
+}
+
+.slide { background: #ffffff; padding: 120px; }
+.content-frame { width: 1500px; }
+h1 { width: fit-content; font-size: 64px; font-weight: 800; margin: 32px 0; }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 40px; }
+.card { position: relative; min-height: 160px; padding: 25px; border: 1px solid #d5d9e0; border-radius: 20px; font-size: 24px; }
+.radial { background: radial-gradient(circle at 20% 30%, #06b6d4, #a855f7 70%); }
+.colour { background: color-mix(in oklab, oklch(70% 0.18 270) 65%, white); color: oklch(25% 0.1 280); }
+.pseudo::before { content: ""; position: absolute; inset: 0 0 auto; height: 6px; border-radius: 20px 20px 0 0; background: linear-gradient(90deg, #0891b2, #9333ea); }
+.highlighted { background: #fef08a; border-radius: 4px; padding: 4px; }
+.custom-badge { display: inline-flex; width: max-content; padding: 6px 12px; border: 1px solid #9333ea; border-radius: 999px; font-size: 12px; line-height: 1.2; letter-spacing: 1px; }

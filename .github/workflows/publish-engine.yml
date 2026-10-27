@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/publish-engine.yml'
+      - 'package.json'
+      - 'playwright.exports.config.mjs'
       - 'packages/deck-engine/**'
       - 'packages/create-deckio/**'
       - 'package-lock.json'
@@ -44,6 +46,26 @@ jobs:
       - name: Run create-deckio smoke test
         if: matrix.package.name == 'create-deckio'
         run: npx vitest run packages/create-deckio/__tests__/smoke.test.js
+
+      - name: Run engine tests
+        if: matrix.package.name == '@deckio/deck-engine'
+        run: npx vitest run packages/deck-engine/__tests__ --maxWorkers=2
+
+      - name: Install export test browsers
+        if: matrix.package.name == '@deckio/deck-engine'
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Verify PDF and PowerPoint rendering
+        if: matrix.package.name == '@deckio/deck-engine'
+        run: npm run test:exports
+
+      - name: Upload export failure images and traces
+        if: failure() && matrix.package.name == '@deckio/deck-engine'
+        uses: actions/upload-artifact@v4
+        with:
+          name: export-rendering-failures
+          path: test-results/exports
+          retention-days: 7
 
       - name: Check if version already exists on npm
         id: check

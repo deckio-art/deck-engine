@@ -89,5 +89,13 @@ Before opening a PR:
 - update docs when behavior or developer workflow changes
 - include tests or validation steps when they are relevant
 
-Whether you are reporting issues, improving docs, or sending code, thank you for helping make DECKIO better. <img src="deckio.png" alt="DECKIO" height="20" />
+Export changes must also pass the real-browser fidelity suite:
 
+```bash
+npx playwright install chromium firefox webkit
+npm run test:exports
+```
+
+It compares captures, rendered PDF pages, and PowerPoint slide images against the browser in Chromium, Firefox, and WebKit. It also checks export sizes, asset failures, animation completion, and state restoration. Images and fonts must be available for embedding; export reports failed assets instead of silently downloading an incomplete deck.
+
+Whether you are reporting issues, improving docs, or sending code, thank you for helping make DECKIO better. <img src="deckio.png" alt="DECKIO" height="20" />

@@ -1,4 +1,4 @@
-import { describe, expect, it, afterEach } from 'vitest'
+import { describe, expect, it, afterEach, vi } from 'vitest'
 import {
   DEFAULT_EXPORT_OPTIONS,
   EXPORT_FITS,
@@ -18,6 +18,7 @@ import {
 describe('exportDeckService presets', () => {
   afterEach(() => {
     delete globalThis.document
+    vi.useRealTimers()
   })
 
   it('defaults to the common PowerPoint widescreen layout with high quality and auto fit', () => {
@@ -78,6 +79,8 @@ describe('exportDeckService presets', () => {
   it('normalizes background colors for PowerPoint', () => {
     expect(normalizeHexColor('#abc')).toBe('AABBCC')
     expect(normalizeHexColor('123456')).toBe('123456')
+    expect(normalizeHexColor('rgb(171, 205, 239)')).toBe('ABCDEF')
+    expect(normalizeHexColor('rgb(100% 0% 50%)')).toBe('FF0080')
     expect(normalizeHexColor('not-a-color')).toBe('080B10')
   })
 
@@ -92,18 +95,103 @@ describe('exportDeckService presets', () => {
     })).toBe('contoso-ltd-quarterly-review.pptx')
   })
 
-  it('does not hang when an image already failed before export starts', async () => {
-    globalThis.document = {}
-    const brokenCompleteImage = {
-      complete: true,
-      naturalWidth: 0,
-      addEventListener() {
-        throw new Error('complete images should not wait for future events')
-      },
-    }
+})
 
+function makeImage({ complete = false, naturalWidth = 0, loading, decode = vi.fn().mockResolvedValue() } = {}) {
+  const attributes = new Map([['src', '/image.png']])
+  if (loading) attributes.set('loading', loading)
+  const img = Object.assign(new EventTarget(), {
+    complete,
+    naturalWidth,
+    decode,
+    alt: 'Slide image',
+    closest: () => null,
+    getAttribute: (name) => attributes.get(name) ?? null,
+    setAttribute: (name, value) => attributes.set(name, value),
+    removeAttribute: (name) => attributes.delete(name),
+  })
+  Object.defineProperty(img, 'loading', {
+    get: () => attributes.get('loading'),
+    set: (value) => attributes.set('loading', value),
+  })
+  return img
+}
+
+describe('export asset readiness', () => {
+  afterEach(() => {
+    delete globalThis.document
+    vi.useRealTimers()
+  })
+
+  it('rejects an already broken image rather than hanging or exporting an empty placeholder', async () => {
+    globalThis.document = {}
     await expect(waitForAssets({
-      querySelectorAll: () => [brokenCompleteImage],
+      querySelectorAll: () => [makeImage({ complete: true })],
+    })).rejects.toThrow('Could not load image "Slide image"')
+  })
+
+  it('loads lazy images, awaits decoding, and restores their loading attribute', async () => {
+    globalThis.document = {}
+    let decoded
+    const img = makeImage({
+      naturalWidth: 100,
+      loading: 'lazy',
+      decode: vi.fn(() => new Promise((resolve) => { decoded = resolve })),
+    })
+    const ready = waitForAssets({ querySelectorAll: () => [img] })
+    expect(img.loading).toBe('eager')
+    img.dispatchEvent(new Event('load'))
+    expect(img.decode).toHaveBeenCalledOnce()
+    decoded()
+    await ready
+    expect(img.loading).toBe('lazy')
+  })
+
+  it('bounds image waits and removes event listeners even if the request never finishes', async () => {
+    vi.useFakeTimers()
+    globalThis.document = {}
+    const img = makeImage({ loading: 'lazy' })
+    const remove = vi.spyOn(img, 'removeEventListener')
+    const failed = expect(waitForAssets({
+      querySelectorAll: () => [img],
+    }, { timeout: 50 })).rejects.toThrow('Timed out loading image')
+    await vi.advanceTimersByTimeAsync(50)
+    await failed
+    expect(img.loading).toBe('lazy')
+    expect(remove).toHaveBeenCalledWith('load', expect.any(Function))
+    expect(remove).toHaveBeenCalledWith('error', expect.any(Function))
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it('cancels the other image waits when one asset fails', async () => {
+    vi.useFakeTimers()
+    globalThis.document = {}
+    const broken = makeImage({ complete: true })
+    const pending = makeImage({ loading: 'lazy' })
+    await expect(waitForAssets({
+      querySelectorAll: () => [broken, pending],
+    })).rejects.toThrow('Could not load image')
+    expect(pending.loading).toBe('lazy')
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it('bounds font readiness as well as image requests', async () => {
+    vi.useFakeTimers()
+    globalThis.document = { fonts: { ready: new Promise(() => {}) } }
+    const failed = expect(waitForAssets({
+      querySelectorAll: () => [],
+    }, { timeout: 50 })).rejects.toThrow('Timed out loading slide fonts')
+    await vi.advanceTimersByTimeAsync(50)
+    await failed
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it('ignores assets belonging to editor chrome explicitly excluded from export', async () => {
+    globalThis.document = {}
+    const ignored = makeImage({ complete: true })
+    ignored.closest = () => ({})
+    await expect(waitForAssets({
+      querySelectorAll: () => [ignored],
     })).resolves.toBeUndefined()
   })
 })

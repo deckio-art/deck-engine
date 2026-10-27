@@ -36,41 +36,35 @@ describe('export wiring', () => {
     expect(source).toContain('exportOptions')
   })
 
-  it('has export-mode CSS for fixed stage sizing and badge-safe capture', () => {
+  it('has export-mode CSS for fixed stage sizing and hidden editor chrome', () => {
     const source = readEngineFile('styles', 'global.css')
 
     expect(source).toContain('html[data-export-mode="capture"]')
     expect(source).toContain('--deckio-export-width')
     expect(source).toContain('--deckio-export-fit-scale')
     expect(source).toContain('.deckio-editable')
-    expect(source).toContain('[data-slot="badge"]')
-    expect(source).toContain('overflow: visible !important')
+    expect(source).toContain('[data-deckio-export-ignore="true"]')
   })
 
-  it('reveals progressive-disclosure steps and generalizes badge breathing room for capture', () => {
+  it('reveals progressive-disclosure steps without changing badge sizing', () => {
     const source = readEngineFile('styles', 'global.css')
 
     expect(source).toContain('.deck-steps-step')
-    expect(source).toContain('[class*="badge" i]')
+    expect(source).not.toContain('html[data-export-mode="capture"] [class*="badge" i]')
+    expect(source).not.toContain('html[data-export-mode="capture"] [data-slot="badge"]')
   })
 
-  it('flattens gradient-clipped text before rasterizing each slide', () => {
+  it('preserves gradient-clipped text when rasterizing each slide', () => {
     const service = readEngineFile('components', 'exportDeckService.js')
 
-    expect(service).toContain('neutralizeClippedText(slide')
-    expect(service).toContain('restoreClippedText()')
+    expect(service).not.toContain('neutralizeClippedText(slide')
+    expect(service).toContain('domToCanvas(slide')
   })
 
-  it('does not nuke gradient-clipped editable text with the background shorthand on export', () => {
+  it('preserves editable backgrounds and gradient-clipped text on export', () => {
     const source = readEngineFile('styles', 'global.css')
 
-    // The export-mode editable reset must only clear the hover/active *color*
-    // layer. Using the `background` shorthand also resets background-image and
-    // background-clip, which turns gradient-clipped <Editable> headlines (e.g.
-    // the GenericThankYouSlide "Thank You" title) fully transparent — and since
-    // clip falls back to border-box, neutralizeClippedText no longer detects
-    // them. Keep this as `background-color`.
-    expect(source).toContain('background-color: transparent !important')
+    expect(source).not.toContain('background-color: transparent !important')
     expect(source).not.toContain('background: transparent !important')
   })
 
@@ -101,19 +95,13 @@ describe('export wiring', () => {
     expect(slideContext).toContain('if (isExportingNow()) return')
   })
 
-  it('settles in-flight reveals by finishing finite animations and pausing only infinite loops', () => {
+  it('settles finite reveals and restores the original animation playback', () => {
     const service = readEngineFile('components', 'exportDeckService.js')
 
-    // A disclosure reveal is a multi-hundred-ms opacity/transform transition.
-    // The pump triggers it just before capture, so freezing it mid-flight bakes
-    // a washed-out, half-faded frame into the export. pauseAnimations must
-    // FINISH finite transitions/animations (snap to full opacity) and only
-    // PAUSE infinite decorative loops.
-    expect(service).toContain('getAnimations({ subtree: true })')
-    expect(service).toContain('anim.finish()')
-    expect(service).toContain('isInfiniteAnimation(anim)')
-    expect(service).toContain('anim.pause()')
-    // pauseAnimations still runs in the capture path before rasterizing.
-    expect(service).toContain('const restoreAnimations = pauseAnimations(slide)')
+    expect(service).toContain('getAnimations?.({ subtree: true })')
+    expect(service).toContain('Number.isFinite(endTime)')
+    expect(service).toContain('animation.pause()')
+    expect(service).toContain('animation.currentTime = currentTime')
+    expect(service).toContain('restores.push(pauseAnimations(slide))')
   })
 })

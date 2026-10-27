@@ -275,36 +275,15 @@ html[data-export-mode="capture"] .content-frame {
 
 html[data-export-mode="capture"] .slide-overflow-warn,
 html[data-export-mode="capture"] .deckio-editable-status,
-html[data-export-mode="capture"] .deckio-inline-edit-toast-root {
+html[data-export-mode="capture"] .deckio-inline-edit-toast-root,
+html[data-export-mode="capture"] [data-export-ignore="true"],
+html[data-export-mode="capture"] [data-deckio-export-ignore="true"] {
   display: none !important;
 }
 
 html[data-export-mode="capture"] .deckio-editable {
   outline: 0 !important;
-  box-shadow: none !important;
-  background-color: transparent !important;
-}
-
-/* Badges are optimized for live HTML, but SVG/foreignObject capture can round
-   text metrics differently and make labels look clipped or overflowing. During
-   export we give badge text breathing room so pills stay tidy. Covers shadcn
-   badges ([data-slot]) and custom/CSS-module badges (hashed class names still
-   contain the local "badge" token, e.g. _badge_x7Yk). */
-html[data-export-mode="capture"] [data-slot="badge"],
-html[data-export-mode="capture"] [class*="badge" i] {
-  width: max-content !important;
-  min-width: max-content !important;
-  max-width: 100% !important;
-  min-height: 1.55em !important;
-  overflow: visible !important;
-  line-height: 1.15 !important;
-  padding-top: 0.28em !important;
-  padding-bottom: 0.28em !important;
-}
-
-html[data-export-mode="capture"] [data-slot="badge"] .deckio-editable,
-html[data-export-mode="capture"] [class*="badge" i] .deckio-editable {
-  line-height: inherit !important;
+  caret-color: transparent !important;
 }
 
 /* Progressive-disclosure steps reveal one at a time during a live talk, but an

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Export fidelity fixture</title>
+    <link rel="stylesheet" href="./fixture.css">
+  </head>
+  <body>
+    <div id="root">
+      <div class="deck">
+        <div class="slide active" data-slide="0">
+          <div class="content-frame">
+            <span data-slot="badge" class="inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-purple-400 px-4 py-1 text-sm font-bold tracking-widest whitespace-nowrap text-purple-600">
+              <span class="deckio-editable">DECISION 2 OF 2 - RECOVER THE SOFTWARE ROLE</span>
+            </span>
+            <h1 class="deckio-editable bg-linear-to-r from-cyan-600 to-purple-600 bg-clip-text text-transparent">Software carries more impact</h1>
+            <div class="cards">
+              <div class="card bg-linear-to-r from-cyan-500 to-purple-600">Linear gradient</div>
+              <div class="card radial">Radial gradient</div>
+              <div class="card colour">Modern CSS colours</div>
+            </div>
+            <div class="cards">
+              <div class="card pseudo">Pseudo-element accent</div>
+              <div class="card">
+                <svg width="300" height="120" viewBox="0 0 300 120" aria-label="SVG gradient">
+                  <defs><linearGradient id="chart-gradient"><stop stop-color="#0891b2"/><stop offset="1" stop-color="#9333ea"/></linearGradient></defs>
+                  <rect x="0" y="0" width="300" height="120" rx="20" fill="url(#chart-gradient)"/>
+                </svg>
+              </div>
+              <div class="card"><span class="deckio-editable highlighted">Editable highlight</span></div>
+            </div>
+            <div class="cards">
+              <div class="card"><img src="./illustration.svg" width="300" height="120" alt="Embedded illustration"></div>
+              <div class="card"><canvas width="300" height="120"></canvas></div>
+              <div class="card"><span class="custom-badge"><span class="deckio-editable">CUSTOM BADGE - READY TO EXPORT</span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module">
+      import { domToCanvas } from 'modern-screenshot'
+      import { captureSlidePng, resolveExportOptions, withExportMode } from '../../components/exportDeckService.js'
+      import { exportDeckPdf } from '../../components/exportDeckPdf.js'
+      import { exportDeckPptx } from '../../components/exportDeckPptx.js'
+      import { createElement } from 'react'
+      import { createRoot } from 'react-dom/client'
+      import { SlideProvider } from '../../context/SlideContext.jsx'
+      import Navigation from '../../components/Navigation.jsx'
+
+      const first = document.querySelector('.slide')
+      const second = first.cloneNode(true)
+      second.classList.remove('active')
+      second.dataset.slide = '1'
+      second.querySelector('h1').textContent = 'A second slide with a different story'
+      document.querySelector('.deck').append(second)
+      for (const canvas of document.querySelectorAll('canvas')) {
+        const context = canvas.getContext('2d')
+        const gradient = context.createLinearGradient(0, 0, canvas.width, 0)
+        gradient.addColorStop(0, '#0891b2')
+        gradient.addColorStop(1, '#9333ea')
+        context.fillStyle = gradient
+        context.fillRect(0, 0, canvas.width, canvas.height)
+      }
+      const goTo = (index) => document.querySelectorAll('.slide').forEach((slide, i) => slide.classList.toggle('active', index === i))
+      window.exportFixture = {
+        goTo,
+        mountNavigation: () => {
+          const host = document.createElement('div')
+          document.body.append(host)
+          createRoot(host).render(createElement(SlideProvider, { totalSlides: 2, project: 'fixture' }, createElement(Navigation)))
+        },
+        capture: (options = {}) => withExportMode('pdf', () => captureSlidePng({
+          domToCanvas: options.fail ? () => { throw new Error('Capture failed') } : domToCanvas,
+          deck: document.querySelector('.deck'),
+          slide: document.querySelector('.slide.active'),
+          ...resolveExportOptions({ quality: 'standard', fit: '1', ...options }),
+          backgroundColor: options.backgroundColor || '#ffffff',
+        })),
+        export: (format) => (format === 'pdf' ? exportDeckPdf : exportDeckPptx)({
+          current: Number(document.querySelector('.slide.active').dataset.slide),
+          totalSlides: 2,
+          project: 'export-fixture',
+          goTo,
+          exportOptions: { quality: 'standard', fit: '1' },
+        }),
+        renderPdf: async (bytes) => {
+          const { getDocument, GlobalWorkerOptions } = await import('pdfjs-dist')
+          const { default: worker } = await import('pdfjs-dist/build/pdf.worker.min.mjs?url')
+          GlobalWorkerOptions.workerSrc = worker
+          const task = getDocument({ data: new Uint8Array(bytes) })
+          const pdf = await task.promise
+          const images = []
+          let size
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i)
+            const viewport = page.getViewport({ scale: 2 })
+            size = page.getViewport({ scale: 1 })
+            const canvas = document.createElement('canvas')
+            canvas.width = Math.round(viewport.width)
+            canvas.height = Math.round(viewport.height)
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise
+            images.push(canvas.toDataURL())
+          }
+          const pages = pdf.numPages
+          await task.destroy()
+          return { pages, images, width: size.width, height: size.height }
+        },
+      }
+    </script>
+  </body>
+</html>

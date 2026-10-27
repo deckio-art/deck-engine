@@ -12,7 +12,6 @@ import {
   getSlideBackground,
   resolveExportOptions,
   settleExportFrame,
-  waitForAssets,
   waitForPaint,
   withExportMode,
 } from './exportDeckService.js'
@@ -30,7 +29,7 @@ export async function exportDeckPdf({
   const slides = Array.from(deck?.querySelectorAll('.slide') || [])
   if (!deck || slides.length === 0) throw new Error('No slides found')
 
-  const [{ domToPng }, { jsPDF }] = await Promise.all([
+  const [{ domToCanvas }, { jsPDF }] = await Promise.all([
     import('modern-screenshot'),
     import('jspdf'),
   ])
@@ -49,7 +48,6 @@ export async function exportDeckPdf({
 
   await withExportMode('pdf', async () => {
     await settleExportFrame()
-    await waitForAssets(deck)
 
     try {
       for (let i = 0; i < totalSlides; i++) {
@@ -58,18 +56,18 @@ export async function exportDeckPdf({
         await waitForPaint()
         await settleExportFrame()
 
-        const active = document.querySelector('.slide.active') || slides[i]
+        const active = deck.querySelector('.slide.active') || slides[i]
         if (!active) throw new Error(`Slide ${i + 1} not found`)
 
         const dataUrl = await captureSlidePng({
-          domToPng,
+          domToCanvas,
           deck,
           slide: active,
           layout,
           quality,
           fit,
           backgroundColor: bg,
-        })
+        }).catch((error) => { throw new Error(`Slide ${i + 1}: ${error.message}`, { cause: error }) })
 
         if (i > 0) pdf.addPage(pageFormat, orientation)
         pdf.addImage(dataUrl, 'PNG', 0, 0, layout.widthIn, layout.heightIn, undefined, 'FAST')
