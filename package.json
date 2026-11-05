@@ -19,6 +19,6 @@
     "pdfjs-dist": "^6.4.299",
     "pixelmatch": "^8.0.0",
     "pngjs": "^7.0.0",
-    "vitest": "^4.1.0"
+    "vitest": "^5.0.0"
   }
 }
